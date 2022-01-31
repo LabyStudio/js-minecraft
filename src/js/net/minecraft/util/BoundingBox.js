@@ -243,7 +243,6 @@ window.BoundingBox = class {
         this.maxZ += z;
     }
 
-
     /**
      * Create a new bounding box with the given offset
      *

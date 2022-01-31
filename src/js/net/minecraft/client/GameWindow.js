@@ -1,6 +1,6 @@
 window.GameWindow = class {
 
-    constructor(renderer, canvasWrapperId) {
+    constructor(minecraft, renderer, canvasWrapperId) {
         this.renderer = renderer;
         this.canvasWrapperId = canvasWrapperId;
 
@@ -30,6 +30,9 @@ window.GameWindow = class {
         // Mouse motion
         document.addEventListener('mousemove', event => this.onMouseMove(event), false);
 
+        // Mouse buttons
+        document.addEventListener('click', event => minecraft.onMouseClicked(event.button), false);
+
         // Create keyboard
         Keyboard.create();
     }
@@ -51,7 +54,7 @@ window.GameWindow = class {
     }
 
     onMouseMove(event) {
-        this.mouseMotionX = -event.movementX;
-        this.mouseMotionY = event.movementY;
+        this.mouseMotionX = event.movementX;
+        this.mouseMotionY = -event.movementY;
     }
 }

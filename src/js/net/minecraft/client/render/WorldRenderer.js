@@ -58,8 +58,8 @@ window.WorldRenderer = class {
         let player = this.minecraft.player;
 
         // Rotation
-        this.camera.rotation.y = player.yaw * (Math.PI / 180);
-        this.camera.rotation.x = player.pitch * (Math.PI / 180);
+        this.camera.rotation.y = -player.yaw * (Math.PI / 180) + Math.PI;
+        this.camera.rotation.x = -player.pitch * (Math.PI / 180);
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
@@ -90,21 +90,14 @@ window.WorldRenderer = class {
     renderChunks(renderer, partialTicks) {
         let world = this.minecraft.world;
 
-        const xKeys = Object.keys(world.chunks)
-        for (let x = 0; x < xKeys.length; x++) {
+        for(let i in world.chunks) {
+            let chunk = world.chunks[i];
 
-            let zArray = world.chunks[xKeys[x]];
-            const zKeys = Object.keys(zArray)
+            for (let y = 0; y < chunk.sections.length; y++) {
+                let section = chunk.sections[y];
 
-            for (let z = 0; z < zKeys.length; z++) {
-                let chunk = zArray[zKeys[z]];
-
-                for (let y = 0; y < chunk.sections.length; y++) {
-                    let section = chunk.sections[y];
-
-                    if (section.dirty) {
-                        section.rebuild(renderer);
-                    }
+                if (section.dirty) {
+                    section.rebuild(renderer);
                 }
             }
         }

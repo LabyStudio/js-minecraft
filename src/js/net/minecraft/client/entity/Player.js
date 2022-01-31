@@ -182,7 +182,7 @@ window.Player = class {
         this.motionY = 0.42;
 
         if (this.sprinting) {
-            let radiansYaw = -this.yaw * (Math.PI / 180);
+            let radiansYaw = this.yaw * (Math.PI / 180) + Math.PI;
             this.motionX -= Math.sin(radiansYaw) * 0.2;
             this.motionZ += Math.cos(radiansYaw) * 0.2;
         }
@@ -281,7 +281,7 @@ window.Player = class {
             up = up * distance;
             forward = forward * distance;
 
-            let yawRadians = -this.yaw * (Math.PI / 180);
+            let yawRadians = this.yaw * (Math.PI / 180) + Math.PI;
             let sin = Math.sin(yawRadians);
             let cos = Math.cos(yawRadians);
 
@@ -471,6 +471,43 @@ window.Player = class {
 
     getBlockPosZ() {
         return this.z - (this.z < 0 ? 1 : 0);
+    }
+
+    getPositionEyes(partialTicks) {
+        if (partialTicks === 1.0) {
+            return new Vector3(this.x, this.y + this.getEyeHeight(), this.z);
+        } else {
+            let x = this.prevX + (this.x - this.prevX) * partialTicks;
+            let y = this.prevY + (this.y - this.prevY) * partialTicks + this.getEyeHeight();
+            let z = this.prevZ + (this.z - this.prevZ) * partialTicks;
+            return new Vector3(x, y, z);
+        }
+    }
+
+    /**
+     * interpolated look vector
+     */
+    getLook(partialTicks) {
+        // TODO interpolation
+        return this.getVectorForRotation(this.pitch, this.yaw);
+    }
+
+    /**
+     * Creates a Vec3 using the pitch and yaw of the entities rotation.
+     */
+    getVectorForRotation(pitch, yaw) {
+        let z = Math.cos(-yaw * 0.017453292 - Math.PI);
+        let x = Math.sin(-yaw * 0.017453292 - Math.PI);
+        let xz = -Math.cos(-pitch * 0.017453292);
+        let y = Math.sin(-pitch * 0.017453292);
+        return new Vector3(x * xz, y, z * xz);
+    }
+
+    rayTrace(blockReachDistance, partialTicks) {
+        let from = this.getPositionEyes(partialTicks);
+        let direction = this.getLook(partialTicks);
+        let to = from.addVector(direction.x * blockReachDistance, direction.y * blockReachDistance, direction.z * blockReachDistance);
+        return this.world.rayTraceBlocks(from, to);
     }
 
 }

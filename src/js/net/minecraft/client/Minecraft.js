@@ -5,7 +5,7 @@ window.Minecraft = class {
      */
     constructor(canvasWrapperId) {
         this.worldRenderer = new WorldRenderer(this);
-        this.window = new GameWindow(this.worldRenderer, canvasWrapperId);
+        this.window = new GameWindow(this, this.worldRenderer, canvasWrapperId);
         this.timer = new Timer(20);
 
         this.frames = 0;
@@ -66,6 +66,7 @@ window.Minecraft = class {
     }
 
     onRender(partialTicks) {
+        // Player rotation
         if (this.window.mouseLocked) {
             this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
 
@@ -78,7 +79,35 @@ window.Minecraft = class {
     }
 
     onTick() {
+        // Tick the player
         this.player.onTick();
+    }
+
+    onMouseClicked(button) {
+        let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
+
+        // Destroy block
+        if (button === 0) {
+            if (hitResult != null) {
+                this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+            }
+        }
+
+        // Place block
+        if (button === 2) {
+            if (hitResult != null) {
+                let x = hitResult.x + hitResult.face.x;
+                let y = hitResult.y + hitResult.face.y;
+                let z = hitResult.z + hitResult.face.z;
+
+                let placedBoundingBox = new BoundingBox(x, y, z, x + 1, y + 1, z + 1);
+
+                // Don't place blocks if the player is standing there
+                if (!placedBoundingBox.intersects(this.player.boundingBox)) {
+                    this.world.setBlockAt(x, y, z, 1);
+                }
+            }
+        }
     }
 
 }

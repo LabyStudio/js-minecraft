@@ -38,8 +38,8 @@ window.EnumBlockFace = class {
     let c = window.EnumBlockFace;
     c.TOP = new EnumBlockFace(0, 1, 0);
     c.BOTTOM = new EnumBlockFace(0, -1, 0);
-    c.NORTH = new EnumBlockFace(-1, 0, 0);
-    c.EAST = new EnumBlockFace(0, 0, -1);
-    c.SOUTH = new EnumBlockFace(1, 0, 0);
-    c.WEST = new EnumBlockFace(0, 0, 1);
+    c.NORTH = new EnumBlockFace(0, 0, -1);
+    c.EAST = new EnumBlockFace(1, 0, 0);
+    c.SOUTH = new EnumBlockFace(0, 0, 1);
+    c.WEST = new EnumBlockFace(-1, 0, 0);
 }

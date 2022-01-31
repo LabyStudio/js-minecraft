@@ -41,7 +41,7 @@ window.BlockRenderer = class {
         let textureIndex = block.getTextureForFace(face);
         let minU = (textureIndex % 16) / 16.0;
         let maxU = minU + (16 / 256);
-        let minV = Math.round(textureIndex / 16);
+        let minV = Math.floor(textureIndex / 16);
         let maxV = minV + (16 / 256);
 
         // Flip V
@@ -65,25 +65,25 @@ window.BlockRenderer = class {
             this.addBlockCorner(world, face, minX, maxY, minZ, minU, minV);
             this.addBlockCorner(world, face, minX, maxY, maxZ, minU, maxV);
         }
-        if (face === EnumBlockFace.EAST) {
+        if (face === EnumBlockFace.NORTH) {
             this.addBlockCorner(world, face, minX, maxY, minZ, maxU, minV);
             this.addBlockCorner(world, face, maxX, maxY, minZ, minU, minV);
             this.addBlockCorner(world, face, maxX, minY, minZ, minU, maxV);
             this.addBlockCorner(world, face, minX, minY, minZ, maxU, maxV);
         }
-        if (face === EnumBlockFace.WEST) {
+        if (face === EnumBlockFace.SOUTH) {
             this.addBlockCorner(world, face, minX, maxY, maxZ, minU, minV);
             this.addBlockCorner(world, face, minX, minY, maxZ, minU, maxV);
             this.addBlockCorner(world, face, maxX, minY, maxZ, maxU, maxV);
             this.addBlockCorner(world, face, maxX, maxY, maxZ, maxU, minV);
         }
-        if (face === EnumBlockFace.NORTH) {
+        if (face === EnumBlockFace.WEST) {
             this.addBlockCorner(world, face, minX, maxY, maxZ, maxU, minV);
             this.addBlockCorner(world, face, minX, maxY, minZ, minU, minV);
             this.addBlockCorner(world, face, minX, minY, minZ, minU, maxV);
             this.addBlockCorner(world, face, minX, minY, maxZ, maxU, maxV);
         }
-        if (face === EnumBlockFace.SOUTH) {
+        if (face === EnumBlockFace.EAST) {
             this.addBlockCorner(world, face, maxX, minY, maxZ, minU, maxV);
             this.addBlockCorner(world, face, maxX, minY, minZ, maxU, maxV);
             this.addBlockCorner(world, face, maxX, maxY, minZ, maxU, minV);

@@ -49,6 +49,8 @@ loadScripts([
     // Minecraft Source
     "src/js/net/minecraft/util/EnumBlockFace.js",
     "src/js/net/minecraft/util/Timer.js",
+    "src/js/net/minecraft/util/Vector3.js",
+    "src/js/net/minecraft/util/MovingObjectPosition.js",
     "src/js/net/minecraft/util/MathHelper.js",
     "src/js/net/minecraft/util/BoundingBox.js",
     "src/js/net/minecraft/util/Keyboard.js",
