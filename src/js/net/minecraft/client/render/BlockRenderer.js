@@ -10,9 +10,7 @@ window.BlockRenderer = class {
         let boundingBox = new BoundingBox(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
 
         for (let face = 0; face < 6; face++) {
-            this.tessellator.startDrawing();
             this.renderFace(world, typeId, boundingBox, face, x, y, z);
-            this.tessellator.draw(group);
         }
     }
 
