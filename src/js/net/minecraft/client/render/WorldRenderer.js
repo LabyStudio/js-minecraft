@@ -1,5 +1,7 @@
 window.WorldRenderer = class {
 
+    static RENDER_DISTANCE = 4;
+
     constructor(minecraft) {
         this.minecraft = minecraft;
 
@@ -19,10 +21,10 @@ window.WorldRenderer = class {
         this.canvasElement = document.createElement('canvas')
         this.webRenderer = this.supportWebGL ? new THREE.WebGLRenderer({
             canvas: this.canvasElement,
-            antialias: true
+            antialias: false
         }) : new THREE.CanvasRenderer({
             canvas: this.canvasElement,
-            antialias: true
+            antialias: false
         });
 
         // Settings
@@ -32,14 +34,10 @@ window.WorldRenderer = class {
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
 
-        // Add lights
-        const nightLight = new THREE.AmbientLight(0x888888, 1.0);
-        this.scene.add(nightLight);
-
         // Load terrain
-        this.terrainTexture = new THREE.TextureLoader().load( 'src/resources/terrain.png' );
+        this.terrainTexture = new THREE.TextureLoader().load('src/resources/terrain.png');
         this.terrainTexture.magFilter = THREE.NearestFilter;
-        this.terrainTexture.minFilter = THREE.LinearFilter;
+        this.terrainTexture.minFilter = THREE.NearestFilter;
 
         // Block Renderer
         this.blockRenderer = new BlockRenderer(this);
@@ -72,6 +70,21 @@ window.WorldRenderer = class {
         // Update FOV
         this.camera.fov = 85 + player.getFOVModifier();
         this.camera.updateProjectionMatrix();
+
+        // Setup fog
+        this.setupFog();
+    }
+
+    setupFog(inWater) {
+        if (inWater) {
+
+        } else {
+            let viewDistance = WorldRenderer.RENDER_DISTANCE * ChunkSection.SIZE;
+
+            let color = new THREE.Color(0x9299ff);
+            this.scene.background = color;
+            this.scene.fog = new THREE.Fog(color, 0.0025, viewDistance);
+        }
     }
 
     renderChunks(renderer, partialTicks) {

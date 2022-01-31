@@ -3,10 +3,10 @@ window.Tessellator = class {
     constructor() {
         this.material = new THREE.MeshBasicMaterial({
             vertexColors: THREE.VertexColors,
-            color: 0xffffff,
             side: THREE.BackSide,
-            overdraw: 1
+            transparent: true
         });
+
     }
 
     bindTexture(texture) {
@@ -47,7 +47,7 @@ window.Tessellator = class {
     draw(group) {
         let geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.vertices), 3));
-        geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(this.colors), 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(this.colors), 3));
         geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(this.uv), 2));
         geometry.setIndex(new THREE.BufferAttribute(new Uint32Array([0, 2, 1, 0, 3, 2]), 1));
 
