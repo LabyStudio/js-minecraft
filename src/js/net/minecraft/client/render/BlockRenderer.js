@@ -43,12 +43,17 @@ window.BlockRenderer = class {
         let textureIndex = typeId;
         let minU = (textureIndex % 16) / 16.0;
         let maxU = minU + (16 / 256);
-        let minV = parseInt(textureIndex / 16); // TODO Math.round
+        let minV = Math.round(textureIndex / 16);
         let maxV = minV + (16 / 256);
 
         // Flip V
         minV = 1 - minV;
         maxV = 1 - maxV;
+
+        // Classic lightning
+        let brightness = 0.9 / 15.0 * 15 + 0.1;
+        let color = brightness * face.getShading();
+        this.tessellator.setColor(color, color, color);
 
         if (face === EnumBlockFace.BOTTOM) {
             this.addBlockCorner(world, face, minX, minY, maxZ, minU, maxV);

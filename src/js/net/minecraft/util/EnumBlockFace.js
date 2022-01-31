@@ -6,6 +6,22 @@ window.EnumBlockFace = class {
         this.z = z;
     }
 
+    getShading() {
+        return this.isXAxis() ? 0.6 : this.isYAxis() ? 1.0 : 0.8;
+    }
+
+    isXAxis() {
+        return this.x !== 0;
+    }
+
+    isYAxis() {
+        return this.y !== 0;
+    }
+
+    isZAxis() {
+        return this.z !== 0;
+    }
+
     static values() {
         return [
             EnumBlockFace.TOP,
