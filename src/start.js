@@ -48,6 +48,7 @@ loadScripts([
 
     // Minecraft Source
     "src/net/minecraft/util/Timer.js",
+    "src/net/minecraft/util/MathHelper.js",
     "src/net/minecraft/util/BoundingBox.js",
     "src/net/minecraft/util/Keyboard.js",
     "src/net/minecraft/client/GameWindow.js",

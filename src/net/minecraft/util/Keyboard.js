@@ -3,8 +3,14 @@ window.Keyboard = class {
     static state = {};
 
     static create() {
-        window.addEventListener('keyup', (e) => Keyboard.state[e.code] = false);
-        window.addEventListener('keydown', (e) => Keyboard.state[e.code] = true);
+        window.addEventListener('keydown', function (event) {
+            Keyboard.state[event.code] = true;
+            //console.log("Key " + event.code + " down");
+        });
+        window.addEventListener('keyup', function (event) {
+            delete Keyboard.state[event.code];
+            //console.log("Key " + event.code + " up");
+        });
     };
 
     static isKeyDown(key) {

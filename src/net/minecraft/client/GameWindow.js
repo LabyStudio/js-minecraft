@@ -13,11 +13,11 @@ window.GameWindow = class {
         document.getElementById(this.canvasWrapperId).appendChild(canvas);
 
         // Init
-        this.initialize();
+        this.onResize();
 
         // On resize
         let scope = this;
-        window.addEventListener('resize', _ => scope.initialize(), false);
+        window.addEventListener('resize', _ => scope.onResize(), false);
 
         // Request focus
         canvas.onclick = function () {
@@ -29,12 +29,12 @@ window.GameWindow = class {
 
         // Mouse motion
         document.addEventListener('mousemove', event => this.onMouseMove(event), false);
-    }
 
-    initialize() {
         // Create keyboard
         Keyboard.create();
+    }
 
+    onResize() {
         // Get canvas size
         let canvasElement = document.getElementById(this.canvasWrapperId);
         this.canvasWidth = canvasElement.offsetWidth;
