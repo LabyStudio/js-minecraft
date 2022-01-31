@@ -23,6 +23,10 @@ window.Minecraft = class {
     }
 
     init() {
+        // Create all blocks
+        Block.create();
+
+        // Start render loop
         this.running = true;
         this.requestNextFrame();
     }

@@ -47,7 +47,7 @@ window.Player = class {
     }
 
     resetPos() {
-        this.setPos(0, 2, 0);
+        this.setPos(0, 25, 0);
     }
 
     setPos(x, y, z) {

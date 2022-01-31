@@ -6,18 +6,21 @@ window.BlockRenderer = class {
         this.tessellator.bindTexture(worldRenderer.terrainTexture);
     }
 
-    renderBlock(world, group, typeId, x, y, z) {
-        let boundingBox = new BoundingBox(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+    renderBlock(world, group, block, x, y, z) {
+        let boundingBox = block.getBoundingBox(world, x, y, z);
 
+        // Render all faces
         let values = EnumBlockFace.values();
         for (let i = 0; i < values.length; i++) {
             let face = values[i];
-            if (this.shouldRenderFace(world, x, y, z, face)) {
+
+            // Check if face is hidden by other block
+            if (block.shouldRenderFace(world, x, y, z, face)) {
                 // Start drawing
                 this.tessellator.startDrawing();
 
                 // Render face
-                this.renderFace(world, typeId, boundingBox, face, x, y, z);
+                this.renderFace(world, block, boundingBox, face, x, y, z);
 
                 // Draw
                 this.tessellator.draw(group);
@@ -25,12 +28,7 @@ window.BlockRenderer = class {
         }
     }
 
-    shouldRenderFace(world, x, y, z, face) {
-        let typeId = world.getBlockAt(x + face.x, y + face.y, z + face.z);
-        return typeId === 0; /*|| Block.getById(typeId).isTransparent();*/
-    }
-
-    renderFace(world, typeId, boundingBox, face, x, y, z) {
+    renderFace(world, block, boundingBox, face, x, y, z) {
         // Vertex mappings
         let minX = x + boundingBox.minX;
         let minY = y + boundingBox.minY;
@@ -40,7 +38,7 @@ window.BlockRenderer = class {
         let maxZ = z + boundingBox.maxZ;
 
         // UV Mapping
-        let textureIndex = typeId;
+        let textureIndex = block.getTextureForFace(face);
         let minU = (textureIndex % 16) / 16.0;
         let maxU = minU + (16 / 256);
         let minV = Math.round(textureIndex / 16);

@@ -1,20 +1,20 @@
 window.World = class {
 
-    static get TOTAL_HEIGHT() {
-        return ChunkSection.SIZE * 16 - 1;
-    }
+    static TOTAL_HEIGHT = ChunkSection.SIZE * 16 - 1;
 
     constructor() {
         this.group = new THREE.Object3D();
         this.chunks = [];
 
+        // Debug world
         for (let x = -16; x < 16; x++) {
-            for (let z = -16; z < 16; z++) {
-                this.setBlockAt(x, 0, z, 1);
+            for (let y = 0; y < 16; y++) {
+                for (let z = -16; z < 16; z++) {
+                    this.setBlockAt(x, y, z, y === 15 ? 2 : 3);
+                }
             }
         }
-
-        this.setBlockAt(0, 1, -2, 2);
+        this.setBlockAt(0, 16, -2, 17);
     }
 
     getChunkAtBlock(x, y, z) {
@@ -46,7 +46,7 @@ window.World = class {
 
     isSolidBlockAt(x, y, z) {
         let typeId = this.getBlockAt(x, y, z);
-        return typeId !== 0; /* && Block.getById(typeId).isSolid();*/
+        return typeId !== 0 && Block.getById(typeId).isSolid();
     }
 
     setBlockAt(x, y, z, type) {
