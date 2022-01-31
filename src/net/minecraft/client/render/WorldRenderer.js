@@ -8,7 +8,7 @@ window.WorldRenderer = class {
                 || !!document.createElement('canvas').getContext('webgl'));
 
         // Create cameras
-        this.camera = new THREE.PerspectiveCamera(85, 1, 0.001, 10000);
+        this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 10000);
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 0, 1);
 
@@ -58,6 +58,10 @@ window.WorldRenderer = class {
         let y = player.prevY + (player.y - player.prevY) * partialTicks;
         let z = player.prevZ + (player.z - player.prevZ) * partialTicks;
         this.camera.position.set(x, y + player.getEyeHeight(), z);
+
+        // Update FOV
+        this.camera.fov = 85 + player.getFOVModifier();
+        this.camera.updateProjectionMatrix();
     }
 
     renderChunks(partialTicks) {
