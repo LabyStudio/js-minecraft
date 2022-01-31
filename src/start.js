@@ -48,10 +48,13 @@ loadScripts([
 
     // Minecraft Source
     "src/net/minecraft/util/Timer.js",
+    "src/net/minecraft/util/BoundingBox.js",
+    "src/net/minecraft/util/Keyboard.js",
     "src/net/minecraft/client/GameWindow.js",
     "src/net/minecraft/client/world/ChunkSection.js",
     "src/net/minecraft/client/world/Chunk.js",
     "src/net/minecraft/client/world/World.js",
+    "src/net/minecraft/client/entity/Player.js",
     "src/net/minecraft/client/Minecraft.js",
     "src/net/minecraft/client/render/WorldRenderer.js"
 ]).then(() => {

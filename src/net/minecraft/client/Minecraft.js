@@ -11,9 +11,14 @@ window.Minecraft = class {
         this.frames = 0;
         this.lastTime = Date.now();
 
+        // Create world
         this.world = new World();
         this.worldRenderer.scene.add(this.world.group);
 
+        // Create player
+        this.player = new Player(this.world);
+
+        // Initialize
         this.init();
     }
 
@@ -27,12 +32,12 @@ window.Minecraft = class {
         requestAnimationFrame(function () {
             if (scope.running) {
                 scope.requestNextFrame();
-                scope.onRender();
+                scope.onLoop();
             }
         });
     }
 
-    onRender() {
+    onLoop() {
         // Update the timer
         this.timer.advanceTime();
 
@@ -42,22 +47,34 @@ window.Minecraft = class {
         }
 
         // Render the game
-        this.worldRenderer.render(this.timer.partialTicks);
+        this.onRender(this.timer.partialTicks);
 
         // Increase rendered frame
         this.frames++;
 
         // Loop if a second passed
         while (Date.now() >= this.lastTime + 1000) {
-            console.log(this.frames + " fps");
+            //console.log(this.frames + " fps");
 
             this.lastTime += 1000;
             this.frames = 0;
         }
     }
 
-    onTick() {
+    onRender(partialTicks) {
+        if (this.window.mouseLocked) {
+            this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
 
+            this.window.mouseMotionX = 0;
+            this.window.mouseMotionY = 0;
+        }
+
+        // Render the game
+        this.worldRenderer.render(partialTicks);
+    }
+
+    onTick() {
+        this.player.onTick();
     }
 
 }

@@ -45,7 +45,7 @@ window.ChunkSection = class {
                         });
 
                         let cube = new THREE.Mesh(geometry, material);
-                        cube.position.set(absoluteX - 0.5, absoluteY - 0.5, absoluteZ - 0.5);
+                        cube.position.set(absoluteX + 0.5, absoluteY + 0.5, absoluteZ + 0.5);
 
                         this.group.add(cube);
                     }
