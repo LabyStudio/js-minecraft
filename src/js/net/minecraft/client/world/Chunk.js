@@ -1,15 +1,16 @@
 window.Chunk = class {
 
-    constructor(x, z) {
-        this.group = new THREE.Object3D();
-
+    constructor(world, x, z) {
+        this.world = world;
         this.x = x;
         this.z = z;
+
+        this.group = new THREE.Object3D();
 
         // Initialize sections
         this.sections = [];
         for (let y = 0; y < 16; y++) {
-            let section = new ChunkSection(x, y, z);
+            let section = new ChunkSection(world, x, y, z);
 
             this.sections[y] = section;
             this.group.add(section.group);
@@ -20,9 +21,9 @@ window.Chunk = class {
         return this.sections[y];
     }
 
-    rebuild() {
+    rebuild(renderer) {
         for (let y = 0; y < this.sections.length; y++) {
-            this.sections[y].rebuild();
+            this.sections[y].rebuild(renderer);
         }
     }
 

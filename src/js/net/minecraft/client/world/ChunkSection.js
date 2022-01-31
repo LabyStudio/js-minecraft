@@ -4,7 +4,8 @@ window.ChunkSection = class {
         return 16;
     }
 
-    constructor(x, y, z) {
+    constructor(world, x, y, z) {
+        this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -22,9 +23,10 @@ window.ChunkSection = class {
         }
     }
 
-    rebuild() {
+    rebuild(renderer) {
         this.dirty = false;
         this.group.clear();
+
 
         for (let x = 0; x < ChunkSection.SIZE; x++) {
             for (let y = 0; y < ChunkSection.SIZE; y++) {
@@ -36,18 +38,7 @@ window.ChunkSection = class {
                         let absoluteY = this.y * ChunkSection.SIZE + y;
                         let absoluteZ = this.z * ChunkSection.SIZE + z;
 
-                        // Debug stuff
-                        let color = 0x888888 | (Math.random() * 223);
-
-                        let geometry = new THREE.BoxGeometry(1, 1, 1);
-                        let material = new THREE.MeshBasicMaterial({
-                            color: color
-                        });
-
-                        let cube = new THREE.Mesh(geometry, material);
-                        cube.position.set(absoluteX + 0.5, absoluteY + 0.5, absoluteZ + 0.5);
-
-                        this.group.add(cube);
+                        renderer.blockRenderer.renderBlock(this.world, this.group, typeId, absoluteX, absoluteY, absoluteZ);
                     }
                 }
             }

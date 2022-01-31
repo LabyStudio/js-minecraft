@@ -25,14 +25,24 @@ window.WorldRenderer = class {
             antialias: true
         });
 
+        // Settings
         this.webRenderer.shadowMap.enabled = true;
         this.webRenderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
         this.webRenderer.autoClear = false;
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
 
+        // Add lights
         const nightLight = new THREE.AmbientLight(0x888888, 1.0);
         this.scene.add(nightLight);
+
+        // Load terrain
+        this.terrainTexture = new THREE.TextureLoader().load( 'src/resources/terrain.png' );
+        this.terrainTexture.magFilter = THREE.NearestFilter;
+        this.terrainTexture.minFilter = THREE.LinearFilter;
+
+        // Block Renderer
+        this.blockRenderer = new BlockRenderer(this);
     }
 
     render(partialTicks) {
@@ -40,7 +50,7 @@ window.WorldRenderer = class {
         this.orientCamera(partialTicks);
 
         // Render chunks
-        this.renderChunks(partialTicks);
+        this.renderChunks(this, partialTicks);
 
         // Render window
         this.webRenderer.render(this.scene, this.camera);
@@ -64,7 +74,7 @@ window.WorldRenderer = class {
         this.camera.updateProjectionMatrix();
     }
 
-    renderChunks(partialTicks) {
+    renderChunks(renderer, partialTicks) {
         let world = this.minecraft.world;
 
         const xKeys = Object.keys(world.chunks)
@@ -80,7 +90,7 @@ window.WorldRenderer = class {
                     let section = chunk.sections[y];
 
                     if (section.dirty) {
-                        section.rebuild();
+                        section.rebuild(renderer);
                     }
                 }
             }

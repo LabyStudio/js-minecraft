@@ -47,17 +47,19 @@ loadScripts([
     "libraries/three.min.js",
 
     // Minecraft Source
-    "src/net/minecraft/util/Timer.js",
-    "src/net/minecraft/util/MathHelper.js",
-    "src/net/minecraft/util/BoundingBox.js",
-    "src/net/minecraft/util/Keyboard.js",
-    "src/net/minecraft/client/GameWindow.js",
-    "src/net/minecraft/client/world/ChunkSection.js",
-    "src/net/minecraft/client/world/Chunk.js",
-    "src/net/minecraft/client/world/World.js",
-    "src/net/minecraft/client/entity/Player.js",
-    "src/net/minecraft/client/Minecraft.js",
-    "src/net/minecraft/client/render/WorldRenderer.js"
+    "src/js/net/minecraft/util/Timer.js",
+    "src/js/net/minecraft/util/MathHelper.js",
+    "src/js/net/minecraft/util/BoundingBox.js",
+    "src/js/net/minecraft/util/Keyboard.js",
+    "src/js/net/minecraft/client/GameWindow.js",
+    "src/js/net/minecraft/client/world/ChunkSection.js",
+    "src/js/net/minecraft/client/world/Chunk.js",
+    "src/js/net/minecraft/client/world/World.js",
+    "src/js/net/minecraft/client/entity/Player.js",
+    "src/js/net/minecraft/client/Minecraft.js",
+    "src/js/net/minecraft/client/render/Tessellator.js",
+    "src/js/net/minecraft/client/render/WorldRenderer.js",
+    "src/js/net/minecraft/client/render/BlockRenderer.js"
 ]).then(() => {
     // Remove pre status
     document.getElementById("pre-status").remove();

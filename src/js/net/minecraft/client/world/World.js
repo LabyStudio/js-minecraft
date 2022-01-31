@@ -70,7 +70,7 @@ window.World = class {
 
         let chunk = zArray[z];
         if (typeof chunk === 'undefined') {
-            chunk = new Chunk(x, z);
+            chunk = new Chunk(this, x, z);
             this.chunks[x][z] = chunk;
             this.group.add(chunk.group);
         }
