@@ -9,9 +9,25 @@ window.BlockRenderer = class {
     renderBlock(world, group, typeId, x, y, z) {
         let boundingBox = new BoundingBox(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
 
-        for (let face = 0; face < 6; face++) {
-            this.renderFace(world, typeId, boundingBox, face, x, y, z);
+        let values = EnumBlockFace.values();
+        for (let i = 0; i < values.length; i++) {
+            let face = values[i];
+            if (this.shouldRenderFace(world, x, y, z, face)) {
+                // Start drawing
+                this.tessellator.startDrawing();
+
+                // Render face
+                this.renderFace(world, typeId, boundingBox, face, x, y, z);
+
+                // Draw
+                this.tessellator.draw(group);
+            }
         }
+    }
+
+    shouldRenderFace(world, x, y, z, face) {
+        let typeId = world.getBlockAt(x + face.x, y + face.y, z + face.z);
+        return typeId === 0; /*|| Block.getById(typeId).isTransparent();*/
     }
 
     renderFace(world, typeId, boundingBox, face, x, y, z) {
@@ -34,37 +50,37 @@ window.BlockRenderer = class {
         minV = 1 - minV;
         maxV = 1 - maxV;
 
-        if (face === 0) {
+        if (face === EnumBlockFace.BOTTOM) {
             this.addBlockCorner(world, face, minX, minY, maxZ, minU, maxV);
             this.addBlockCorner(world, face, minX, minY, minZ, minU, minV);
             this.addBlockCorner(world, face, maxX, minY, minZ, maxU, minV);
             this.addBlockCorner(world, face, maxX, minY, maxZ, maxU, maxV);
         }
-        if (face === 1) {
+        if (face === EnumBlockFace.TOP) {
             this.addBlockCorner(world, face, maxX, maxY, maxZ, maxU, maxV);
             this.addBlockCorner(world, face, maxX, maxY, minZ, maxU, minV);
             this.addBlockCorner(world, face, minX, maxY, minZ, minU, minV);
             this.addBlockCorner(world, face, minX, maxY, maxZ, minU, maxV);
         }
-        if (face === 2) {
+        if (face === EnumBlockFace.EAST) {
             this.addBlockCorner(world, face, minX, maxY, minZ, maxU, minV);
             this.addBlockCorner(world, face, maxX, maxY, minZ, minU, minV);
             this.addBlockCorner(world, face, maxX, minY, minZ, minU, maxV);
             this.addBlockCorner(world, face, minX, minY, minZ, maxU, maxV);
         }
-        if (face === 3) {
+        if (face === EnumBlockFace.WEST) {
             this.addBlockCorner(world, face, minX, maxY, maxZ, minU, minV);
             this.addBlockCorner(world, face, minX, minY, maxZ, minU, maxV);
             this.addBlockCorner(world, face, maxX, minY, maxZ, maxU, maxV);
             this.addBlockCorner(world, face, maxX, maxY, maxZ, maxU, minV);
         }
-        if (face === 4) {
+        if (face === EnumBlockFace.NORTH) {
             this.addBlockCorner(world, face, minX, maxY, maxZ, maxU, minV);
             this.addBlockCorner(world, face, minX, maxY, minZ, minU, minV);
             this.addBlockCorner(world, face, minX, minY, minZ, minU, maxV);
             this.addBlockCorner(world, face, minX, minY, maxZ, maxU, maxV);
         }
-        if (face === 5) {
+        if (face === EnumBlockFace.SOUTH) {
             this.addBlockCorner(world, face, maxX, minY, maxZ, minU, maxV);
             this.addBlockCorner(world, face, maxX, minY, minZ, maxU, maxV);
             this.addBlockCorner(world, face, maxX, maxY, minZ, maxU, minV);

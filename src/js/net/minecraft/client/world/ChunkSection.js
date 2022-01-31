@@ -27,8 +27,6 @@ window.ChunkSection = class {
         this.dirty = false;
         this.group.clear();
 
-        renderer.blockRenderer.tessellator.startDrawing();
-
         for (let x = 0; x < ChunkSection.SIZE; x++) {
             for (let y = 0; y < ChunkSection.SIZE; y++) {
                 for (let z = 0; z < ChunkSection.SIZE; z++) {
@@ -44,8 +42,6 @@ window.ChunkSection = class {
                 }
             }
         }
-
-        renderer.blockRenderer.tessellator.draw(this.group);
     }
 
     getBlockAt(x, y, z) {

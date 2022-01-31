@@ -47,6 +47,7 @@ loadScripts([
     "libraries/three.min.js",
 
     // Minecraft Source
+    "src/js/net/minecraft/util/EnumBlockFace.js",
     "src/js/net/minecraft/util/Timer.js",
     "src/js/net/minecraft/util/MathHelper.js",
     "src/js/net/minecraft/util/BoundingBox.js",

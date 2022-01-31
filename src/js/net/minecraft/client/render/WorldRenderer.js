@@ -8,7 +8,7 @@ window.WorldRenderer = class {
                 || !!document.createElement('canvas').getContext('webgl'));
 
         // Create cameras
-        this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 10000);
+        this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 1000000);
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 0, 1);
 

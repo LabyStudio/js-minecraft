@@ -13,6 +13,8 @@ window.World = class {
                 this.setBlockAt(x, 0, z, 1);
             }
         }
+
+        this.setBlockAt(0, 1, -2, 2);
     }
 
     getChunkAtBlock(x, y, z) {
