@@ -1,8 +1,6 @@
 window.ChunkSection = class {
 
-    static get SIZE() {
-        return 16;
-    }
+    static SIZE = 16;
 
     constructor(world, x, y, z) {
         this.world = world;
@@ -11,6 +9,7 @@ window.ChunkSection = class {
         this.z = z;
 
         this.group = new THREE.Object3D();
+        this.group.matrixAutoUpdate = false;
         this.dirty = true;
 
         this.blocks = [];

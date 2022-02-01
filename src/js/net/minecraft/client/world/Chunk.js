@@ -6,6 +6,7 @@ window.Chunk = class {
         this.z = z;
 
         this.group = new THREE.Object3D();
+        this.group.matrixAutoUpdate = false;
 
         // Initialize sections
         this.sections = [];

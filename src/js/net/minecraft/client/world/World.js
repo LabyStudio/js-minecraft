@@ -4,6 +4,7 @@ window.World = class {
 
     constructor() {
         this.group = new THREE.Object3D();
+        this.group.matrixAutoUpdate = false;
         this.chunks = [];
 
         // Debug world

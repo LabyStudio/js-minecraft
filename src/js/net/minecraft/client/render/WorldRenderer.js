@@ -16,6 +16,7 @@ window.WorldRenderer = class {
 
         // Create scene
         this.scene = new THREE.Scene();
+        this.scene.matrixAutoUpdate = false;
 
         // Create web renderer
         this.canvasElement = document.createElement('canvas')
