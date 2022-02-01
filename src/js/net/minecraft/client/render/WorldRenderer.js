@@ -103,8 +103,7 @@ window.WorldRenderer = class {
     renderChunks(cameraChunkX, cameraChunkZ) {
         let world = this.minecraft.world;
 
-        for (let i in world.chunks) {
-            let chunk = world.chunks[i];
+        for (let [index, chunk] of world.chunks) {
 
             let distanceX = Math.abs(cameraChunkX - chunk.x);
             let distanceZ = Math.abs(cameraChunkZ - chunk.z);

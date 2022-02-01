@@ -1,6 +1,6 @@
 window.BlockRenderer = class {
 
-    static CLASSIC_LIGHTNING = false;
+    static CLASSIC_LIGHTNING = true;
 
     constructor(worldRenderer) {
         this.worldRenderer = worldRenderer;
@@ -125,7 +125,7 @@ window.BlockRenderer = class {
                     if (typeId === 0 || Block.getById(typeId).isTransparent()) {
 
                         // Sum up the light levels
-                        totalLightLevel += world.getLightAt(x + offsetX, y + offsetY, z + offsetZ);
+                        totalLightLevel += world.getTotalLightAt(x + offsetX, y + offsetY, z + offsetZ);
                         totalBlocks++;
                     }
                 }

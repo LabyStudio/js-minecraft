@@ -24,15 +24,16 @@ window.ChunkSection = class {
 
         this.blocks = [];
         this.blockLight = [];
+        this.skyLight = [];
 
         // Fill chunk with air and light
-        for (let lightX = 0; lightX < ChunkSection.SIZE; lightX++) {
-            for (let lightY = 0; lightY < ChunkSection.SIZE; lightY++) {
-                for (let lightZ = 0; lightZ < ChunkSection.SIZE; lightZ++) {
-                    let index = lightY << 8 | lightZ << 4 | lightX;
-
+        for (let tX = 0; tX < ChunkSection.SIZE; tX++) {
+            for (let tY = 0; tY < ChunkSection.SIZE; tY++) {
+                for (let tZ = 0; tZ < ChunkSection.SIZE; tZ++) {
+                    let index = tY << 8 | tZ << 4 | tX;
                     this.blocks[index] = 0;
-                    this.blockLight[index] = 15;
+                    this.blockLight[index] = 0;
+                    this.skyLight[index] = 0;
                 }
             }
         }
@@ -81,14 +82,30 @@ window.ChunkSection = class {
         this.blocks[index] = typeId;
     }
 
-    setLightAt(x, y, z, lightLevel) {
+    setLightAt(sourceType, x, y, z, lightLevel) {
         let index = y << 8 | z << 4 | x;
         this.blockLight[index] = lightLevel;
     }
 
-    getLightAt(x, y, z) {
+    getTotalLightAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        return this.blockLight[index];
+        let skyLight = this.skyLight[index];
+        let blockLight = this.blockLight[index];
+        if (blockLight > skyLight) {
+            skyLight = blockLight;
+        }
+        return skyLight;
+    }
+
+    getLightAt(sourceType, x, y, z) {
+        let index = y << 8 | z << 4 | x;
+        if (sourceType === EnumSkyBlock.SKY) {
+            return this.skyLight[index];
+        }
+        if (sourceType === EnumSkyBlock.Block) {
+            return this.blockLight[index];
+        }
+        return 0;
     }
 
     isEmpty() {

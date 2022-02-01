@@ -5,32 +5,19 @@ window.World = class {
     constructor() {
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
-        this.chunks = [];
+        this.chunks = new Map();
 
         // Load world
         this.generator = new WorldGenerator(this, Date.now() % 100000);
 
         this.lightUpdateQueue = [];
+
+        this.lightUpdateProcesses = 0;
+        this.lightUpdates = 0;
     }
 
     onTick() {
-        // Handle 128 light updates per tick
-        for (let i = 0; i < 128; i++) {
 
-            // Light updates
-            if (this.lightUpdateQueue.length !== 0) {
-
-                // Get next position to update
-                let positionIndex = this.lightUpdateQueue.shift();
-                if (positionIndex != null) {
-                    let z = positionIndex >> 16;
-                    let x = positionIndex - (z << 16);
-                    this.updateBlockLightsAtXZ(x, z);
-                } else {
-                    break;
-                }
-            }
-        }
     }
 
     loadChunk(chunk) {
@@ -71,6 +58,113 @@ window.World = class {
         return boundingBoxList;
     }
 
+    updateLight(sourceType, x1, y1, z1, x2, y2, z2, notifyNeighbor = true) {
+        if (this.lightUpdates >= 50) {
+            return;
+        }
+
+        this.lightUpdates++;
+
+        let size = this.lightUpdateQueue.length;
+
+        if (notifyNeighbor) {
+            let max = 4;
+            if (max > size) {
+                max = size;
+            }
+
+            for (let i = 0; i < max; i++) {
+                let meta = this.lightUpdateQueue[size - i - 1];
+                if (meta.type === sourceType && meta.isOutsideOf(x1, y1, z1, x2, y2, z2)) {
+                    this.lightUpdates--;
+                    return;
+                }
+            }
+        }
+
+        // Push light update to queue
+        this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
+        if (this.lightUpdateQueue.length > 0x186a0) {
+            this.lightUpdateQueue = [];
+        }
+        this.lightUpdates--;
+    }
+
+    neighborLightPropagationChanged(sourceType, x, y, z, lightLevel) {
+        if (sourceType === EnumSkyBlock.SKY) {
+            if (this.isHighestBlock(x, y, z)) {
+                lightLevel = 15;
+            }
+        } else if (sourceType === EnumSkyBlock.BLOCK) {
+            let typeId = this.getBlockAt(x, y, z);
+            let block = Block.getById(typeId);
+            let blockLight = block.getLightValue();
+
+            if (blockLight > lightLevel) {
+                lightLevel = blockLight;
+            }
+        }
+        if (this.getSavedLightValue(sourceType, x, y, z) !== lightLevel) {
+            this.updateLight(sourceType, x, y, z, x, y, z);
+        }
+    }
+
+    updateLights() {
+        if (this.lightUpdateProcesses >= 50) {
+            return false;
+        }
+        this.lightUpdateProcesses++;
+
+        // Update lights in queue
+        let i = 5000;
+        while (this.lightUpdateQueue.length > 0) {
+            if (i <= 0) {
+                return true;
+            }
+            this.lightUpdateQueue.shift().updateBlockLightning(this);
+            i--;
+        }
+
+        this.lightUpdateProcesses--;
+        return false;
+    }
+
+    getHeightAt(x, z) {
+        return this.getChunkAt(x >> 4, z >> 4).getHeightAt(x & 15, z & 15);
+    }
+
+    isHighestBlock(x, y, z) {
+        let chunk = this.getChunkAt(x >> 4, z >> 4)
+        return y >= chunk.getHeightAt(x & 15, z & 15);
+    }
+
+    getTotalLightAt(x, y, z) {
+        if (y < 0) {
+            return 15;
+        }
+
+        let section = this.getChunkSectionAt(x >> 4, y >> 4, z >> 4)
+        return section.getTotalLightAt(x & 15, y & 15, z & 15);
+    }
+
+    getSavedLightValue(sourceType, x, y, z) {
+        if (y < 0) {
+            return 15;
+        }
+
+        let section = this.getChunkSectionAt(x >> 4, y >> 4, z >> 4)
+        return section.getLightAt(sourceType, x & 15, y & 15, z & 15);
+    }
+
+    setLightAt(sourceType, x, y, z, lightLevel) {
+        if (y < 0) {
+            return;
+        }
+
+        let section = this.getChunkSectionAt(x >> 4, y >> 4, z >> 4)
+        section.setLightAt(sourceType, x & 15, y & 15, z & 15, lightLevel);
+    }
+
     isSolidBlockAt(x, y, z) {
         let typeId = this.getBlockAt(x, y, z);
         return typeId !== 0 && Block.getById(typeId).isSolid();
@@ -82,11 +176,10 @@ window.World = class {
     }
 
     setBlockAt(x, y, z, type) {
-        let chunkSection = this.getChunkAtBlock(x, y, z);
-        if (chunkSection != null) {
-            chunkSection.setBlockAt(x & 15, y & 15, z & 15, type);
-        }
+        let chunk = this.getChunkAt(x >> 4, z >> 4);
+        chunk.setBlockAt(x & 15, y, z & 15, type);
 
+        // Rebuild chunk
         this.onBlockChanged(x, y, z);
     }
 
@@ -105,125 +198,12 @@ window.World = class {
 
     getChunkAt(x, z) {
         let index = x + (z << 16);
-        let chunk = this.chunks[index];
+        let chunk = this.chunks.get(index);
         if (typeof chunk === 'undefined') {
-            this.chunks[index] = chunk = new Chunk(this, x, z);
+            this.chunks.set(index, chunk = new Chunk(this, x, z));
             this.group.add(chunk.group);
         }
         return chunk;
-    }
-
-    getHighestBlockYAt(x, z) {
-        for (let y = World.TOTAL_HEIGHT; y > 0; y--) {
-            if (this.isSolidBlockAt(x, y, z)) {
-                return y;
-            }
-        }
-        return 0;
-    }
-
-    updateBlockLightAt(x, y, z) {
-        // Calculate brightness for target block
-        let lightLevel = this.isHighestBlockAt(x, y, z) ? 15 : this.calculateLightAt(x, y, z);
-
-        // Update target block light
-        this.getChunkAtBlock(x, y, z).setLightAt(x & 15, y & 15, z & 15, lightLevel);
-
-        // Update block lights below the target block and the surrounding blocks
-        for (let offsetX = -1; offsetX <= 1; offsetX++) {
-            for (let offsetZ = -1; offsetZ <= 1; offsetZ++) {
-                this.updateBlockLightsAtXZ(x + offsetX, z + offsetZ);
-            }
-        }
-    }
-
-    updateBlockLightsAtXZ(x, z) {
-        let lightChanged = false;
-        let skyLevel = 15;
-
-        // Scan from the top to the bottom
-        for (let y = World.TOTAL_HEIGHT; y >= 0; y--) {
-            if (!this.isTransparentBlockAt(x, y, z)) {
-                // Sun is blocked because of solid block
-                skyLevel = 0;
-            } else {
-                // Get opacity of this block
-                let typeId = this.getBlockAt(x, y, z);
-                let translucence = typeId === 0 ? 1.0 : 1.0 - Block.getById(typeId).getOpacity();
-
-                // Decrease strength of the skylight by the opacity of the block
-                skyLevel *= translucence;
-
-                // Get previous block light
-                let prevBlockLight = this.getLightAt(x, y, z);
-
-                // Combine skylight with the calculated block light and decrease strength by the opacity of the block
-                let blockLight = Math.floor(Math.max(skyLevel, this.calculateLightAt(x, y, z)) * translucence);
-
-                // Did one of the light change inside of the range?
-                if (prevBlockLight !== blockLight) {
-                    lightChanged = true;
-                }
-
-                // Apply the new light to the block
-                this.setLightAt(x, y, z, blockLight);
-            }
-        }
-
-        // Chain reaction, update next affected blocks
-        if (lightChanged && this.lightUpdateQueue.length < 512) {
-            for (let offsetX = -1; offsetX <= 1; offsetX++) {
-                for (let offsetZ = -1; offsetZ <= 1; offsetZ++) {
-                    let positionIndex = (x + offsetX) + ((z + offsetZ) << 16);
-
-                    // Add block range to update queue
-                    if (!this.lightUpdateQueue.includes(positionIndex)) {
-                        this.lightUpdateQueue.push(positionIndex);
-                    }
-                }
-            }
-        }
-    }
-
-    setLightAt(x, y, z, light) {
-        let chunkSection = this.getChunkAtBlock(x, y, z);
-        if (chunkSection != null) {
-            chunkSection.setLightAt(x & 15, y & 15, z & 15, light);
-            chunkSection.queueForRebuild();
-        }
-    }
-
-    getLightAt(x, y, z) {
-        let chunkSection = this.getChunkAtBlock(x, y, z);
-        return chunkSection == null ? 15 : chunkSection.getLightAt(x & 15, y & 15, z & 15);
-    }
-
-    isHighestBlockAt(x, y, z) {
-        for (let i = y + 1; i < World.TOTAL_HEIGHT; i++) {
-            if (this.isSolidBlockAt(x, i, z)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    calculateLightAt(x, y, z) {
-        let maxBrightness = 0;
-
-        // Get maximal brightness of surround blocks
-        let values = EnumBlockFace.values();
-        for (let i in values) {
-            let face = values[i];
-
-            if (this.isTransparentBlockAt(x + face.x, y + face.y, z + face.z)) {
-                let brightness = this.getLightAt(x + face.x, y + face.y, z + face.z);
-
-                maxBrightness = Math.max(maxBrightness, brightness);
-            }
-        }
-
-        // Decrease maximum brightness by 6%
-        return Math.max(0, maxBrightness - 1);
     }
 
     onBlockChanged(x, y, z) {

@@ -1,6 +1,6 @@
 window.Block = class {
 
-    static blocks = [];
+    static blocks = new Map();
 
     static create() {
         Block.STONE = new BlockStone(1, 0);
@@ -19,7 +19,7 @@ window.Block = class {
         this.boundingBox = new BoundingBox(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
 
         // Register block
-        Block.blocks[id] = this;
+        Block.blocks.set(id, this);
     }
 
     getId() {
@@ -37,6 +37,10 @@ window.Block = class {
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
         return typeId === 0 || Block.getById(typeId).isTransparent();
+    }
+
+    getLightValue() {
+        return 0;
     }
 
     isSolid() {
@@ -167,7 +171,7 @@ window.Block = class {
     }
 
     static getById(typeId) {
-        return Block.blocks[typeId];
+        return Block.blocks.get(typeId);
     }
 
 }
