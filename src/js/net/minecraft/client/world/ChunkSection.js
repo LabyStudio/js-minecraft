@@ -31,7 +31,7 @@ window.ChunkSection = class {
         }
     }
 
-    render(renderLayer) {
+    render() {
 
     }
 

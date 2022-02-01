@@ -52,7 +52,6 @@ loadScripts([
     "src/js/net/minecraft/util/Timer.js",
     "src/js/net/minecraft/util/Random.js",
     "src/js/net/minecraft/util/Vector3.js",
-    "src/js/net/minecraft/util/EnumWorldBlockLayer.js",
     "src/js/net/minecraft/util/MovingObjectPosition.js",
     "src/js/net/minecraft/util/MathHelper.js",
     "src/js/net/minecraft/util/BoundingBox.js",

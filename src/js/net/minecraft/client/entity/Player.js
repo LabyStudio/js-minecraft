@@ -171,11 +171,11 @@ window.Player = class {
     }
 
     isInWater() {
-        return false;
+        return this.world.getBlockAt(this.getBlockPosX(), this.getBlockPosY(), this.getBlockPosZ()) === Block.WATER.getId();
     }
 
     isHeadInWater() {
-        return false;
+        return this.world.getBlockAt(this.getBlockPosX(), Math.floor(this.y + this.getEyeHeight() + 0.12), this.getBlockPosZ()) === Block.WATER.getId();
     }
 
     jump() {

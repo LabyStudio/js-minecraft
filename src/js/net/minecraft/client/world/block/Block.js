@@ -35,7 +35,7 @@ window.Block = class {
     }
 
     shouldRenderFace(world, x, y, z, face) {
-        let typeId = world.getBlockAt(x + face.x, y + face.y, z + face.z);
+        let typeId = world.getBlockAtFace(x, y, z, face);
         return typeId === 0 || Block.getById(typeId).isTransparent();
     }
 

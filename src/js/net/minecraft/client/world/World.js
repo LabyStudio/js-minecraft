@@ -68,6 +68,10 @@ window.World = class {
         return chunkSection == null ? 0 : chunkSection.getBlockAt(x & 15, y & 15, z & 15);
     }
 
+    getBlockAtFace(x, y, z, face) {
+        return this.getBlockAt(x + face.x, y + face.y, z + face.z);
+    }
+
     getChunkSectionAt(chunkX, layerY, chunkZ) {
         return this.getChunkAt(chunkX, chunkZ).getSection(layerY);
     }

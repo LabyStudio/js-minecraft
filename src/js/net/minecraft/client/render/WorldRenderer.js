@@ -10,7 +10,7 @@ window.WorldRenderer = class {
                 || !!document.createElement('canvas').getContext('webgl'));
 
         // Create cameras
-        this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 1000000);
+        this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 1000);
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 0, 1);
 
@@ -56,7 +56,7 @@ window.WorldRenderer = class {
         let player = this.minecraft.player;
         let cameraChunkX = Math.floor(player.x >> 4);
         let cameraChunkZ = Math.floor(player.z >> 4);
-        this.renderChunks(cameraChunkX, cameraChunkZ, EnumWorldBlockLayer.SOLID);
+        this.renderChunks(cameraChunkX, cameraChunkZ);
 
         // Render window
         this.webRenderer.render(this.scene, this.camera);
@@ -83,12 +83,14 @@ window.WorldRenderer = class {
         this.camera.updateProjectionMatrix();
 
         // Setup fog
-        this.setupFog();
+        this.setupFog(player.isHeadInWater());
     }
 
     setupFog(inWater) {
         if (inWater) {
-
+            let color = new THREE.Color(0.2, 0.2, 0.4);
+            this.scene.background = color;
+            this.scene.fog = new THREE.Fog(color, 0.0025, 5);
         } else {
             let viewDistance = WorldRenderer.RENDER_DISTANCE * ChunkSection.SIZE;
 
@@ -98,7 +100,7 @@ window.WorldRenderer = class {
         }
     }
 
-    renderChunks(cameraChunkX, cameraChunkZ, renderLayer) {
+    renderChunks(cameraChunkX, cameraChunkZ) {
         let world = this.minecraft.world;
 
         for (let i in world.chunks) {
@@ -112,7 +114,6 @@ window.WorldRenderer = class {
                 // Make chunk visible
                 chunk.group.visible = true;
 
-
                 // For all chunk sections
                 for (let y in chunk.sections) {
                     let chunkSection = chunk.sections[y];
@@ -123,7 +124,7 @@ window.WorldRenderer = class {
                         chunkSection.group.visible = true;
 
                         // Render chunk section
-                        chunkSection.render(renderLayer);
+                        chunkSection.render();
 
                         // Queue for rebuild
                         if (chunkSection.isQueuedForRebuild() && !this.chunkSectionUpdateQueue.includes(chunkSection)) {
@@ -156,6 +157,14 @@ window.WorldRenderer = class {
                     let chunk = chunkSection.chunk;
                     if (!chunk.isLoaded()) {
                         world.loadChunk(chunk);
+
+                        // Rebuild neighbor chunks to update transparent blocks
+                        for (let relX = -1; relX <= 1; relX++) {
+                            for (let relZ = -1; relZ <= 1; relZ++) {
+                                let neighborChunk = world.getChunkAt(chunk.x + relX, chunk.z + relZ);
+                                neighborChunk.queueForRebuild();
+                            }
+                        }
                     }
 
                     // Rebuild chunk

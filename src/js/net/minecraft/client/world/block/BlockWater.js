@@ -4,7 +4,6 @@ window.BlockWater = class extends Block {
         super(id, textureSlotId);
     }
 
-
     getOpacity() {
         return 0.3;
     }
@@ -14,7 +13,7 @@ window.BlockWater = class extends Block {
     }
 
     shouldRenderFace(world, x, y, z, face) {
-        let typeId = world.getBlockAt(x + face.x, y + face.y, z + face.z);
+        let typeId = world.getBlockAtFace(x, y, z, face);
         return typeId === 0 || typeId !== this.id && Block.getById(typeId).isTransparent();
     }
 
