@@ -84,6 +84,9 @@ window.Minecraft = class {
     }
 
     onTick() {
+        // Tick world
+        this.world.onTick();
+
         // Tick the player
         this.player.onTick();
     }

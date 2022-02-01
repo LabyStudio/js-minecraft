@@ -1,5 +1,7 @@
 window.BlockRenderer = class {
 
+    static CLASSIC_LIGHTNING = false;
+
     constructor(worldRenderer) {
         this.worldRenderer = worldRenderer;
         this.tessellator = new Tessellator();
@@ -44,9 +46,11 @@ window.BlockRenderer = class {
         maxV = 1 - maxV;
 
         // Classic lightning
-        let brightness = 0.9 / 15.0 * 15 + 0.1;
-        let color = brightness * face.getShading();
-        this.tessellator.setColor(color, color, color);
+        if (BlockRenderer.CLASSIC_LIGHTNING) {
+            let brightness = 0.9 / 15.0 * 15 + 0.1;
+            let color = brightness * face.getShading();
+            this.tessellator.setColor(color, color, color);
+        }
 
         if (face === EnumBlockFace.BOTTOM) {
             this.addBlockCorner(world, face, minX, minY, maxZ, minU, maxV);
@@ -87,7 +91,49 @@ window.BlockRenderer = class {
     }
 
     addBlockCorner(world, face, x, y, z, u, v) {
+        // Smooth lightning
+        if (!BlockRenderer.CLASSIC_LIGHTNING) {
+            this.setAverageColor(world, face, x, y, z);
+        }
+
         this.tessellator.addVertexWithUV(x, y, z, u, v);
+    }
+
+    setAverageColor(world, face, x, y, z) {
+        // Get the average light level of all 4 blocks at this corner
+        let lightLevelAtThisCorner = this.getAverageLightLevelAt(world, x, y, z);
+
+        // Convert light level from [0 - 15] to [0.1 - 1.0]
+        let brightness = 0.9 / 15.0 * lightLevelAtThisCorner + 0.1;
+        let color = brightness * face.getShading();
+
+        // Set color with shading
+        this.tessellator.setColor(color, color, color);
+    }
+
+    getAverageLightLevelAt(world, x, y, z) {
+        let totalLightLevel = 0;
+        let totalBlocks = 0;
+
+        // For all blocks around this corner
+        for (let offsetX = -1; offsetX <= 0; offsetX++) {
+            for (let offsetY = -1; offsetY <= 0; offsetY++) {
+                for (let offsetZ = -1; offsetZ <= 0; offsetZ++) {
+                    let typeId = world.getBlockAt(x + offsetX, y + offsetY, z + offsetZ);
+
+                    // Does it contain air?
+                    if (typeId === 0 || Block.getById(typeId).isTransparent()) {
+
+                        // Sum up the light levels
+                        totalLightLevel += world.getLightAt(x + offsetX, y + offsetY, z + offsetZ);
+                        totalBlocks++;
+                    }
+                }
+            }
+        }
+
+        // Calculate the average light level of all surrounding blocks
+        return totalBlocks === 0 ? 0 : totalLightLevel / totalBlocks;
     }
 
 }

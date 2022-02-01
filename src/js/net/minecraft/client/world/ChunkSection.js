@@ -5,6 +5,7 @@ window.ChunkSection = class {
     constructor(world, chunk, x, y, z) {
         this.world = world;
         this.chunk = chunk;
+
         this.x = x;
         this.y = y;
         this.z = z;
@@ -22,10 +23,16 @@ window.ChunkSection = class {
         this.queuedForRebuild = true;
 
         this.blocks = [];
-        for (let x = 0; x < ChunkSection.SIZE; x++) {
-            for (let y = 0; y < ChunkSection.SIZE; y++) {
-                for (let z = 0; z < ChunkSection.SIZE; z++) {
-                    this.setBlockAt(x, y, z, 0);
+        this.blockLight = [];
+
+        // Fill chunk with air and light
+        for (let lightX = 0; lightX < ChunkSection.SIZE; lightX++) {
+            for (let lightY = 0; lightY < ChunkSection.SIZE; lightY++) {
+                for (let lightZ = 0; lightZ < ChunkSection.SIZE; lightZ++) {
+                    let index = lightY << 8 | lightZ << 4 | lightX;
+
+                    this.blocks[index] = 0;
+                    this.blockLight[index] = 15;
                 }
             }
         }
@@ -72,6 +79,30 @@ window.ChunkSection = class {
     setBlockAt(x, y, z, typeId) {
         let index = y << 8 | z << 4 | x;
         this.blocks[index] = typeId;
+    }
+
+    setLightAt(x, y, z, lightLevel) {
+        let index = y << 8 | z << 4 | x;
+        this.blockLight[index] = lightLevel;
+    }
+
+    getLightAt(x, y, z) {
+        let index = y << 8 | z << 4 | x;
+        return this.blockLight[index];
+    }
+
+    isEmpty() {
+        for (let x = 0; x < ChunkSection.SIZE; x++) {
+            for (let y = 0; y < ChunkSection.SIZE; y++) {
+                for (let z = 0; z < ChunkSection.SIZE; z++) {
+                    let index = y << 8 | z << 4 | x;
+                    if (this.blocks[index] !== 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     queueForRebuild() {
