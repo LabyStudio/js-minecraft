@@ -47,7 +47,7 @@ window.Player = class {
     }
 
     resetPos() {
-        this.setPos(0, 25, 0);
+        this.setPos(0, 80, 0);
     }
 
     setPos(x, y, z) {
@@ -182,7 +182,7 @@ window.Player = class {
         this.motionY = 0.42;
 
         if (this.sprinting) {
-            let radiansYaw = this.yaw * (Math.PI / 180) + Math.PI;
+            let radiansYaw = MathHelper.toRadians(this.yaw + 180);
             this.motionX -= Math.sin(radiansYaw) * 0.2;
             this.motionZ += Math.cos(radiansYaw) * 0.2;
         }
@@ -281,7 +281,7 @@ window.Player = class {
             up = up * distance;
             forward = forward * distance;
 
-            let yawRadians = this.yaw * (Math.PI / 180) + Math.PI;
+            let yawRadians = MathHelper.toRadians(this.yaw + 180);
             let sin = Math.sin(yawRadians);
             let cos = Math.cos(yawRadians);
 

@@ -8,4 +8,12 @@ window.MathHelper = class {
         return value < i ? i - 1 : i;
     }
 
+    static toDegrees(angle) {
+        return angle * (180 / Math.PI);
+    }
+
+    static toRadians(degree) {
+        return degree * (Math.PI / 180);
+    };
+
 }

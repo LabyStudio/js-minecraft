@@ -11,6 +11,9 @@ window.Minecraft = class {
         this.frames = 0;
         this.lastTime = Date.now();
 
+        // Create all blocks
+        Block.create();
+
         // Create world
         this.world = new World();
         this.worldRenderer.scene.add(this.world.group);
@@ -23,9 +26,6 @@ window.Minecraft = class {
     }
 
     init() {
-        // Create all blocks
-        Block.create();
-
         // Start render loop
         this.running = true;
         this.requestNextFrame();

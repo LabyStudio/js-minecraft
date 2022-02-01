@@ -7,15 +7,19 @@ window.World = class {
         this.group.matrixAutoUpdate = false;
         this.chunks = [];
 
-        // Debug world
-        for (let x = -16; x < 16; x++) {
-            for (let y = 0; y < 16; y++) {
-                for (let z = -16; z < 16; z++) {
-                    this.setBlockAt(x, y, z, y === 15 ? 2 : 3);
-                }
-            }
-        }
-        this.setBlockAt(0, 16, -2, 17);
+        // Load world
+        this.generator = new WorldGenerator(this, Date.now() % 100000);
+    }
+
+    loadChunk(chunk) {
+        // Load chunk
+        chunk.load();
+
+        // Generate new chunk
+        this.generator.generateChunk(chunk);
+
+        // Populate chunk
+        this.generator.populateChunk(chunk.x, chunk.z);
     }
 
     getChunkAtBlock(x, y, z) {
@@ -56,9 +60,8 @@ window.World = class {
             chunkSection.setBlockAt(x & 15, y & 15, z & 15, type);
         }
 
-        this.blockChanged(x, y, z);
+        this.onBlockChanged(x, y, z);
     }
-
 
     getBlockAt(x, y, z) {
         let chunkSection = this.getChunkAtBlock(x, y, z);
@@ -79,11 +82,20 @@ window.World = class {
         return chunk;
     }
 
-    blockChanged(x, y, z) {
-        this.setDirty(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+    getHighestBlockYAt(x, z) {
+        for (let y = World.TOTAL_HEIGHT; y > 0; y--) {
+            if (this.isSolidBlockAt(x, y, z)) {
+                return y;
+            }
+        }
+        return 0;
     }
 
-    setDirty(minX, minY, minZ, maxX, maxY, maxZ) {
+    onBlockChanged(x, y, z) {
+        this.queueForRebuildInRegion(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+    }
+
+    queueForRebuildInRegion(minX, minY, minZ, maxX, maxY, maxZ) {
         // To chunk coordinates
         minX = minX >> 4;
         maxX = maxX >> 4;

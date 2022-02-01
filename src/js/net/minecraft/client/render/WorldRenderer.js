@@ -14,6 +14,8 @@ window.WorldRenderer = class {
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 0, 1);
 
+        this.frustum = new THREE.Frustum();
+
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.matrixAutoUpdate = false;
@@ -42,6 +44,8 @@ window.WorldRenderer = class {
 
         // Block Renderer
         this.blockRenderer = new BlockRenderer(this);
+
+        this.chunkSectionUpdateQueue = [];
     }
 
     render(partialTicks) {
@@ -49,7 +53,10 @@ window.WorldRenderer = class {
         this.orientCamera(partialTicks);
 
         // Render chunks
-        this.renderChunks(this, partialTicks);
+        let player = this.minecraft.player;
+        let cameraChunkX = Math.floor(player.x >> 4);
+        let cameraChunkZ = Math.floor(player.z >> 4);
+        this.renderChunks(cameraChunkX, cameraChunkZ, EnumWorldBlockLayer.SOLID);
 
         // Render window
         this.webRenderer.render(this.scene, this.camera);
@@ -59,14 +66,17 @@ window.WorldRenderer = class {
         let player = this.minecraft.player;
 
         // Rotation
-        this.camera.rotation.y = -player.yaw * (Math.PI / 180) + Math.PI;
-        this.camera.rotation.x = -player.pitch * (Math.PI / 180);
+        this.camera.rotation.y = -MathHelper.toRadians(player.yaw + 180);
+        this.camera.rotation.x = -MathHelper.toRadians(player.pitch);
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
         let y = player.prevY + (player.y - player.prevY) * partialTicks;
         let z = player.prevZ + (player.z - player.prevZ) * partialTicks;
         this.camera.position.set(x, y + player.getEyeHeight(), z);
+
+        // Update frustum
+        this.frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
 
         // Update FOV
         this.camera.fov = 85 + player.getFOVModifier();
@@ -88,17 +98,68 @@ window.WorldRenderer = class {
         }
     }
 
-    renderChunks(renderer, partialTicks) {
+    renderChunks(cameraChunkX, cameraChunkZ, renderLayer) {
         let world = this.minecraft.world;
 
-        for(let i in world.chunks) {
+        for (let i in world.chunks) {
             let chunk = world.chunks[i];
 
-            for (let y = 0; y < chunk.sections.length; y++) {
-                let section = chunk.sections[y];
+            let distanceX = Math.abs(cameraChunkX - chunk.x);
+            let distanceZ = Math.abs(cameraChunkZ - chunk.z);
 
-                if (section.dirty) {
-                    section.rebuild(renderer);
+            // Is in render distance check
+            if (distanceX < WorldRenderer.RENDER_DISTANCE && distanceZ < WorldRenderer.RENDER_DISTANCE) {
+                // Make chunk visible
+                chunk.group.visible = true;
+
+
+                // For all chunk sections
+                for (let y in chunk.sections) {
+                    let chunkSection = chunk.sections[y];
+
+                    // Is in camera view check
+                    if (this.frustum.intersectsBox(chunkSection.boundingBox)) {
+                        // Make section visible
+                        chunkSection.group.visible = true;
+
+                        // Render chunk section
+                        chunkSection.render(renderLayer);
+
+                        // Queue for rebuild
+                        if (chunkSection.isQueuedForRebuild() && !this.chunkSectionUpdateQueue.includes(chunkSection)) {
+                            this.chunkSectionUpdateQueue.push(chunkSection);
+                        }
+                    } else {
+                        // Hide section
+                        chunkSection.group.visible = false;
+                    }
+                }
+            } else {
+                // Hide chunk
+                chunk.group.visible = false;
+            }
+        }
+
+        // Sort update queue, chunk sections that are closer to the camera get a higher priority
+        this.chunkSectionUpdateQueue.sort((section1, section2) => {
+            let distance1 = Math.floor(Math.pow(section1.x - cameraChunkX, 2) + Math.pow(section1.z - cameraChunkZ, 2));
+            let distance2 = Math.floor(Math.pow(section2.x - cameraChunkX, 2) + Math.pow(section2.z - cameraChunkZ, 2));
+            return distance1 - distance2;
+        });
+
+        // Rebuild 16 chunk sections per frame (An entire chunk)
+        for (let i = 0; i < 16; i++) {
+            if (this.chunkSectionUpdateQueue.length !== 0) {
+                let chunkSection = this.chunkSectionUpdateQueue.shift();
+                if (chunkSection != null) {
+                    // Load chunk
+                    let chunk = chunkSection.chunk;
+                    if (!chunk.isLoaded()) {
+                        world.loadChunk(chunk);
+                    }
+
+                    // Rebuild chunk
+                    chunkSection.rebuild(this);
                 }
             }
         }

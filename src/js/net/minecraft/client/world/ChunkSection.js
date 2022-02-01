@@ -2,15 +2,24 @@ window.ChunkSection = class {
 
     static SIZE = 16;
 
-    constructor(world, x, y, z) {
+    constructor(world, chunk, x, y, z) {
         this.world = world;
+        this.chunk = chunk;
         this.x = x;
         this.y = y;
         this.z = z;
 
+        this.boundingBox = new THREE.Box3();
+        this.boundingBox.min.x = x * ChunkSection.SIZE;
+        this.boundingBox.min.y = y * ChunkSection.SIZE;
+        this.boundingBox.min.z = z * ChunkSection.SIZE;
+        this.boundingBox.max.x = x * ChunkSection.SIZE + ChunkSection.SIZE;
+        this.boundingBox.max.y = y * ChunkSection.SIZE + ChunkSection.SIZE;
+        this.boundingBox.max.z = z * ChunkSection.SIZE + ChunkSection.SIZE;
+
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
-        this.dirty = true;
+        this.queuedForRebuild = true;
 
         this.blocks = [];
         for (let x = 0; x < ChunkSection.SIZE; x++) {
@@ -22,8 +31,12 @@ window.ChunkSection = class {
         }
     }
 
+    render(renderLayer) {
+
+    }
+
     rebuild(renderer) {
-        this.dirty = false;
+        this.queuedForRebuild = false;
         this.group.clear();
 
         // Start drawing chunk section
@@ -62,6 +75,10 @@ window.ChunkSection = class {
     }
 
     queueForRebuild() {
-        this.dirty = true;
+        this.queuedForRebuild = true;
+    }
+
+    isQueuedForRebuild() {
+        return this.queuedForRebuild;
     }
 }

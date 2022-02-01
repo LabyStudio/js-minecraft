@@ -12,7 +12,7 @@ window.GameWindow = class {
 
         // Stats
         this.stats = new Stats()
-        this.stats.showPanel(1);
+        this.stats.showPanel(0);
         wrapper.appendChild(this.stats.dom);
 
         // Add web renderer canvas to wrapper
