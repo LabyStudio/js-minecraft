@@ -99,6 +99,7 @@ window.Minecraft = class {
             if (button === 0) {
                 if (hitResult != null) {
                     this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                    this.world.updateBlockLightAt(hitResult.x, hitResult.y, hitResult.z);
                 }
             }
 
@@ -124,6 +125,7 @@ window.Minecraft = class {
                     // Don't place blocks if the player is standing there
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
                         this.world.setBlockAt(x, y, z, this.pickedBlock);
+                        this.world.updateBlockLightAt(x, y, z);
                     }
                 }
             }

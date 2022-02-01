@@ -15,22 +15,22 @@ window.World = class {
 
     onTick() {
         // Handle 128 light updates per tick
-         for (let i = 0; i < 128; i++) {
+        for (let i = 0; i < 128; i++) {
 
-             // Light updates
-             if (this.lightUpdateQueue.length !== 0) {
+            // Light updates
+            if (this.lightUpdateQueue.length !== 0) {
 
-                 // Get next position to update
-                 let positionIndex = this.lightUpdateQueue.shift();
-                 if (positionIndex != null) {
-                     let z = positionIndex >> 16;
-                     let x = positionIndex - (z << 16);
-                     this.updateBlockLightsAtXZ(x, z);
-                 } else {
-                     break;
-                 }
-             }
-         }
+                // Get next position to update
+                let positionIndex = this.lightUpdateQueue.shift();
+                if (positionIndex != null) {
+                    let z = positionIndex >> 16;
+                    let x = positionIndex - (z << 16);
+                    this.updateBlockLightsAtXZ(x, z);
+                } else {
+                    break;
+                }
+            }
+        }
     }
 
     loadChunk(chunk) {
@@ -85,8 +85,6 @@ window.World = class {
         let chunkSection = this.getChunkAtBlock(x, y, z);
         if (chunkSection != null) {
             chunkSection.setBlockAt(x & 15, y & 15, z & 15, type);
-
-            this.updateBlockLightAt(x, y, z);
         }
 
         this.onBlockChanged(x, y, z);
