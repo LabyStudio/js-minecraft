@@ -8,9 +8,16 @@ window.GameWindow = class {
         this.mouseMotionY = 0;
         this.mouseLocked = false;
 
+        let wrapper = document.getElementById(this.canvasWrapperId);
+
+        // Stats
+        this.stats = new Stats()
+        this.stats.showPanel(1);
+        wrapper.appendChild(this.stats.dom);
+
         // Add web renderer canvas to wrapper
         let canvas = renderer.canvasElement;
-        document.getElementById(this.canvasWrapperId).appendChild(canvas);
+        wrapper.appendChild(canvas);
 
         // Init
         this.onResize();

@@ -6,8 +6,6 @@ window.Tessellator = class {
             side: THREE.BackSide,
             transparent: true
         });
-
-        this.index = new THREE.BufferAttribute(new Uint32Array([0, 2, 1, 0, 3, 2]), 1);
     }
 
     bindTexture(texture) {
@@ -50,7 +48,19 @@ window.Tessellator = class {
         geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.vertices), 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(this.colors), 3));
         geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(this.uv), 2));
-        geometry.setIndex(this.index);
+
+        // Create index array
+        let index = [];
+        let verticesPerFace = 4;
+        for (let i = 0; i < this.addedVertices / verticesPerFace; i++) {
+            index.push(i * verticesPerFace + 0);
+            index.push(i * verticesPerFace + 2);
+            index.push(i * verticesPerFace + 1);
+            index.push(i * verticesPerFace + 0);
+            index.push(i * verticesPerFace + 3);
+            index.push(i * verticesPerFace + 2);
+        }
+        geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(index), 1));
 
         let mesh = new THREE.Mesh(geometry, this.material);
         group.matrixAutoUpdate = false;

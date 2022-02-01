@@ -45,6 +45,7 @@ function updatePreStatus(message) {
 loadScripts([
     // Dependencies
     "libraries/three.min.js",
+    "libraries/stats.min.js",
 
     // Minecraft Source
     "src/js/net/minecraft/util/EnumBlockFace.js",

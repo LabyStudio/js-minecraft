@@ -42,6 +42,8 @@ window.Minecraft = class {
     }
 
     onLoop() {
+        this.window.stats.begin();
+
         // Update the timer
         this.timer.advanceTime();
 
@@ -63,6 +65,8 @@ window.Minecraft = class {
             this.lastTime += 1000;
             this.frames = 0;
         }
+
+        this.window.stats.end();
     }
 
     onRender(partialTicks) {
@@ -84,27 +88,29 @@ window.Minecraft = class {
     }
 
     onMouseClicked(button) {
-        let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
+        if (this.window.mouseLocked) {
+            let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
 
-        // Destroy block
-        if (button === 0) {
-            if (hitResult != null) {
-                this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+            // Destroy block
+            if (button === 0) {
+                if (hitResult != null) {
+                    this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                }
             }
-        }
 
-        // Place block
-        if (button === 2) {
-            if (hitResult != null) {
-                let x = hitResult.x + hitResult.face.x;
-                let y = hitResult.y + hitResult.face.y;
-                let z = hitResult.z + hitResult.face.z;
+            // Place block
+            if (button === 2) {
+                if (hitResult != null) {
+                    let x = hitResult.x + hitResult.face.x;
+                    let y = hitResult.y + hitResult.face.y;
+                    let z = hitResult.z + hitResult.face.z;
 
-                let placedBoundingBox = new BoundingBox(x, y, z, x + 1, y + 1, z + 1);
+                    let placedBoundingBox = new BoundingBox(x, y, z, x + 1, y + 1, z + 1);
 
-                // Don't place blocks if the player is standing there
-                if (!placedBoundingBox.intersects(this.player.boundingBox)) {
-                    this.world.setBlockAt(x, y, z, 1);
+                    // Don't place blocks if the player is standing there
+                    if (!placedBoundingBox.intersects(this.player.boundingBox)) {
+                        this.world.setBlockAt(x, y, z, 1);
+                    }
                 }
             }
         }

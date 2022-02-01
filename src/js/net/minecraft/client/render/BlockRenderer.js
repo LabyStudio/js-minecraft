@@ -16,14 +16,9 @@ window.BlockRenderer = class {
 
             // Check if face is hidden by other block
             if (block.shouldRenderFace(world, x, y, z, face)) {
-                // Start drawing
-                this.tessellator.startDrawing();
 
                 // Render face
                 this.renderFace(world, block, boundingBox, face, x, y, z);
-
-                // Draw
-                this.tessellator.draw(group);
             }
         }
     }
