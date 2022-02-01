@@ -47,6 +47,10 @@ window.Block = class {
         return 1.0;
     }
 
+    canCollide() {
+        return true;
+    }
+
     getBoundingBox(world, x, y, z) {
         return this.boundingBox;
     }

@@ -132,10 +132,12 @@ window.World = class {
 
         let blockId = this.getBlockAt(x, y, z);
         let block = Block.getById(blockId);
-        let hit = block == null ? null : block.collisionRayTrace(x, y, z, from, to);
 
-        if (hit != null) {
-            return hit;
+        if (block != null && block.canCollide()) {
+            let hit = block.collisionRayTrace(x, y, z, from, to);
+            if (hit != null) {
+                return hit;
+            }
         }
 
         let lastHit = null;
@@ -224,9 +226,12 @@ window.World = class {
 
             let blockId = this.getBlockAt(x, y, z);
             let block = Block.getById(blockId);
-            let hit = block == null ? null : block.collisionRayTrace(x, y, z, from, to);
-            if (hit != null) {
-                return hit;
+
+            if (block != null && block.canCollide()) {
+                let hit = block.collisionRayTrace(x, y, z, from, to);
+                if (hit != null) {
+                    return hit;
+                }
             }
         }
 

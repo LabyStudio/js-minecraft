@@ -20,6 +20,7 @@ window.Minecraft = class {
 
         // Create player
         this.player = new Player(this.world);
+        this.pickedBlock = 1;
 
         // Initialize
         this.init();
@@ -98,6 +99,16 @@ window.Minecraft = class {
                 }
             }
 
+            // Pick block
+            if (button === 1) {
+                if (hitResult != null) {
+                    let typeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
+                    if (typeId !== 0) {
+                        this.pickedBlock = typeId;
+                    }
+                }
+            }
+
             // Place block
             if (button === 2) {
                 if (hitResult != null) {
@@ -109,7 +120,7 @@ window.Minecraft = class {
 
                     // Don't place blocks if the player is standing there
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
-                        this.world.setBlockAt(x, y, z, 1);
+                        this.world.setBlockAt(x, y, z, this.pickedBlock);
                     }
                 }
             }

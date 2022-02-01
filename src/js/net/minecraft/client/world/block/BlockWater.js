@@ -12,6 +12,10 @@ window.BlockWater = class extends Block {
         return false;
     }
 
+    canCollide() {
+        return false;
+    }
+
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
         return typeId === 0 || typeId !== this.id && Block.getById(typeId).isTransparent();
@@ -24,5 +28,4 @@ window.BlockWater = class extends Block {
         }
         return box;
     }
-
 }
