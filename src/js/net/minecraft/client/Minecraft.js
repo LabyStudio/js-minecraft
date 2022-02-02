@@ -78,11 +78,11 @@ window.Minecraft = class {
             this.window.mouseMotionX = 0;
             this.window.mouseMotionY = 0;
         }
+        
+        while (this.world.updateLights()) ;
 
         // Render the game
         this.worldRenderer.render(partialTicks);
-
-        while (this.world.updateLights()) ;
     }
 
     onTick() {

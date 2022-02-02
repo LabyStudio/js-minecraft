@@ -32,8 +32,8 @@ window.WorldGenerator = class {
             for (let relZ = 0; relZ < ChunkSection.SIZE; relZ++) {
 
                 // Absolute position of the block
-                let x = chunk.x * ChunkSection.SIZE + relX;
-                let z = chunk.z * ChunkSection.SIZE + relZ;
+                let x = chunk.x * ChunkSection.SIZE + relX + 10000; // TODO fix this 10000 offset
+                let z = chunk.z * ChunkSection.SIZE + relZ + 10000;
 
                 // Extract height value of the noise
                 let heightValue = this.groundHeightNoise.perlin(x, z);

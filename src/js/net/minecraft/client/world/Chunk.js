@@ -35,7 +35,6 @@ window.Chunk = class {
                     highest = this.heightMap[z << 4 | x] & 0xff;
                 }
             }
-
         }
 
         this.highestY = highest;
@@ -46,11 +45,11 @@ window.Chunk = class {
 
         }
 
-        this.queueForRebuild();
+        this.setModifiedAllSections();
     }
 
     updateBlockLight() {
-
+        this.setModifiedAllSections();
     }
 
     notifyNeighbors(x, z) {
@@ -71,7 +70,7 @@ window.Chunk = class {
         } else if (height < y) {
             this.world.updateLight(EnumSkyBlock.SKY, x, height, z, x, y, z);
         }
-        this.queueForRebuild();
+        this.setModifiedAllSections();
     }
 
     updateHeightMap(relX, y, relZ) {
@@ -80,7 +79,7 @@ window.Chunk = class {
         if (y > currentHighestY) {
             highestY = y;
         }
-        while (highestY > 0 && Block.lightOpacity[this.getBlockAt(relX, highestY - 1, relZ)] === 0) {
+        while (highestY > 0 && Block.lightOpacity[this.getBlockAt(relX, highestY, relZ)] === 0) {
             highestY--;
         }
         if (highestY === currentHighestY) {
@@ -138,7 +137,7 @@ window.Chunk = class {
         if (highestY !== prevHeight) {
             this.world.updateLight(EnumSkyBlock.SKY, x - 1, highestY, z - 1, x + 1, prevHeight, z + 1);
         }
-        this.queueForRebuild();
+        this.setModifiedAllSections();
     }
 
     setLightAt(sourceType, x, y, z, level) {
@@ -189,7 +188,7 @@ window.Chunk = class {
 
         //this.data.setNibble(i, j, k, i1);
 
-        this.queueForRebuild();
+        this.setModifiedAllSections();
         return true;
     }
 
@@ -219,14 +218,13 @@ window.Chunk = class {
         }
     }
 
-    queueForRebuild() {
-        for (let y = 0; y < this.sections.length; y++) {
-            this.sections[y].queueForRebuild();
-        }
-    }
-
     isLoaded() {
         return this.loaded;
     }
 
+    setModifiedAllSections() {
+        for (let y = 0; y < this.sections.length; y++) {
+            this.sections[y].isModified = true;
+        }
+    }
 }

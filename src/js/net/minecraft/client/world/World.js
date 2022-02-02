@@ -11,9 +11,6 @@ window.World = class {
         this.generator = new WorldGenerator(this, Date.now() % 100000);
 
         this.lightUpdateQueue = [];
-
-        this.lightUpdateProcesses = 0;
-        this.lightUpdates = 0;
     }
 
     onTick() {
@@ -24,7 +21,7 @@ window.World = class {
         let index = x + (z << 16);
         let chunk = this.chunks.get(index);
         if (typeof chunk === 'undefined') {
-            let chunk = new Chunk(this, x, z);
+            chunk = new Chunk(this, x, z);
 
             // Generate new chunk
             this.generator.generateChunk(chunk);
@@ -85,13 +82,7 @@ window.World = class {
         return false;
     }
 
-    static prev = 0;
-
     updateLight(sourceType, x1, y1, z1, x2, y2, z2, notifyNeighbor = true) {
-        if (this.lightUpdates >= 50) {
-            return;
-        }
-
         let centerX = (x2 + x1) / 2;
         let centerZ = (z2 + z1) / 2;
 
@@ -112,11 +103,6 @@ window.World = class {
                     return;
                 }
             }
-        }
-
-        if (World.prev !== this.lightUpdateQueue.length && this.lightUpdateQueue.length % 100 === 0) {
-            World.prev = this.lightUpdateQueue.length;
-            console.log(this.lightUpdateQueue.length + " in queue");
         }
 
         this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
@@ -230,10 +216,10 @@ window.World = class {
     }
 
     onBlockChanged(x, y, z) {
-        this.queueForRebuildInRegion(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+        this.setModified(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
     }
 
-    queueForRebuildInRegion(minX, minY, minZ, maxX, maxY, maxZ) {
+    setModified(minX, minY, minZ, maxX, maxY, maxZ) {
         // To chunk coordinates
         minX = minX >> 4;
         maxX = maxX >> 4;
@@ -249,7 +235,9 @@ window.World = class {
         for (let x = minX; x <= maxX; x++) {
             for (let y = minY; y <= maxY; y++) {
                 for (let z = minZ; z <= maxZ; z++) {
-                    this.getChunkSectionAt(x, y, z).queueForRebuild();
+                    if (this.chunkExists(x >> 4, z >> 4)) {
+                        this.getChunkSectionAt(x, y, z).isModified = true;
+                    }
                 }
             }
         }

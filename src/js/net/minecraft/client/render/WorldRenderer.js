@@ -133,7 +133,7 @@ window.WorldRenderer = class {
                         chunkSection.render();
 
                         // Queue for rebuild
-                        if (chunkSection.isQueuedForRebuild() && !this.chunkSectionUpdateQueue.includes(chunkSection)) {
+                        if (chunkSection.isModified && !this.chunkSectionUpdateQueue.includes(chunkSection)) {
                             this.chunkSectionUpdateQueue.push(chunkSection);
                         }
                     } else {

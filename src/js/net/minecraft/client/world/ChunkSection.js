@@ -20,7 +20,7 @@ window.ChunkSection = class {
 
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
-        this.queuedForRebuild = true;
+        this.isModified = false;
 
         this.blocks = [];
         this.blockLight = [];
@@ -44,7 +44,7 @@ window.ChunkSection = class {
     }
 
     rebuild(renderer) {
-        this.queuedForRebuild = false;
+        this.isModified = false;
         this.group.clear();
 
         // Start drawing chunk section
@@ -80,6 +80,8 @@ window.ChunkSection = class {
     setBlockAt(x, y, z, typeId) {
         let index = y << 8 | z << 4 | x;
         this.blocks[index] = typeId;
+
+        this.isModified = true;
     }
 
     setLightAt(sourceType, x, y, z, lightLevel) {
@@ -91,6 +93,8 @@ window.ChunkSection = class {
         if (sourceType === EnumSkyBlock.BLOCK) {
             this.blockLight[index] = lightLevel;
         }
+
+        this.isModified = true;
     }
 
     getTotalLightAt(x, y, z) {
@@ -126,13 +130,5 @@ window.ChunkSection = class {
             }
         }
         return true;
-    }
-
-    queueForRebuild() {
-        this.queuedForRebuild = true;
-    }
-
-    isQueuedForRebuild() {
-        return this.queuedForRebuild;
     }
 }
