@@ -23,6 +23,8 @@ window.Block = class {
         // Register block
         Block.blocks.set(id, this);
         Block.lightOpacity[id] = this.isSolid() ? 255 : 0;
+
+        Block.lightOpacity[0] = 0;
     }
 
     getId() {

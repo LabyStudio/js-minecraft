@@ -103,13 +103,20 @@ window.WorldRenderer = class {
     renderChunks(cameraChunkX, cameraChunkZ) {
         let world = this.minecraft.world;
 
-        for (let [index, chunk] of world.chunks) {
+        let renderDistance = WorldRenderer.RENDER_DISTANCE;
 
+        for (let x = -renderDistance; x <= renderDistance; x++) {
+            for (let z = -renderDistance; z <= renderDistance; z++) {
+                world.getChunkAt(cameraChunkX + x, cameraChunkZ + z);
+            }
+        }
+
+        for (let [index, chunk] of world.chunks) {
             let distanceX = Math.abs(cameraChunkX - chunk.x);
             let distanceZ = Math.abs(cameraChunkZ - chunk.z);
 
             // Is in render distance check
-            if (distanceX < WorldRenderer.RENDER_DISTANCE && distanceZ < WorldRenderer.RENDER_DISTANCE) {
+            if (distanceX < renderDistance && distanceZ < renderDistance) {
                 // Make chunk visible
                 chunk.group.visible = true;
 
@@ -152,20 +159,6 @@ window.WorldRenderer = class {
             if (this.chunkSectionUpdateQueue.length !== 0) {
                 let chunkSection = this.chunkSectionUpdateQueue.shift();
                 if (chunkSection != null) {
-                    // Load chunk
-                    let chunk = chunkSection.chunk;
-                    if (!chunk.isLoaded()) {
-                        world.loadChunk(chunk);
-
-                        // Rebuild neighbor chunks to update transparent blocks
-                        for (let relX = -1; relX <= 1; relX++) {
-                            for (let relZ = -1; relZ <= 1; relZ++) {
-                                let neighborChunk = world.getChunkAt(chunk.x + relX, chunk.z + relZ);
-                                neighborChunk.queueForRebuild();
-                            }
-                        }
-                    }
-
                     // Rebuild chunk
                     chunkSection.rebuild(this);
                 }

@@ -20,20 +20,34 @@ window.World = class {
 
     }
 
-    loadChunk(chunk) {
-        // Load chunk
-        chunk.load();
+    getChunkAt(x, z) {
+        let index = x + (z << 16);
+        let chunk = this.chunks.get(index);
+        if (typeof chunk === 'undefined') {
+            let chunk = new Chunk(this, x, z);
 
-        // Generate new chunk
-        this.generator.generateChunk(chunk);
+            // Generate new chunk
+            this.generator.generateChunk(chunk);
 
-        // Populate chunk
-        this.generator.populateChunk(chunk.x, chunk.z);
+            // Init
+            chunk.generateSkylightMap();
+
+            // Register
+            chunk.loaded = true;
+            this.chunks.set(index, chunk);
+            this.group.add(chunk.group);
+
+            // Populate chunk
+            this.generator.populateChunk(chunk.x, chunk.z);
+        }
+        return chunk;
     }
 
     getChunkAtBlock(x, y, z) {
-        let chunk = this.getChunkAt(x >> 4, z >> 4);
-        return y < 0 || y > World.TOTAL_HEIGHT ? null : chunk.getSection(y >> 4);
+        if (!this.blockExists(x, y, z)) {
+            return null;
+        }
+        return this.getChunkAt(x >> 4, z >> 4).getSection(y >> 4);
     }
 
     getCollisionBoxes(region) {
@@ -57,6 +71,21 @@ window.World = class {
         }
         return boundingBoxList;
     }
+
+    updateLights() {
+        // Update lights in queue
+        let i = 5000;
+        while (this.lightUpdateQueue.length > 0) {
+            if (i <= 0) {
+                return true;
+            }
+            this.lightUpdateQueue.shift().updateBlockLightning(this);
+            i--;
+        }
+        return false;
+    }
+
+    static prev = 0;
 
     updateLight(sourceType, x1, y1, z1, x2, y2, z2, notifyNeighbor = true) {
         if (this.lightUpdates >= 50) {
@@ -83,8 +112,13 @@ window.World = class {
                     return;
                 }
             }
-
         }
+
+        if (World.prev !== this.lightUpdateQueue.length && this.lightUpdateQueue.length % 100 === 0) {
+            World.prev = this.lightUpdateQueue.length;
+            console.log(this.lightUpdateQueue.length + " in queue");
+        }
+
         this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
         if (this.lightUpdateQueue.length > 0x186a0) {
             this.lightUpdateQueue = [];
@@ -124,26 +158,6 @@ window.World = class {
         }
     }
 
-    updateLights() {
-        if (this.lightUpdateProcesses >= 50) {
-            return false;
-        }
-        this.lightUpdateProcesses++;
-
-        // Update lights in queue
-        let i = 5000;
-        while (this.lightUpdateQueue.length > 0) {
-            if (i <= 0) {
-                return true;
-            }
-            this.lightUpdateQueue.shift().updateBlockLightning(this);
-            i--;
-        }
-
-        this.lightUpdateProcesses--;
-        return false;
-    }
-
     getHeightAt(x, z) {
         if (!this.chunkExists(x >> 4, z >> 4)) {
             return 0;
@@ -167,7 +181,7 @@ window.World = class {
     }
 
     getSavedLightValue(sourceType, x, y, z) {
-        if (y < 0) {
+        if (!this.chunkExists(x >> 4, z >> 4)) {
             return 15;
         }
 
@@ -176,7 +190,7 @@ window.World = class {
     }
 
     setLightAt(sourceType, x, y, z, lightLevel) {
-        if (y < 0) {
+        if (!this.chunkExists(x >> 4, z >> 4)) {
             return;
         }
 
@@ -213,16 +227,6 @@ window.World = class {
 
     getChunkSectionAt(chunkX, layerY, chunkZ) {
         return this.getChunkAt(chunkX, chunkZ).getSection(layerY);
-    }
-
-    getChunkAt(x, z) {
-        let index = x + (z << 16);
-        let chunk = this.chunks.get(index);
-        if (typeof chunk === 'undefined') {
-            this.chunks.set(index, chunk = new Chunk(this, x, z));
-            this.group.add(chunk.group);
-        }
-        return chunk;
     }
 
     onBlockChanged(x, y, z) {

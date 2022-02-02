@@ -21,10 +21,9 @@ window.Chunk = class {
 
         // Create height map
         this.heightMap = [];
-        this.initHeightMapAndLight();
     }
 
-    initHeightMapAndLight() {
+    generateSkylightMap() {
         let highest = World.TOTAL_HEIGHT;
         for (let x = 0; x < 16; x++) {
             for (let z = 0; z < 16; z++) {
@@ -160,6 +159,10 @@ window.Chunk = class {
 
         this.getSection(y >> 4).setBlockAt(x, y & 15, z, byte0);
 
+        if (!this.loaded) {
+            return;
+        }
+
         //if (k1 !== 0 && !this.worldObj.multiplayerWorld) {
         //Block.blocksList[k1].onBlockRemoval(this.world, l1, j, i2);
         //}
@@ -220,10 +223,6 @@ window.Chunk = class {
         for (let y = 0; y < this.sections.length; y++) {
             this.sections[y].queueForRebuild();
         }
-    }
-
-    load() {
-        this.loaded = true;
     }
 
     isLoaded() {
