@@ -5,7 +5,7 @@ window.BlockWater = class extends Block {
     }
 
     getOpacity() {
-        return 0.3;
+        return 0.93;
     }
 
     isSolid() {

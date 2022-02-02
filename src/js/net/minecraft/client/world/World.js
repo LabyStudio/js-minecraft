@@ -112,7 +112,7 @@ window.World = class {
     }
 
     blockExists(x, y, z) {
-        if (y < 0 || y >= 128) {
+        if (y < 0 || y >= World.TOTAL_HEIGHT) {
             return false;
         } else {
             return this.chunkExists(x >> 4, z >> 4);
@@ -167,7 +167,7 @@ window.World = class {
     }
 
     getSavedLightValue(sourceType, x, y, z) {
-        if (!this.chunkExists(x >> 4, z >> 4)) {
+        if (!this.blockExists(x, y, z)) {
             return 15;
         }
 

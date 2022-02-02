@@ -79,7 +79,14 @@ window.Chunk = class {
         if (y > currentHighestY) {
             highestY = y;
         }
-        while (highestY > 0 && Block.lightOpacity[this.getBlockAt(relX, highestY, relZ)] === 0) {
+        while (highestY > 0) {
+            let typeId = this.getBlockAt(relX, highestY, relZ);
+            let block = Block.getById(typeId);
+
+            if (typeId !== 0 && block.getOpacity() !== 0) {
+                break;
+            }
+
             highestY--;
         }
         if (highestY === currentHighestY) {
@@ -122,7 +129,11 @@ window.Chunk = class {
         let prevHeight = highestY;
         while (highestY > 0 && lightLevel > 0) {
             highestY--;
-            let opacity = Block.lightOpacity[this.getBlockID(relX, highestY, relZ)];
+
+            let typeId = this.getBlockID(relX, highestY, relZ);
+            let block = Block.getById(typeId);
+
+            let opacity = Math.floor(typeId === 0 ? 0 : block.getOpacity() * 255);
             if (opacity === 0) {
                 opacity = 1;
             }
@@ -130,10 +141,20 @@ window.Chunk = class {
             if (lightLevel < 0) {
                 lightLevel = 0;
             }
+
             this.setLightAt(EnumSkyBlock.SKY, relX, highestY, relZ, lightLevel);
         }
-        for (; highestY > 0 && Block.lightOpacity[this.getBlockID(relX, highestY - 1, relZ)] === 0; highestY--) {
+
+        while (highestY > 0) {
+            let typeId = this.getBlockID(relX, highestY - 1, relZ);
+            let block = Block.getById(typeId);
+
+            if (typeId !== 0 && block.isSolid()) {
+                break;
+            }
+            highestY--;
         }
+
         if (highestY !== prevHeight) {
             this.world.updateLight(EnumSkyBlock.SKY, x - 1, highestY, z - 1, x + 1, prevHeight, z + 1);
         }
@@ -168,7 +189,8 @@ window.Chunk = class {
         //this.data.setNibble(i, j, k, i1);
         //if (!this.worldObj.worldProvider.field_6478_e) {
 
-        if (Block.lightOpacity[byte0] !== 0) {
+        let block = Block.getById(typeId);
+        if (typeId !== 0 && block.isSolid()) {
             if (y >= height) {
                 this.updateHeightMap(x, y + 1, z);
             }

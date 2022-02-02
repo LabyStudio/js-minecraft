@@ -32,7 +32,8 @@ window.MetadataChunkBlock = class {
                     let savedLightValue = world.getSavedLightValue(this.type, x, y, z);
                     let newLevel = 0;
                     let typeId = world.getBlockAt(x, y, z);
-                    let opacity = Block.lightOpacity[typeId];
+                    let block = Block.getById(typeId);
+                    let opacity = typeId === 0 ? 0 : block.getOpacity() * 255;
 
                     if (opacity === 0) {
                         opacity = 1;

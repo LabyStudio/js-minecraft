@@ -1,9 +1,7 @@
 window.Block = class {
 
     static blocks = new Map();
-
-    static lightOpacity = [];
-
+    
     static create() {
         Block.STONE = new BlockStone(1, 0);
         Block.GRASS = new BlockGrass(2, 1);
@@ -22,9 +20,6 @@ window.Block = class {
 
         // Register block
         Block.blocks.set(id, this);
-        Block.lightOpacity[id] = this.isSolid() ? 255 : 0;
-
-        Block.lightOpacity[0] = 0;
     }
 
     getId() {
