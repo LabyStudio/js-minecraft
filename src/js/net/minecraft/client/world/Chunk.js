@@ -7,6 +7,8 @@ window.Chunk = class {
 
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
+        this.group.chunkX = x;
+        this.group.chunkZ = z;
 
         this.loaded = false;
 

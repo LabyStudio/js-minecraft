@@ -2,7 +2,9 @@ window.World = class {
 
     static TOTAL_HEIGHT = ChunkSection.SIZE * 16 - 1;
 
-    constructor() {
+    constructor(minecraft) {
+        this.minecrat = minecraft;
+
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
         this.chunks = new Map();
@@ -14,7 +16,16 @@ window.World = class {
     }
 
     onTick() {
+        let player = this.minecrat.player;
+        let cameraChunkX = Math.floor(player.x >> 4);
+        let cameraChunkZ = Math.floor(player.z >> 4);
 
+        // Update render order of chunks
+        this.group.children.sort((a, b) => {
+            let distance1 = Math.floor(Math.pow(a.chunkX - cameraChunkX, 2) + Math.pow(a.chunkZ - cameraChunkZ, 2));
+            let distance2 = Math.floor(Math.pow(b.chunkX - cameraChunkX, 2) + Math.pow(b.chunkZ - cameraChunkZ, 2));
+            return distance2 - distance1;
+        });
     }
 
     getChunkAt(x, z) {

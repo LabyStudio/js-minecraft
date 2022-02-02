@@ -15,7 +15,7 @@ window.Minecraft = class {
         Block.create();
 
         // Create world
-        this.world = new World();
+        this.world = new World(this);
         this.worldRenderer.scene.add(this.world.group);
 
         // Create player
@@ -78,7 +78,7 @@ window.Minecraft = class {
             this.window.mouseMotionX = 0;
             this.window.mouseMotionY = 0;
         }
-        
+
         while (this.world.updateLights()) ;
 
         // Render the game

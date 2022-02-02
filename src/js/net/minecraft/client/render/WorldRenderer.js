@@ -34,6 +34,7 @@ window.WorldRenderer = class {
         this.webRenderer.shadowMap.enabled = true;
         this.webRenderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
         this.webRenderer.autoClear = false;
+        this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
 
@@ -102,15 +103,16 @@ window.WorldRenderer = class {
 
     renderChunks(cameraChunkX, cameraChunkZ) {
         let world = this.minecraft.world;
-
         let renderDistance = WorldRenderer.RENDER_DISTANCE;
 
+        // Load chunks
         for (let x = -renderDistance; x <= renderDistance; x++) {
             for (let z = -renderDistance; z <= renderDistance; z++) {
                 world.getChunkAt(cameraChunkX + x, cameraChunkZ + z);
             }
         }
 
+        // Update chunks
         for (let [index, chunk] of world.chunks) {
             let distanceX = Math.abs(cameraChunkX - chunk.x);
             let distanceZ = Math.abs(cameraChunkZ - chunk.z);
