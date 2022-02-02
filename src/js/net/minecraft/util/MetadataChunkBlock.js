@@ -11,29 +11,41 @@ window.MetadataChunkBlock = class {
     }
 
     updateBlockLightning(world) {
+        let centerX = (this.x2 - this.x1) + 1;
+        let centerY = (this.y2 - this.y1) + 1;
+        let centerZ = (this.z2 - this.z1) + 1;
+        let index = centerX * centerY * centerZ;
+        if (index > 32768) {
+            return;
+        }
         for (let x = this.x1; x <= this.x2; x++) {
             for (let z = this.z1; z <= this.z2; z++) {
+                if (!world.blockExists(x, 0, z)) {
+                    continue;
+                }
+
                 for (let y = this.y1; y <= this.y2; y++) {
+                    if (y < 0 || y >= World.TOTAL_HEIGHT) {
+                        continue;
+                    }
 
                     let savedLightValue = world.getSavedLightValue(this.type, x, y, z);
-
-                    let level = 0;
                     let newLevel = 0;
-
                     let typeId = world.getBlockAt(x, y, z);
-                    let block = Block.getById(typeId);
+                    let opacity = Block.lightOpacity[typeId];
 
-                    let opacity = typeId === 0 ? 0 : (block.getOpacity() * 255);
                     if (opacity === 0) {
                         opacity = 1;
                     }
+
+                    let level = 0;
 
                     if (this.type === EnumSkyBlock.SKY) {
                         if (world.isHighestBlock(x, y, z)) {
                             level = 15;
                         }
                     } else if (this.type === EnumSkyBlock.BLOCK) {
-                        level = typeId === 0 ? 0 : block.getLightValue();
+                        level = 0; // TODO
                     }
 
                     if (opacity >= 15 && level === 0) {
@@ -63,9 +75,7 @@ window.MetadataChunkBlock = class {
                         if (z2Level > newLevel) {
                             newLevel = z2Level;
                         }
-
                         newLevel -= opacity;
-
                         if (newLevel < 0) {
                             newLevel = 0;
                         }
@@ -73,11 +83,9 @@ window.MetadataChunkBlock = class {
                             newLevel = level;
                         }
                     }
-
                     if (savedLightValue === newLevel) {
                         continue;
                     }
-
                     world.setLightAt(this.type, x, y, z, newLevel);
 
                     let decreasedLevel = newLevel - 1;

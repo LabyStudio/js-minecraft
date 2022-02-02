@@ -84,7 +84,13 @@ window.ChunkSection = class {
 
     setLightAt(sourceType, x, y, z, lightLevel) {
         let index = y << 8 | z << 4 | x;
-        this.blockLight[index] = lightLevel;
+
+        if (sourceType === EnumSkyBlock.SKY) {
+            this.skyLight[index] = lightLevel;
+        }
+        if (sourceType === EnumSkyBlock.BLOCK) {
+            this.blockLight[index] = lightLevel;
+        }
     }
 
     getTotalLightAt(x, y, z) {
@@ -102,7 +108,7 @@ window.ChunkSection = class {
         if (sourceType === EnumSkyBlock.SKY) {
             return this.skyLight[index];
         }
-        if (sourceType === EnumSkyBlock.Block) {
+        if (sourceType === EnumSkyBlock.BLOCK) {
             return this.blockLight[index];
         }
         return 0;

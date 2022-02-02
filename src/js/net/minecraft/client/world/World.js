@@ -63,7 +63,12 @@ window.World = class {
             return;
         }
 
-        this.lightUpdates++;
+        let centerX = (x2 + x1) / 2;
+        let centerZ = (z2 + z1) / 2;
+
+        if (!this.blockExists(centerX, 64, centerZ)) {
+            return;
+        }
 
         let size = this.lightUpdateQueue.length;
 
@@ -72,39 +77,49 @@ window.World = class {
             if (max > size) {
                 max = size;
             }
-
             for (let i = 0; i < max; i++) {
-                let meta = this.lightUpdateQueue[size - i - 1];
+                let meta = this.lightUpdateQueue[(this.lightUpdateQueue.length - i - 1)];
                 if (meta.type === sourceType && meta.isOutsideOf(x1, y1, z1, x2, y2, z2)) {
-                    this.lightUpdates--;
                     return;
                 }
             }
-        }
 
-        // Push light update to queue
+        }
         this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
         if (this.lightUpdateQueue.length > 0x186a0) {
             this.lightUpdateQueue = [];
         }
-        this.lightUpdates--;
     }
 
-    neighborLightPropagationChanged(sourceType, x, y, z, lightLevel) {
+    blockExists(x, y, z) {
+        if (y < 0 || y >= 128) {
+            return false;
+        } else {
+            return this.chunkExists(x >> 4, z >> 4);
+        }
+    }
+
+    chunkExists(chunkX, chunkZ) {
+        let index = chunkX + (chunkZ << 16);
+        let chunk = this.chunks.get(index);
+        return typeof chunk !== 'undefined';
+    }
+
+    neighborLightPropagationChanged(sourceType, x, y, z, level) {
+        if (!this.blockExists(x, y, z)) {
+            return;
+        }
         if (sourceType === EnumSkyBlock.SKY) {
             if (this.isHighestBlock(x, y, z)) {
-                lightLevel = 15;
+                level = 15;
             }
         } else if (sourceType === EnumSkyBlock.BLOCK) {
-            let typeId = this.getBlockAt(x, y, z);
-            let block = Block.getById(typeId);
-            let blockLight = block.getLightValue();
-
-            if (blockLight > lightLevel) {
-                lightLevel = blockLight;
+            let i1 = this.getBlockAt(x, y, z);
+            if (0 > level) { // TODO
+                level = 0;
             }
         }
-        if (this.getSavedLightValue(sourceType, x, y, z) !== lightLevel) {
+        if (this.getSavedLightValue(sourceType, x, y, z) !== level) {
             this.updateLight(sourceType, x, y, z, x, y, z);
         }
     }
@@ -130,6 +145,10 @@ window.World = class {
     }
 
     getHeightAt(x, z) {
+        if (!this.chunkExists(x >> 4, z >> 4)) {
+            return 0;
+        }
+
         return this.getChunkAt(x >> 4, z >> 4).getHeightAt(x & 15, z & 15);
     }
 

@@ -47,7 +47,7 @@ window.BlockRenderer = class {
 
         // Classic lightning
         if (BlockRenderer.CLASSIC_LIGHTNING) {
-            let brightness = 0.9 / 15.0 * world.getLightAt(minX + face.x, minY + face.y, minZ + face.z) + 0.1;
+            let brightness = 0.9 / 15.0 * world.getTotalLightAt(minX + face.x, minY + face.y, minZ + face.z) + 0.1;
             let color = brightness * face.getShading();
             this.tessellator.setColor(color, color, color);
         }
