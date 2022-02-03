@@ -4,8 +4,8 @@ window.Minecraft = class {
      * Create Minecraft instance and render it on a canvas
      */
     constructor(canvasWrapperId) {
-        this.worldRenderer = new WorldRenderer(this, canvasWrapperId);
-        this.window = new GameWindow(this, this.worldRenderer, canvasWrapperId);
+        this.window = new GameWindow(this, canvasWrapperId);
+        this.worldRenderer = new WorldRenderer(this, this.window);
         this.timer = new Timer(20);
 
         this.frames = 0;

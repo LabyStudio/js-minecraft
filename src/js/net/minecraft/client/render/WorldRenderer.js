@@ -2,22 +2,32 @@ window.WorldRenderer = class {
 
     static RENDER_DISTANCE = 4;
 
-    constructor(minecraft, canvasWrapperId) {
+    constructor(minecraft, window) {
         this.minecraft = minecraft;
-
-        this.canvas2D = document.createElement('canvas');
-        // Get canvas size
-        let canvasElement = document.getElementById(canvasWrapperId);
-        this.canvasWidth = canvasElement.offsetWidth;
-        this.canvasHeight = canvasElement.offsetHeight;
-
-        this.stack2D = null;
-        this.hudTexture = null;
+        this.window = window;
+        this.chunkSectionUpdateQueue = [];
 
         this.supportWebGL = !!WebGLRenderingContext
             && (!!document.createElement('canvas').getContext('experimental-webgl')
                 || !!document.createElement('canvas').getContext('webgl'));
 
+        // Load terrain
+        this.terrainTexture = new THREE.TextureLoader().load('src/resources/terrain.png');
+        this.terrainTexture.magFilter = THREE.NearestFilter;
+        this.terrainTexture.minFilter = THREE.NearestFilter;
+
+        // Block Renderer
+        this.blockRenderer = new BlockRenderer(this);
+
+        // Initialize renderers
+        this.initializeRenderer();
+        this.initializeGui();
+
+        // Load renderer into window
+        this.window.loadRenderer(this);
+    }
+
+    initializeRenderer() {
         // Create world camera
         this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 1000);
         this.camera.rotation.order = 'ZYX';
@@ -41,49 +51,53 @@ window.WorldRenderer = class {
         });
 
         // Settings
+        this.webRenderer.setSize(this.window.width, this.window.height);
         this.webRenderer.shadowMap.enabled = true;
         this.webRenderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
         this.webRenderer.autoClear = false;
         this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
-
-        // Load terrain
-        this.terrainTexture = new THREE.TextureLoader().load('src/resources/terrain.png');
-        this.terrainTexture.magFilter = THREE.NearestFilter;
-        this.terrainTexture.minFilter = THREE.NearestFilter;
-
-        // Block Renderer
-        this.blockRenderer = new BlockRenderer(this);
-
-        this.chunkSectionUpdateQueue = [];
-
-        this.initializeHud();
     }
 
-    initializeHud() {
+    initializeGui() {
+        // We will use 2D canvas element to render our HUD.
+        this.canvas2d = document.createElement('canvas')
 
-        // Create canvas context for screen rendering
-        this.stack2D =   this.canvas2D.getContext('2d');
-        this.hudTexture = new THREE.Texture(this.stack2D);
-        this.hudTexture.needsUpdate = true;
+        // Update camera size
+        this.canvas2d.width = this.window.width;
+        this.canvas2d.height = this.window.height;
+
+        // Get context stack of 2d canvas
+        this.stack2d = this.canvas2d.getContext('2d');
+
+        // Create texture from rendered graphics.
+        this.frameBuffer = new THREE.Texture(this.canvas2d)
+        this.frameBuffer.needsUpdate = true;
+        this.frameBuffer.minFilter = THREE.LinearFilter;
 
         // Create HUD material.
-        let material = new THREE.MeshBasicMaterial({map: this.hudTexture});
-        material.map.minFilter = THREE.LinearFilter;
-        material.transparent = true;
+        let material = new THREE.MeshBasicMaterial({
+            map: this.frameBuffer,
+            transparent: true
+        });
 
         // Create plane to render the HUD. This plane fill the whole screen.
-        let planeGeometry = new THREE.PlaneGeometry(  this.canvas2D.width,   this.canvas2D.height);
-        let plane = new THREE.Mesh(planeGeometry, material);
+        let geometry = new THREE.PlaneGeometry(this.canvas2d.width, this.canvas2d.height);
+        let plane = new THREE.Mesh(geometry, material);
 
-        // Create HUD
-        this.hud = new THREE.Scene();
-        // this.hud.matrixAutoUpdate = false;
-        this.hud.add(plane);
+        // Create also a custom scene for HUD.
+        this.scene2d = new THREE.Scene();
+        this.scene2d.add(plane);
 
-        // Create camera for HUD
-        this.camera2D = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 30);
+        // Create 2D camera
+        this.camera2d = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 30);
+        this.camera2d.aspect = this.window.width / this.window.height;
+        this.camera2d.left = -this.window.width / 2;
+        this.camera2d.right = this.window.width / 2;
+        this.camera2d.top = this.window.height / 2;
+        this.camera2d.bottom = -this.window.height / 2;
+        this.camera2d.updateProjectionMatrix();
     }
 
     render(partialTicks) {
@@ -99,15 +113,11 @@ window.WorldRenderer = class {
         // Render in-game overlay
         let mouseX = this.minecraft.window.mouseX;
         let mouseY = this.minecraft.window.mouseY;
-        //this.minecraft.ingameOverlay.render(this.stack2D, mouseX, mouseY, partialTicks);
+        this.minecraft.ingameOverlay.render(this.stack2d, mouseX, mouseY, partialTicks);
 
-        // Render actual scene
+        // Render actual scene and hud
         this.webRenderer.render(this.scene, this.camera);
-
-        // Render actual HUD
-        if (this.stack2D !== null && this.hudTexture !== null && this.hudTexture.image.naturalWidth !== 0) {
-            this.webRenderer.render(this.hud, this.camera2D);
-        }
+        this.webRenderer.render(this.scene2d, this.camera2d);
     }
 
     orientCamera(partialTicks) {
