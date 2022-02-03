@@ -38,7 +38,7 @@ window.BlockRenderer = class {
         let textureIndex = block.getTextureForFace(face);
         let minU = (textureIndex % 16) / 16.0;
         let maxU = minU + (16 / 256);
-        let minV = Math.floor(textureIndex / 16);
+        let minV = Math.floor(textureIndex / 16) / 16.0;
         let maxV = minV + (16 / 256);
 
         // Flip V
