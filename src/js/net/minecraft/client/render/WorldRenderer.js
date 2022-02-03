@@ -120,6 +120,11 @@ window.WorldRenderer = class {
         let mouseY = this.minecraft.window.mouseY;
         this.minecraft.ingameOverlay.render(this.stack2d, mouseX, mouseY, partialTicks);
 
+        // Render current screen
+        if (!(this.minecraft.currentScreen === null)) {
+            this.minecraft.currentScreen.drawScreen(this.stack2d, mouseX, mouseY, partialTicks);
+        }
+
         // Render actual scene and hud
         this.webRenderer.render(this.scene, this.camera);
         this.webRenderer.render(this.scene2d, this.camera2d);
