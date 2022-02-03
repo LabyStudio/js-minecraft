@@ -1,5 +1,7 @@
 window.Gui = class {
 
+    static FONT = "normal 20px Minecraftia";
+
     drawRect(stack, left, top, right, bottom, color, alpha = 1) {
         stack.save();
         stack.fillStyle = color;
@@ -8,16 +10,26 @@ window.Gui = class {
         stack.restore();
     }
 
-    drawString(stack, string, x, y, color) {
-        this._drawString(stack, string, x, y, color, 0, false);
+    drawCenteredString(stack, string, x, y, color = 'white') {
+        this._drawString(stack, string, x + this.getStringWidth(stack, string) / 2, y, color, 1);
     }
 
-    _drawString(stack, string, x, y, color, alignment, bold) {
-        let size = 24;
-        stack.font = (bold ? "bold" : "normal") + " " + size + "px Minecraftia";
-        stack.fillStyle = color;
+    drawString(stack, string, x, y, color = 'white') {
+        this._drawString(stack, string, x, y, color, 0);
+    }
+
+    _drawString(stack, string, x, y, color, alignment) {
+        stack.font = Gui.FONT;
+        stack.fillStyle = 'black';
         stack.textAlign = alignment === 0 ? "center" : alignment < 0 ? "left" : "right";
+        stack.fillText(string, x + 2, y + 2);
+        stack.fillStyle = color;
         stack.fillText(string, x, y);
+    }
+
+    getStringWidth(stack, string) {
+        stack.font = Gui.FONT;
+        return stack.measureText(string).width;
     }
 
     drawTexture(stack, texture, x, y, width, height, alpha = 1.0) {
@@ -42,7 +54,7 @@ window.Gui = class {
         stack.restore();
     }
 
-    loadTexture(path) {
+    static loadTexture(path) {
         let img = new Image();
         img.src = path;
         return img;

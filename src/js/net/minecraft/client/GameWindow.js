@@ -28,8 +28,23 @@ window.GameWindow = class {
         // Mouse motion
         document.addEventListener('mousemove', event => this.onMouseMove(event), false);
 
+        // Losing focus event
+        window.addEventListener("mouseout", function () {
+            if (minecraft.currentScreen === null) {
+                minecraft.displayScreen(new GuiIngameMenu());
+            }
+        });
+
         // Mouse buttons
-        document.addEventListener('click', event => minecraft.onMouseClicked(event.button), false);
+        document.addEventListener('click', function (event) {
+            // Handle in-game mouse click
+            minecraft.onMouseClicked(event.button);
+
+            // Handle mouse click on screen
+            if (!(minecraft.currentScreen === null)) {
+                minecraft.currentScreen.mouseClicked(event.x, event.y, event.code);
+            }
+        }, false);
 
         // Keyboard interaction with screen
         window.addEventListener('keydown', function (event) {
@@ -41,6 +56,9 @@ window.GameWindow = class {
                     // Cancel browser interaction
                     event.preventDefault();
                 }
+            } else if (event.code === 'Escape') {
+                event.preventDefault();
+                minecraft.displayScreen(new GuiIngameMenu());
             }
         });
 
@@ -49,7 +67,12 @@ window.GameWindow = class {
     }
 
     requestFocus() {
-        this.renderer.canvasElement.requestPointerLock();
+        let scope = this;
+
+        setTimeout(function () {
+            window.focus();
+            scope.renderer.canvasElement.requestPointerLock();
+        }, 0);
     }
 
     loadRenderer(renderer) {
@@ -64,10 +87,10 @@ window.GameWindow = class {
         this.onResize();
 
         // Request focus
-        let minecraft = this.minecraft;
+        let scope = this;
         canvas.onclick = function () {
-            if (minecraft.currentScreen === null) {
-                canvas.requestPointerLock();
+            if (scope.minecraft.currentScreen === null) {
+                scope.requestFocus();
             }
         }
     }
@@ -90,14 +113,13 @@ window.GameWindow = class {
 
         // Reinitialize current screen
         if (!(this.minecraft.currentScreen === null)) {
-            this.minecraft.currentScreen.init(this.minecraft, this.width, this.height);
+            this.minecraft.currentScreen.setup(this.minecraft, this.width, this.height);
         }
     }
 
     onFocusChanged() {
         this.mouseLocked = document.pointerLockElement === this.renderer.canvasElement;
 
-        // Open in-game menu
         if (!this.mouseLocked && this.minecraft.currentScreen === null) {
             this.minecraft.displayScreen(new GuiIngameMenu());
         }

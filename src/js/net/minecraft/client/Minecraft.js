@@ -31,7 +31,7 @@ window.Minecraft = class {
         this.worldRenderer.scene.add(this.world.group);
 
         // Create player
-        this.player = new Player(this.world);
+        this.player = new Player(this, this.world);
         this.pickedBlock = 1;
 
         // Initialize
@@ -46,6 +46,10 @@ window.Minecraft = class {
         // Start render loop
         this.running = true;
         this.requestNextFrame();
+    }
+
+    hasInGameFocus() {
+        return this.window.mouseLocked && this.currentScreen === null;
     }
 
     requestNextFrame() {
@@ -88,7 +92,7 @@ window.Minecraft = class {
 
     onRender(partialTicks) {
         // Player rotation
-        if (this.window.mouseLocked && !(this.currentScreen === "null")) {
+        if (this.hasInGameFocus()) {
             this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
 
             this.window.mouseMotionX = 0;
@@ -112,7 +116,7 @@ window.Minecraft = class {
         if (screen === null) {
             this.window.requestFocus();
         } else {
-            screen.init(this, this.window.width, this.window.height);
+            screen.setup(this, this.window.width, this.window.height);
         }
     }
 

@@ -4,7 +4,7 @@ window.IngameOverlay = class extends Gui {
         super();
         this.window = window;
 
-        this.textureCrosshair = this.loadTexture("icons.png");
+        this.textureCrosshair = Gui.loadTexture("icons.png");
     }
 
     render(stack, mouseX, mouseY, partialTicks) {
