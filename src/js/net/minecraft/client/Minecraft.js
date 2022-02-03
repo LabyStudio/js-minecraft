@@ -4,9 +4,21 @@ window.Minecraft = class {
      * Create Minecraft instance and render it on a canvas
      */
     constructor(canvasWrapperId) {
+        this.currentScreen = null;
+        this.loadingScreen = null;
+
+        // Create window and world renderer
         this.window = new GameWindow(this, canvasWrapperId);
         this.worldRenderer = new WorldRenderer(this, this.window);
         this.timer = new Timer(20);
+
+        // Create current screen and overlay
+        this.ingameOverlay = new IngameOverlay(this.window);
+
+        // Display loading screen
+        this.loadingScreen = new GuiLoadingScreen();
+        this.loadingScreen.setTitle("Building terrain...");
+        this.displayScreen(this.loadingScreen);
 
         this.frames = 0;
         this.lastTime = Date.now();
@@ -21,10 +33,6 @@ window.Minecraft = class {
         // Create player
         this.player = new Player(this.world);
         this.pickedBlock = 1;
-
-        // Create current screen and overlay
-        this.ingameOverlay = new IngameOverlay(this.window);
-        this.currentScreen = null;
 
         // Initialize
         this.init();
@@ -80,17 +88,32 @@ window.Minecraft = class {
 
     onRender(partialTicks) {
         // Player rotation
-        if (this.window.mouseLocked) {
+        if (this.window.mouseLocked && !(this.currentScreen === "null")) {
             this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
 
             this.window.mouseMotionX = 0;
             this.window.mouseMotionY = 0;
         }
 
-        while (this.world.updateLights()) ;
+        // Update lights
+        while (this.world.updateLights()) {
+            // Empty
+        }
 
         // Render the game
         this.worldRenderer.render(partialTicks);
+    }
+
+    displayScreen(screen) {
+        // Switch screen
+        this.currentScreen = screen;
+
+        // Initialize new screen
+        if (screen === null) {
+            this.window.requestFocus();
+        } else {
+            screen.init(this, this.window.width, this.window.height);
+        }
     }
 
     onTick() {
@@ -99,6 +122,18 @@ window.Minecraft = class {
 
         // Tick the player
         this.player.onTick();
+
+        // Update loading progress
+        if (!(this.loadingScreen === null)) {
+            let progress = Math.max(0, 1 - this.world.lightUpdateQueue.length / 10000);
+            this.loadingScreen.setProgress(progress);
+
+            // Finish loading
+            if (progress >= 1) {
+                this.loadingScreen = null;
+                this.displayScreen(null);
+            }
+        }
     }
 
     onMouseClicked(button) {

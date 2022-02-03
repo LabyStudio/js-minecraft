@@ -1,6 +1,7 @@
 window.GameWindow = class {
 
     constructor(minecraft, canvasWrapperId) {
+        this.minecraft = minecraft;
         this.canvasWrapperId = canvasWrapperId;
 
         this.mouseMotionX = 0;
@@ -30,14 +31,31 @@ window.GameWindow = class {
         // Mouse buttons
         document.addEventListener('click', event => minecraft.onMouseClicked(event.button), false);
 
+        // Keyboard interaction with screen
+        window.addEventListener('keydown', function (event) {
+            if (!(minecraft.currentScreen === null)) {
+                // Handle key type on screen
+                let consumed = minecraft.currentScreen.keyTyped(event.code);
+
+                if (consumed) {
+                    // Cancel browser interaction
+                    event.preventDefault();
+                }
+            }
+        });
+
         // Create keyboard
         Keyboard.create();
+    }
+
+    requestFocus() {
+        this.renderer.canvasElement.requestPointerLock();
     }
 
     loadRenderer(renderer) {
         this.renderer = renderer;
 
-        let canvas = renderer.canvasElement;
+        let canvas = this.renderer.canvasElement;
 
         // Add web renderer canvas to wrapper
         this.wrapper.appendChild(canvas);
@@ -46,8 +64,11 @@ window.GameWindow = class {
         this.onResize();
 
         // Request focus
+        let minecraft = this.minecraft;
         canvas.onclick = function () {
-            canvas.requestPointerLock();
+            if (minecraft.currentScreen === null) {
+                canvas.requestPointerLock();
+            }
         }
     }
 
@@ -66,15 +87,26 @@ window.GameWindow = class {
 
         // Reinitialize gui
         this.renderer.initializeGui();
+
+        // Reinitialize current screen
+        if (!(this.minecraft.currentScreen === null)) {
+            this.minecraft.currentScreen.init(this.minecraft, this.width, this.height);
+        }
     }
 
     onFocusChanged() {
         this.mouseLocked = document.pointerLockElement === this.renderer.canvasElement;
+
+        // Open in-game menu
+        if (!this.mouseLocked && this.minecraft.currentScreen === null) {
+            this.minecraft.displayScreen(new GuiIngameMenu());
+        }
     }
 
     onMouseMove(event) {
         this.mouseMotionX = event.movementX;
         this.mouseMotionY = -event.movementY;
+
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
     }

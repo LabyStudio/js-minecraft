@@ -1,6 +1,17 @@
+@font-face {
+    font-family: "Minecraftia";
+    src: url(src/resources/font.ttf);
+}
+
 body {
     margin: 0;
-    background-color: black;
+}
+
+#background {
+    background-image: url(background.png);
+    background-size: 128px 128px;
+    image-rendering: pixelated;
+    filter: brightness(0.5);
 }
 
 #pre-status {
@@ -16,19 +27,22 @@ body {
     -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                     supported by Chrome, Edge, Opera and Firefox */
     /* No overflow */
     white-space: nowrap;
     overflow: hidden;
 
     /* Font */
     font-size: 25px;
-    font-family: "FoundryGridnik", serif;
+    font-family: "Minecraftia", sans-serif;
     color: white;
 }
 
-#canvas-container {
+.fullscreen {
+    position: absolute;
+    float: left;
     display: block;
     width: 100%;
     height: 100%;

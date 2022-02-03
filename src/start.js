@@ -62,6 +62,8 @@ loadScripts([
     "src/js/net/minecraft/client/gui/Gui.js",
     "src/js/net/minecraft/client/gui/GuiScreen.js",
     "src/js/net/minecraft/client/gui/IngameOverlay.js",
+    "src/js/net/minecraft/client/gui/screens/GuiLoadingScreen.js",
+    "src/js/net/minecraft/client/gui/screens/GuiIngameMenu.js",
     "src/js/net/minecraft/client/GameWindow.js",
     "src/js/net/minecraft/client/world/block/Block.js",
     "src/js/net/minecraft/client/world/block/BlockStone.js",
