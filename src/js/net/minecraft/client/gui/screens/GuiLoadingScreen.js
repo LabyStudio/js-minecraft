@@ -44,6 +44,9 @@ window.GuiLoadingScreen = class extends GuiScreen {
     }
 
     setProgress(progress) {
+        if (progress < this.progress) {
+            return;
+        }
         this.progress = progress;
     }
 
