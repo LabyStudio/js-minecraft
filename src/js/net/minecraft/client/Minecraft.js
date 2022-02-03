@@ -4,7 +4,7 @@ window.Minecraft = class {
      * Create Minecraft instance and render it on a canvas
      */
     constructor(canvasWrapperId) {
-        this.worldRenderer = new WorldRenderer(this);
+        this.worldRenderer = new WorldRenderer(this, canvasWrapperId);
         this.window = new GameWindow(this, this.worldRenderer, canvasWrapperId);
         this.timer = new Timer(20);
 
@@ -21,6 +21,10 @@ window.Minecraft = class {
         // Create player
         this.player = new Player(this.world);
         this.pickedBlock = 1;
+
+        // Create current screen and overlay
+        this.ingameOverlay = new IngameOverlay();
+        this.currentScreen = null;
 
         // Initialize
         this.init();

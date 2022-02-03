@@ -47,13 +47,22 @@ window.GameWindow = class {
     onResize() {
         // Get canvas size
         let canvasElement = document.getElementById(this.canvasWrapperId);
-        this.canvasWidth = canvasElement.offsetWidth;
-        this.canvasHeight = canvasElement.offsetHeight;
+        this.width = canvasElement.offsetWidth;
+        this.height = canvasElement.offsetHeight;
 
         // Adjust camera
-        this.renderer.camera.aspect = this.canvasWidth / this.canvasHeight;
+        this.renderer.camera.aspect = this.width / this.height;
         this.renderer.camera.updateProjectionMatrix();
-        this.renderer.webRenderer.setSize(this.canvasWidth, this.canvasHeight);
+        this.renderer.webRenderer.setSize(this.width, this.height);
+
+        // Update HUD camera
+        this.renderer.camera2D.left = -this.width / 2;
+        this.renderer.camera2D.right = this.width / 2;
+        this.renderer.camera2D.top = this.height / 2;
+        this.renderer.camera2D.bottom = -this.height / 2;
+        this.renderer.camera2D.updateProjectionMatrix();
+
+        console.log("Resize");
     }
 
     onFocusChanged() {
@@ -63,5 +72,7 @@ window.GameWindow = class {
     onMouseMove(event) {
         this.mouseMotionX = event.movementX;
         this.mouseMotionY = -event.movementY;
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
     }
 }

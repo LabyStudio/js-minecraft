@@ -2,18 +2,28 @@ window.WorldRenderer = class {
 
     static RENDER_DISTANCE = 4;
 
-    constructor(minecraft) {
+    constructor(minecraft, canvasWrapperId) {
         this.minecraft = minecraft;
+
+        this.canvas2D = document.createElement('canvas');
+        // Get canvas size
+        let canvasElement = document.getElementById(canvasWrapperId);
+        this.canvasWidth = canvasElement.offsetWidth;
+        this.canvasHeight = canvasElement.offsetHeight;
+
+        this.stack2D = null;
+        this.hudTexture = null;
 
         this.supportWebGL = !!WebGLRenderingContext
             && (!!document.createElement('canvas').getContext('experimental-webgl')
                 || !!document.createElement('canvas').getContext('webgl'));
 
-        // Create cameras
+        // Create world camera
         this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 1000);
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 0, 1);
 
+        // Frustum
         this.frustum = new THREE.Frustum();
 
         // Create scene
@@ -47,6 +57,33 @@ window.WorldRenderer = class {
         this.blockRenderer = new BlockRenderer(this);
 
         this.chunkSectionUpdateQueue = [];
+
+        this.initializeHud();
+    }
+
+    initializeHud() {
+
+        // Create canvas context for screen rendering
+        this.stack2D =   this.canvas2D.getContext('2d');
+        this.hudTexture = new THREE.Texture(this.stack2D);
+        this.hudTexture.needsUpdate = true;
+
+        // Create HUD material.
+        let material = new THREE.MeshBasicMaterial({map: this.hudTexture});
+        material.map.minFilter = THREE.LinearFilter;
+        material.transparent = true;
+
+        // Create plane to render the HUD. This plane fill the whole screen.
+        let planeGeometry = new THREE.PlaneGeometry(  this.canvas2D.width,   this.canvas2D.height);
+        let plane = new THREE.Mesh(planeGeometry, material);
+
+        // Create HUD
+        this.hud = new THREE.Scene();
+        // this.hud.matrixAutoUpdate = false;
+        this.hud.add(plane);
+
+        // Create camera for HUD
+        this.camera2D = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 30);
     }
 
     render(partialTicks) {
@@ -59,8 +96,18 @@ window.WorldRenderer = class {
         let cameraChunkZ = Math.floor(player.z >> 4);
         this.renderChunks(cameraChunkX, cameraChunkZ);
 
-        // Render window
+        // Render in-game overlay
+        let mouseX = this.minecraft.window.mouseX;
+        let mouseY = this.minecraft.window.mouseY;
+        //this.minecraft.ingameOverlay.render(this.stack2D, mouseX, mouseY, partialTicks);
+
+        // Render actual scene
         this.webRenderer.render(this.scene, this.camera);
+
+        // Render actual HUD
+        if (this.stack2D !== null && this.hudTexture !== null && this.hudTexture.image.naturalWidth !== 0) {
+            this.webRenderer.render(this.hud, this.camera2D);
+        }
     }
 
     orientCamera(partialTicks) {
