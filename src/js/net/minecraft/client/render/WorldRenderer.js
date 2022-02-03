@@ -70,6 +70,7 @@ window.WorldRenderer = class {
 
         // Get context stack of 2d canvas
         this.stack2d = this.canvas2d.getContext('2d');
+        this.stack2d.imageSmoothingEnabled = false;
 
         // Create texture from rendered graphics.
         this.frameBuffer = new THREE.Texture(this.canvas2d)
@@ -109,6 +110,10 @@ window.WorldRenderer = class {
         let cameraChunkX = Math.floor(player.x >> 4);
         let cameraChunkZ = Math.floor(player.z >> 4);
         this.renderChunks(cameraChunkX, cameraChunkZ);
+
+        // Clear frame buffer for 2d screen
+        this.stack2d.clearRect(0, 0, this.window.width, this.window.height);
+        this.frameBuffer.needsUpdate = true;
 
         // Render in-game overlay
         let mouseX = this.minecraft.window.mouseX;

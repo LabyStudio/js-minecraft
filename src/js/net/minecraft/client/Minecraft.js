@@ -23,7 +23,7 @@ window.Minecraft = class {
         this.pickedBlock = 1;
 
         // Create current screen and overlay
-        this.ingameOverlay = new IngameOverlay();
+        this.ingameOverlay = new IngameOverlay(this.window);
         this.currentScreen = null;
 
         // Initialize
