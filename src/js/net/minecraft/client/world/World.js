@@ -1,18 +1,18 @@
 window.World = class {
 
-    static TOTAL_HEIGHT = ChunkSection.SIZE * 16 - 1;
+    static TOTAL_HEIGHT = ChunkSection.SIZE * 8 - 1; // ChunkSection.SIZE * 16 - 1;
 
     constructor(minecraft) {
         this.minecrat = minecraft;
 
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
+
         this.chunks = new Map();
+        this.lightUpdateQueue = [];
 
         // Load world
         this.generator = new WorldGenerator(this, Date.now() % 100000);
-
-        this.lightUpdateQueue = [];
     }
 
     onTick() {
@@ -81,14 +81,35 @@ window.World = class {
     }
 
     updateLights() {
-        // Update lights in queue
-        let i = 5000;
-        while (this.lightUpdateQueue.length > 0) {
-            if (i <= 0) {
-                return true;
+        let scope = this;
+
+        if (this.lightUpdateQueue.length > 10) {
+            // Update lights async
+            setTimeout(function () {
+                // Update lights in queue
+                let i = 5000;
+                while (scope.lightUpdateQueue.length > 0) {
+                    if (i <= 0) {
+                        break;
+                    }
+
+                    let meta = scope.lightUpdateQueue.shift();
+                    meta.updateBlockLightning(scope);
+                    i--;
+                }
+            }, 0);
+        } else {
+            // Update lights in queue
+            let i = 10;
+            while (scope.lightUpdateQueue.length > 0) {
+                if (i <= 0) {
+                    return true;
+                }
+
+                let meta = scope.lightUpdateQueue.shift();
+                meta.updateBlockLightning(scope);
+                i--;
             }
-            this.lightUpdateQueue.shift().updateBlockLightning(this);
-            i--;
         }
         return false;
     }
@@ -116,8 +137,11 @@ window.World = class {
             }
         }
 
+        // Add light update region to queue
         this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
-        if (this.lightUpdateQueue.length > 0x186a0) {
+
+        // Max light updates in queue
+        if (this.lightUpdateQueue.length > 100000) {
             this.lightUpdateQueue = [];
         }
     }
@@ -141,7 +165,7 @@ window.World = class {
             return;
         }
         if (sourceType === EnumSkyBlock.SKY) {
-            if (this.isHighestBlock(x, y, z)) {
+            if (this.isAboveGround(x, y, z)) {
                 level = 15;
             }
         } else if (sourceType === EnumSkyBlock.BLOCK) {
@@ -155,17 +179,40 @@ window.World = class {
         }
     }
 
+    /**
+     * Get the first non-solid block
+     */
     getHeightAt(x, z) {
         if (!this.chunkExists(x >> 4, z >> 4)) {
             return 0;
         }
-
         return this.getChunkAt(x >> 4, z >> 4).getHeightAt(x & 15, z & 15);
     }
 
+    /**
+     * Get the highest solid block
+     */
+    getHighestBlockAt(x, z) {
+        if (!this.chunkExists(x >> 4, z >> 4)) {
+            return 0;
+        }
+        return this.getChunkAt(x >> 4, z >> 4).getHighestBlockAt(x & 15, z & 15);
+    }
+
+    /**
+     * Is the highest solid block or above
+     */
     isHighestBlock(x, y, z) {
         let chunk = this.getChunkAt(x >> 4, z >> 4)
-        return y >= chunk.getHeightAt(x & 15, z & 15);
+        return chunk.isHighestBlock(x & 15, y, z & 15);
+    }
+
+    /**
+     * Is above the highest solid block
+     */
+    isAboveGround(x, y, z) {
+        let chunk = this.getChunkAt(x >> 4, z >> 4)
+        return chunk.isAboveGround(x & 15, y, z & 15);
     }
 
     getTotalLightAt(x, y, z) {

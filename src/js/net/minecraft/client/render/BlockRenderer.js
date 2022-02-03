@@ -1,6 +1,6 @@
 window.BlockRenderer = class {
 
-    static CLASSIC_LIGHTNING = true;
+    static CLASSIC_LIGHTNING = false;
 
     constructor(worldRenderer) {
         this.worldRenderer = worldRenderer;

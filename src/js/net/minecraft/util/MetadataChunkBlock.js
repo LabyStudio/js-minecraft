@@ -42,7 +42,7 @@ window.MetadataChunkBlock = class {
                     let level = 0;
 
                     if (this.type === EnumSkyBlock.SKY) {
-                        if (world.isHighestBlock(x, y, z)) {
+                        if (world.isAboveGround(x, y, z)) {
                             level = 15;
                         }
                     } else if (this.type === EnumSkyBlock.BLOCK) {

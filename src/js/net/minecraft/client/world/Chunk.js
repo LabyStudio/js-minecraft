@@ -26,27 +26,22 @@ window.Chunk = class {
     }
 
     generateSkylightMap() {
-        let highest = World.TOTAL_HEIGHT;
+        // Calculate height map
         for (let x = 0; x < 16; x++) {
             for (let z = 0; z < 16; z++) {
-                this.heightMap[z << 4 | x] = -1;
-
+                this.setHeightAt(x, z, 0); // TODO set to 0 to calculate proper lightning
                 this.updateHeightMap(x, World.TOTAL_HEIGHT, z);
-
-                if ((this.heightMap[z << 4 | x] & 0xff) < highest) {
-                    highest = this.heightMap[z << 4 | x] & 0xff;
-                }
             }
         }
 
-        this.highestY = highest;
-        for (let k = 0; k < 16; k++) {
-            for (let i1 = 0; i1 < 16; i1++) {
-                this.notifyNeighbors(k, i1);
+        // Update light of neighbor blocks
+        for (let x = 0; x < 16; x++) {
+            for (let z = 0; z < 16; z++) {
+                this.notifyNeighbors(x, z);
             }
-
         }
 
+        // Rebuild all sections
         this.setModifiedAllSections();
     }
 
@@ -76,57 +71,34 @@ window.Chunk = class {
     }
 
     updateHeightMap(relX, y, relZ) {
-        let currentHighestY = this.heightMap[relZ << 4 | relX] & 0xff;
+        let currentHighestY = this.getHeightAt(relX, relZ);
         let highestY = currentHighestY;
         if (y > currentHighestY) {
             highestY = y;
         }
-        while (highestY > 0) {
-            let typeId = this.getBlockAt(relX, highestY, relZ);
-            let block = Block.getById(typeId);
 
-            if (typeId !== 0 && block.getOpacity() !== 0) {
-                break;
-            }
+        highestY = this.calculateHeightAt(relX, relZ, highestY);
 
-            highestY--;
-        }
         if (highestY === currentHighestY) {
             return;
         }
-        //this.world.heightLevelChanged(relX, relZ, highestY, currentHighestY);
-        this.heightMap[relZ << 4 | relX] = highestY;
-        if (highestY < this.highestY) {
-            this.highestY = highestY;
-        } else {
-            let highest = 127;
-            for (let cx = 0; cx < 16; cx++) {
-                for (let cz = 0; cz < 16; cz++) {
-                    if ((this.heightMap[cz << 4 | cx] & 0xff) < highest) {
-                        highest = this.heightMap[cz << 4 | cx] & 0xff;
-                    }
-                }
 
-            }
-
-            this.highestY = highest;
-        }
+        this.setHeightAt(relX, relZ, highestY);
 
         let x = this.x * 16 + relX;
         let z = this.z * 16 + relZ;
 
         if (highestY < currentHighestY) {
-            for (let l2 = highestY; l2 < currentHighestY; l2++) {
-                this.setLightAt(EnumSkyBlock.SKY, relX, l2, relZ, 15);
+            for (let hy = highestY; hy < currentHighestY; hy++) {
+                this.setLightAt(EnumSkyBlock.SKY, relX, hy, relZ, 15);
             }
-
         } else {
             this.world.updateLight(EnumSkyBlock.SKY, x, currentHighestY, z, x, highestY, z);
             for (let hy = currentHighestY; hy < highestY; hy++) {
                 this.setLightAt(EnumSkyBlock.SKY, relX, hy, relZ, 0);
             }
-
         }
+
         let lightLevel = 15;
         let prevHeight = highestY;
         while (highestY > 0 && lightLevel > 0) {
@@ -147,15 +119,7 @@ window.Chunk = class {
             this.setLightAt(EnumSkyBlock.SKY, relX, highestY, relZ, lightLevel);
         }
 
-        while (highestY > 0) {
-            let typeId = this.getBlockID(relX, highestY - 1, relZ);
-            let block = Block.getById(typeId);
-
-            if (typeId !== 0 && block.isSolid()) {
-                break;
-            }
-            highestY--;
-        }
+        highestY = this.calculateHeightAt(relX, relZ, highestY);
 
         if (highestY !== prevHeight) {
             this.world.updateLight(EnumSkyBlock.SKY, x - 1, highestY, z - 1, x + 1, prevHeight, z + 1);
@@ -163,33 +127,75 @@ window.Chunk = class {
         this.setModifiedAllSections();
     }
 
+    calculateHeightAt(x, z, startY) {
+        let y = startY;
+        while (y > 0) {
+            let typeId = this.getBlockAt(x, y - 1, z);
+            let block = Block.getById(typeId);
+            let opacity = typeId === 0 ? 0 : block.getOpacity();
+
+            if (opacity !== 0) {
+                break;
+            }
+            y--;
+        }
+        return y;
+    }
+
+    updateHeightMapAt(x, z) {
+        let y = this.calculateHeightAt(x, z, World.TOTAL_HEIGHT);
+        this.setHeightAt(x, z, y);
+    }
+
+    setHeightAt(x, z, height) {
+        this.heightMap[z << 4 | x] = height;
+    }
+
+    /**
+     * Is the highest solid block or above
+     */
+    isHighestBlock(x, y, z) {
+        return y >= this.getHighestBlockAt(x, z);
+    }
+
+    /**
+     * Is above the highest solid block
+     */
+    isAboveGround(x, y, z) {
+        return y >= this.getHeightAt(x, z);
+    }
+
+    /**
+     * Get the first non-solid block
+     */
+    getHeightAt(x, z) {
+        return this.heightMap[z << 4 | x];
+    }
+
+    /**
+     * Get the highest solid block
+     */
+    getHighestBlockAt(x, z) {
+        return this.getHeightAt(x, z) - 1;
+    }
+
     setLightAt(sourceType, x, y, z, level) {
-        this.getSection(y >> 4).setLightAt(sourceType, x, y & 15, z, level);
+        let section = this.getSection(y >> 4);
+        section.setLightAt(sourceType, x, y & 15, z, level);
     }
 
     setBlockAt(x, y, z, typeId) {
-        let byte0 = typeId;
-        let height = this.heightMap[z << 4 | x] & 0xff;
-
+        let height = this.getHeightAt(x, z);
         let prevTypeId = this.getBlockAt(x, y, z);
         if (prevTypeId === typeId) {
             return false;
         }
 
-        let totalX = this.x * 16 + x;
-        let totalZ = this.z * 16 + z;
-
-        this.getSection(y >> 4).setBlockAt(x, y & 15, z, byte0);
+        this.getSection(y >> 4).setBlockAt(x, y & 15, z, typeId);
 
         if (!this.loaded) {
             return;
         }
-
-        //if (k1 !== 0 && !this.worldObj.multiplayerWorld) {
-        //Block.blocksList[k1].onBlockRemoval(this.world, l1, j, i2);
-        //}
-        //this.data.setNibble(i, j, k, i1);
-        //if (!this.worldObj.worldProvider.field_6478_e) {
 
         let block = Block.getById(typeId);
         if (typeId !== 0 && block.isSolid()) {
@@ -200,18 +206,13 @@ window.Chunk = class {
             this.updateHeightMap(x, y, z);
         }
 
+        let totalX = this.x * 16 + x;
+        let totalZ = this.z * 16 + z;
+
         this.world.updateLight(EnumSkyBlock.SKY, totalX, y, totalZ, totalX, y, totalZ);
-        //}
-
         this.world.updateLight(EnumSkyBlock.BLOCK, totalX, y, totalZ, totalX, y, totalZ);
+
         this.notifyNeighbors(x, z);
-
-        if (typeId !== 0) {
-            //Block.blocksList[l].onBlockAdded(this.worldObj, l1, j, i2);
-        }
-
-        //this.data.setNibble(i, j, k, i1);
-
         this.setModifiedAllSections();
         return true;
     }
@@ -222,14 +223,6 @@ window.Chunk = class {
 
     getBlockAt(x, y, z) {
         return this.getSection(y >> 4).getBlockAt(x, y & 15, z);
-    }
-
-    isHighestBlock(x, y, z) {
-        return y >= (this.heightMap[z << 4 | x] & 0xff);
-    }
-
-    getHeightAt(x, z) {
-        return this.heightMap[z << 4 | x] & 0xff;
     }
 
     getSection(y) {

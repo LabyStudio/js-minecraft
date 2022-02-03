@@ -117,7 +117,7 @@ window.WorldGenerator = class {
             if (perlin > 0 && this.random.nextInt(2) === 0) {
 
                 // Get the highest block at this position
-                let highestY = this.world.getHeightAt(absoluteX, absoluteZ);
+                let highestY = this.world.getHighestBlockAt(absoluteX, absoluteZ);
 
                 // Don't place a tree if there is no grass
                 if (this.world.getBlockAt(absoluteX, highestY, absoluteZ) === Block.GRASS.getId()

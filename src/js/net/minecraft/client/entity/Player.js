@@ -42,22 +42,33 @@ window.Player = class {
         this.prevFovModifier = 0;
         this.fovModifier = 0;
         this.timeFovChanged = 0;
-
-        this.resetPos();
     }
 
-    resetPos() {
-        this.setPos(0, 80, 0);
+    respawn() {
+        let spawnY = this.world.getHeightAt(0, 0);
+        this.setPosition(0, spawnY + 8, 0);
     }
 
-    setPos(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    setPosition(x, y, z) {
+        let width = 0.3;
+        let height = 0.9;
+        this.boundingBox = new BoundingBox(
+            x - width,
+            y - height,
+            z - width,
+            x + width,
+            y + height,
+            z + width
+        );
 
-        let w = 0.3;
-        let h = 0.9;
-        this.boundingBox = new BoundingBox(x - w, y - h, z - w, x + w, y + h, z + w);
+        this.motionX = 0;
+        this.motionY = 0;
+        this.motionZ = 0;
+
+        // Update position
+        this.x = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
+        this.y = this.boundingBox.minY;
+        this.z = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
     }
 
     turn(motionX, motionY) {
@@ -299,7 +310,7 @@ window.Player = class {
         let sneaking = false;
 
         if (Keyboard.isKeyDown("KeyR")) { // R
-            this.resetPos();
+            this.respawn();
         }
         if (Keyboard.isKeyDown("KeyW")) { // W
             moveForward++;

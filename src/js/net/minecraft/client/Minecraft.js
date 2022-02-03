@@ -27,6 +27,10 @@ window.Minecraft = class {
     }
 
     init() {
+        // Load spawn chunk
+        this.world.getChunkAt(0, 0);
+        this.player.respawn();
+
         // Start render loop
         this.running = true;
         this.requestNextFrame();
