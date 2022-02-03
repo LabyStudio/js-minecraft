@@ -131,6 +131,10 @@ window.GameWindow = class {
 
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
+
+        if (!this.mouseLocked && this.minecraft.currentScreen === null) {
+            this.requestFocus();
+        }
     }
 
 }
