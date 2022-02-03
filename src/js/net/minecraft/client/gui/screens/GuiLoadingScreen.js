@@ -3,7 +3,7 @@ window.GuiLoadingScreen = class extends GuiScreen {
     constructor() {
         super();
 
-        this.textureBackground = this.loadTexture("background.png");
+        this.textureBackground = Gui.loadTexture("background.png");
     }
 
     drawScreen(stack, mouseX, mouseY, partialTicks) {
@@ -35,6 +35,8 @@ window.GuiLoadingScreen = class extends GuiScreen {
             this.height / 2 + progressHeight / 2,
             '#80ff80',
         );
+
+        super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }
 
     setTitle(title) {

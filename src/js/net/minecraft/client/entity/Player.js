@@ -1,6 +1,7 @@
 window.Player = class {
 
-    constructor(world) {
+    constructor(minecraft, world) {
+        this.minecraft = minecraft;
         this.world = world;
 
         this.prevX = 0;
@@ -309,38 +310,40 @@ window.Player = class {
         let jumping = false;
         let sneaking = false;
 
-        if (Keyboard.isKeyDown("KeyR")) { // R
-            this.respawn();
-        }
-        if (Keyboard.isKeyDown("KeyW")) { // W
-            moveForward++;
-        }
-        if (Keyboard.isKeyDown("KeyS")) { // S
-            moveForward--;
-        }
-        if (Keyboard.isKeyDown("KeyA")) { // A
-            moveStrafe++;
-        }
-        if (Keyboard.isKeyDown("KeyD")) { // D
-            moveStrafe--;
-        }
-        if (Keyboard.isKeyDown("Space")) { // Space
-            jumping = true;
-        }
-        if (Keyboard.isKeyDown("ShiftLeft")) { // Shift
-            if (this.moveForward > 0 && !this.sneaking && !this.sprinting && this.motionX !== 0 && this.motionZ !== 0) {
-                this.sprinting = true;
-
-                this.updateFOVModifier();
+        if (this.minecraft.hasInGameFocus()) {
+            if (Keyboard.isKeyDown("KeyR")) { // R
+                this.respawn();
             }
-        }
-        if (Keyboard.isKeyDown("KeyQ")) { // Q
-            sneaking = true;
-        }
+            if (Keyboard.isKeyDown("KeyW")) { // W
+                moveForward++;
+            }
+            if (Keyboard.isKeyDown("KeyS")) { // S
+                moveForward--;
+            }
+            if (Keyboard.isKeyDown("KeyA")) { // A
+                moveStrafe++;
+            }
+            if (Keyboard.isKeyDown("KeyD")) { // D
+                moveStrafe--;
+            }
+            if (Keyboard.isKeyDown("Space")) { // Space
+                jumping = true;
+            }
+            if (Keyboard.isKeyDown("ShiftLeft")) { // Shift
+                if (this.moveForward > 0 && !this.sneaking && !this.sprinting && this.motionX !== 0 && this.motionZ !== 0) {
+                    this.sprinting = true;
 
-        if (sneaking) {
-            moveStrafe = moveStrafe * 0.3;
-            moveForward = moveForward * 0.3;
+                    this.updateFOVModifier();
+                }
+            }
+            if (Keyboard.isKeyDown("KeyQ")) { // Q
+                sneaking = true;
+            }
+
+            if (sneaking) {
+                moveStrafe = moveStrafe * 0.3;
+                moveForward = moveForward * 0.3;
+            }
         }
 
         this.moveForward = moveForward;

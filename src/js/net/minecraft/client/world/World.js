@@ -13,6 +13,16 @@ window.World = class {
 
         // Load world
         this.generator = new WorldGenerator(this, Date.now() % 100000);
+
+        // Update lights async
+        let scope = this;
+        setInterval(function () {
+            let i = 1000;
+            while (scope.lightUpdateQueue.length >= 10 && i > 0) {
+                i--;
+                scope.lightUpdateQueue.shift().updateBlockLightning(scope);
+            }
+        }, 1);
     }
 
     onTick() {
@@ -83,22 +93,7 @@ window.World = class {
     updateLights() {
         let scope = this;
 
-        if (this.lightUpdateQueue.length > 10) {
-            // Update lights async
-            setTimeout(function () {
-                // Update lights in queue
-                let i = 5000;
-                while (scope.lightUpdateQueue.length > 0) {
-                    if (i <= 0) {
-                        break;
-                    }
-
-                    let meta = scope.lightUpdateQueue.shift();
-                    meta.updateBlockLightning(scope);
-                    i--;
-                }
-            }, 0);
-        } else {
+        if (this.lightUpdateQueue.length < 10) {
             // Update lights in queue
             let i = 10;
             while (scope.lightUpdateQueue.length > 0) {

@@ -37,6 +37,7 @@ body {
     /* Font */
     font-size: 25px;
     font-family: "Minecraftia", sans-serif;
+    text-shadow: 2px 2px #000000;
     color: white;
 }
 

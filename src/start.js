@@ -61,6 +61,7 @@ loadScripts([
     "src/js/net/minecraft/util/Keyboard.js",
     "src/js/net/minecraft/client/gui/Gui.js",
     "src/js/net/minecraft/client/gui/GuiScreen.js",
+    "src/js/net/minecraft/client/gui/widgets/GuiButton.js",
     "src/js/net/minecraft/client/gui/IngameOverlay.js",
     "src/js/net/minecraft/client/gui/screens/GuiLoadingScreen.js",
     "src/js/net/minecraft/client/gui/screens/GuiIngameMenu.js",
