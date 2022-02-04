@@ -30,7 +30,7 @@ window.IngameOverlay = class extends Gui {
             this.textureHotbar,
             0, 22,
             24, 24,
-            x + this.minecraft.inventory.selectedSlotIndex * 20, y - 1,
+            x + this.minecraft.inventory.selectedSlotIndex * 20 - 1, y - 1,
             24, 24
         )
 

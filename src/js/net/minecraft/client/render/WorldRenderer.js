@@ -37,9 +37,8 @@ window.WorldRenderer = class {
         this.scene.matrixAutoUpdate = false;
 
         // Create web renderer
-        this.canvas = document.createElement('canvas')
         this.webRenderer = new THREE.WebGLRenderer({
-            canvas: this.canvas,
+            canvas: this.window.canvas,
             antialias: false
         });
 
@@ -54,47 +53,44 @@ window.WorldRenderer = class {
     }
 
     initializeGui() {
-        // We will use 2D canvas element to render our HUD.
-        this.canvas2d = document.createElement('canvas')
-
         // Update camera size
-        this.canvas2d.width = this.window.width;
-        this.canvas2d.height = this.window.height;
+        this.window.canvas2d.width = this.window.width;
+        this.window.canvas2d.height = this.window.height;
 
         // Get context stack of 2d canvas
-        this.stack2d = this.canvas2d.getContext('2d');
+        this.stack2d = this.window.canvas2d.getContext('2d');
         this.stack2d.webkitImageSmoothingEnabled = false;
         this.stack2d.mozImageSmoothingEnabled = false;
         this.stack2d.imageSmoothingEnabled = false;
 
         // Create texture from rendered graphics.
-        this.frameBuffer = new THREE.Texture(this.canvas2d)
-        this.frameBuffer.needsUpdate = true;
-        this.frameBuffer.minFilter = THREE.LinearFilter;
-        this.frameBuffer.maxFilter = THREE.LinearFilter;
+        //this.frameBuffer = new THREE.Texture(this.canvas2d)
+        //this.frameBuffer.needsUpdate = true;
+        //this.frameBuffer.minFilter = THREE.LinearFilter;
+        //this.frameBuffer.maxFilter = THREE.LinearFilter;
 
         // Create HUD material.
-        let material = new THREE.MeshBasicMaterial({
-            map: this.frameBuffer,
-            transparent: true
-        });
+        //let material = new THREE.MeshBasicMaterial({
+        //    map: this.frameBuffer,
+        //    transparent: true
+        //});
 
         // Create plane to render the HUD. This plane fill the whole screen.
-        let geometry = new THREE.PlaneGeometry(this.canvas2d.width, this.canvas2d.height);
-        let plane = new THREE.Mesh(geometry, material);
+        //let geometry = new THREE.PlaneGeometry(this.canvas2d.width, this.canvas2d.height);
+        //let plane = new THREE.Mesh(geometry, material);
 
         // Create also a custom scene for HUD.
-        this.scene2d = new THREE.Scene();
-        this.scene2d.add(plane);
+        //this.scene2d = new THREE.Scene();
+        //this.scene2d.add(plane);
 
         // Create 2D camera
-        this.camera2d = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 30);
+        /*this.camera2d = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 30);
         this.camera2d.aspect = this.window.width / this.window.height;
         this.camera2d.left = -this.window.width / 2;
         this.camera2d.right = this.window.width / 2;
         this.camera2d.top = this.window.height / 2;
         this.camera2d.bottom = -this.window.height / 2;
-        this.camera2d.updateProjectionMatrix();
+        this.camera2d.updateProjectionMatrix();*/
     }
 
     render(partialTicks) {
@@ -107,9 +103,8 @@ window.WorldRenderer = class {
         let cameraChunkZ = Math.floor(player.z >> 4);
         this.renderChunks(cameraChunkX, cameraChunkZ);
 
-        // Clear frame buffer for 2d screen
+        // Reset 2d canvas
         this.stack2d.clearRect(0, 0, this.window.width, this.window.height);
-        this.frameBuffer.needsUpdate = true;
 
         // Render in-game overlay
         let mouseX = this.minecraft.window.mouseX;
@@ -123,7 +118,6 @@ window.WorldRenderer = class {
 
         // Render actual scene and hud
         this.webRenderer.render(this.scene, this.camera);
-        this.webRenderer.render(this.scene2d, this.camera2d);
     }
 
     orientCamera(partialTicks) {
