@@ -3,6 +3,7 @@ window.GameWindow = class {
     constructor(minecraft, canvasWrapperId) {
         this.minecraft = minecraft;
         this.canvasWrapperId = canvasWrapperId;
+        this.renderer = null;
 
         this.mouseMotionX = 0;
         this.mouseMotionY = 0;
@@ -46,6 +47,12 @@ window.GameWindow = class {
             }
         }, false);
 
+        // Mouse scroll
+        document.addEventListener('wheel', function (event) {
+            let delta = Math.sign(event.deltaY);
+            minecraft.onMouseScroll(delta);
+        }, false);
+
         // Keyboard interaction with screen
         window.addEventListener('keydown', function (event) {
             if (!(minecraft.currentScreen === null)) {
@@ -59,6 +66,8 @@ window.GameWindow = class {
             } else if (event.code === 'Escape') {
                 event.preventDefault();
                 minecraft.displayScreen(new GuiIngameMenu());
+            } else {
+                minecraft.onKeyPressed(event.code);
             }
         });
 
@@ -105,6 +114,10 @@ window.GameWindow = class {
 
         this.width = this.width / this.scaleFactor;
         this.height = this.height / this.scaleFactor;
+
+        if (!(this.renderer === null)) {
+            this.renderer.webRenderer.setPixelRatio(/*this.minecraft.currentScreen === null ? 1 :*/ 1 / this.scaleFactor);
+        }
     }
 
     onResize() {

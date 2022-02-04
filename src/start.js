@@ -83,6 +83,7 @@ loadScripts([
     "src/js/net/minecraft/client/world/generator/noise/NoiseGeneratorCombined.js",
     "src/js/net/minecraft/client/world/generator/WorldGenerator.js",
     "src/js/net/minecraft/client/entity/Player.js",
+    "src/js/net/minecraft/client/inventory/Inventory.js",
     "src/js/net/minecraft/client/Minecraft.js",
     "src/js/net/minecraft/client/render/FontRenderer.js",
     "src/js/net/minecraft/client/render/Tessellator.js",

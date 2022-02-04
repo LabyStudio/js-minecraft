@@ -135,5 +135,4 @@ window.BlockRenderer = class {
         // Calculate the average light level of all surrounding blocks
         return totalBlocks === 0 ? 0 : totalLightLevel / totalBlocks;
     }
-
 }
