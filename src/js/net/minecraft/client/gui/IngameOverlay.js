@@ -50,7 +50,7 @@ window.IngameOverlay = class extends Gui {
                 let minU = (textureIndex % 16) / 16.0;
                 let minV = Math.floor(textureIndex / 16) / 16.0;
 
-                this.drawSprite(stack, this.textureTerrain, minU * 256, minV, 16, 16, x + 3, y + 3, 16, 16)
+                this.drawSprite(stack, this.textureTerrain, minU * 256, minV, 16, 16, x + 3 + i * 20, y + 3, 16, 16)
             }
         }
     }

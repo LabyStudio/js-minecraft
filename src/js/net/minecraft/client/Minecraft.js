@@ -12,8 +12,14 @@ window.Minecraft = class {
         this.worldRenderer = new WorldRenderer(this, this.window);
         this.timer = new Timer(20);
 
+        // Create screen renderer
+        this.screenRenderer = new ScreenRenderer(this, this.window);
+
         // Create current screen and overlay
         this.ingameOverlay = new IngameOverlay(this, this.window);
+
+        // Update window size
+        this.window.updateWindowSize();
 
         // Display loading screen
         this.loadingScreen = new GuiLoadingScreen();
@@ -106,6 +112,7 @@ window.Minecraft = class {
 
         // Render the game
         this.worldRenderer.render(partialTicks);
+        this.screenRenderer.render(partialTicks);
     }
 
     displayScreen(screen) {
