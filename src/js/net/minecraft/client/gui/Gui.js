@@ -39,6 +39,24 @@ window.Gui = class {
         stack.restore();
     }
 
+    renderBlock(stack, texture, block, x, y) {
+        stack.save();
+        stack.translate(x + 3, y + 3);
+        this.renderBlockFace(stack, texture, block, EnumBlockFace.NORTH);
+        stack.restore();
+    }
+
+    renderBlockFace(stack, texture, block, face) {
+        // UV Mapping
+        let textureIndex = block.getTextureForFace(face);
+        let minU = (textureIndex % 16) / 16.0;
+        let minV = Math.floor(textureIndex / 16) / 16.0;
+
+        stack.save();
+        this.drawSprite(stack, texture, minU * 256, minV, 16, 16, 0, 0, 16, 16)
+        stack.restore();
+    }
+
     static drawSprite(stack, texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height, alpha = 1.0) {
         stack.save();
         stack.globalAlpha = alpha;

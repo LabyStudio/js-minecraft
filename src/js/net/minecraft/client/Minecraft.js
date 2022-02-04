@@ -32,7 +32,7 @@ window.Minecraft = class {
 
         // Create player
         this.player = new Player(this, this.world);
-        this.pickedBlock = 1;
+        this.inventory = new Inventory();
 
         // Initialize
         this.init();
@@ -112,12 +112,13 @@ window.Minecraft = class {
         // Switch screen
         this.currentScreen = screen;
 
+        // Update window size
+        this.window.updateWindowSize();
+
         // Initialize new screen
         if (screen === null) {
-            this.worldRenderer.webRenderer.setPixelRatio(1);
             this.window.requestFocus();
         } else {
-            this.worldRenderer.webRenderer.setPixelRatio(1 / this.window.scaleFactor);
             screen.setup(this, this.window.width, this.window.height);
         }
     }
@@ -142,6 +143,14 @@ window.Minecraft = class {
         }
     }
 
+    onKeyPressed(button) {
+        for (let i = 1; i <= 9; i++) {
+            if (button === 'Digit' + i) {
+                this.inventory.selectedSlotIndex = i - 1;
+            }
+        }
+    }
+
     onMouseClicked(button) {
         if (this.window.mouseLocked) {
             let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
@@ -158,7 +167,7 @@ window.Minecraft = class {
                 if (hitResult != null) {
                     let typeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
                     if (typeId !== 0) {
-                        this.pickedBlock = typeId;
+                        this.inventory.setItemInSelectedSlot(typeId);
                     }
                 }
             }
@@ -174,11 +183,18 @@ window.Minecraft = class {
 
                     // Don't place blocks if the player is standing there
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
-                        this.world.setBlockAt(x, y, z, this.pickedBlock);
+                        let typeId = this.inventory.getItemInSelectedSlot();
+                        if (typeId !== 0) {
+                            this.world.setBlockAt(x, y, z, typeId);
+                        }
                     }
                 }
             }
         }
+    }
+
+    onMouseScroll(delta) {
+        this.inventory.shiftSelectedSlot(delta);
     }
 
 }
