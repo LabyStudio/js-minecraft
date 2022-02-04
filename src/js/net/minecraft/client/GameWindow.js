@@ -8,6 +8,7 @@ window.GameWindow = class {
         this.mouseMotionX = 0;
         this.mouseMotionY = 0;
         this.mouseLocked = false;
+        this.actualMouseLocked = false;
 
         // Get canvas wrapper
         this.wrapper = document.getElementById(this.canvasWrapperId);
@@ -150,18 +151,24 @@ window.GameWindow = class {
     }
 
     onFocusChanged() {
-        this.mouseLocked = document.pointerLockElement === this.canvas;
+        this.actualMouseLocked = document.pointerLockElement === this.canvas;
     }
 
     onMouseMove(event) {
-        this.mouseMotionX = event.movementX;
-        this.mouseMotionY = -event.movementY;
-
         this.mouseX = event.clientX / this.scaleFactor;
         this.mouseY = event.clientY / this.scaleFactor;
 
-        if (document.pointerLockElement !== this.canvas && this.minecraft.currentScreen === null) {
-            this.requestFocus();
+        if (document.pointerLockElement !== this.canvas) {
+            this.mouseLocked = false;
+
+            if (this.minecraft.currentScreen === null) {
+                this.requestFocus();
+            }
+        }
+
+        if (this.actualMouseLocked || this.mouseLocked) {
+            this.mouseMotionX = event.movementX;
+            this.mouseMotionY = -event.movementY;
         }
     }
 
