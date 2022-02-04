@@ -1,7 +1,5 @@
 window.Gui = class {
 
-    static FONT = "normal 20px Minecraftia";
-
     drawRect(stack, left, top, right, bottom, color, alpha = 1) {
         stack.save();
         stack.fillStyle = color;
@@ -10,40 +8,27 @@ window.Gui = class {
         stack.restore();
     }
 
-    drawCenteredString(stack, string, x, y, color = 'white') {
-        this._drawString(stack, string, x + this.getStringWidth(stack, string) / 2, y, color, 1);
+    drawCenteredString(stack, string, x, y, color = -1) {
+        FontRenderer.INSTANCE.drawString(stack, string, x - this.getStringWidth(stack, string) / 2, y, color);
     }
 
-    drawString(stack, string, x, y, color = 'white') {
-        this._drawString(stack, string, x, y, color, 0);
-    }
-
-    _drawString(stack, string, x, y, color, alignment) {
-        stack.font = Gui.FONT;
-        stack.fillStyle = 'black';
-        stack.textAlign = alignment === 0 ? "center" : alignment < 0 ? "left" : "right";
-        stack.fillText(string, x + 2, y + 2);
-        stack.fillStyle = color;
-        stack.fillText(string, x, y);
+    drawString(stack, string, x, y, color = -1) {
+        FontRenderer.INSTANCE.drawString(stack, string, x, y, color);
     }
 
     getStringWidth(stack, string) {
-        stack.font = Gui.FONT;
-        return stack.measureText(string).width;
+        return FontRenderer.INSTANCE.getStringWidth(string);
     }
 
     drawTexture(stack, texture, x, y, width, height, alpha = 1.0) {
-        this.drawSprite(stack, texture, 0, 0, 256, 256, x, y, width, height, alpha);
+        Gui.drawSprite(stack, texture, 0, 0, 256, 256, x, y, width, height, alpha);
     }
 
     drawSprite(stack, texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height, alpha = 1.0) {
-        stack.save();
-        stack.globalAlpha = alpha;
-        stack.drawImage(texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height);
-        stack.restore();
+        Gui.drawSprite(stack, texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height, alpha);
     }
 
-    drawBackground(stack, texture, width, height, scale = 8) {
+    drawBackground(stack, texture, width, height, scale = 2) {
         let pattern = stack.createPattern(texture, "repeat");
         stack.save();
         stack.filter = "brightness(50%)";
@@ -54,9 +39,17 @@ window.Gui = class {
         stack.restore();
     }
 
-    static loadTexture(path) {
+    static drawSprite(stack, texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height, alpha = 1.0) {
+        stack.save();
+        stack.globalAlpha = alpha;
+        stack.drawImage(texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height);
+        stack.restore();
+    }
+
+    static loadTexture(path, callback) {
         let img = new Image();
-        img.src = path;
+        img.src = "src/resources/" + path;
+        img.onload = callback;
         return img;
     }
 

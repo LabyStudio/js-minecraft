@@ -7,10 +7,6 @@ window.WorldRenderer = class {
         this.window = window;
         this.chunkSectionUpdateQueue = [];
 
-        this.supportWebGL = !!WebGLRenderingContext
-            && (!!document.createElement('canvas').getContext('experimental-webgl')
-                || !!document.createElement('canvas').getContext('webgl'));
-
         // Load terrain
         this.terrainTexture = new THREE.TextureLoader().load('src/resources/terrain.png');
         this.terrainTexture.magFilter = THREE.NearestFilter;
@@ -41,12 +37,9 @@ window.WorldRenderer = class {
         this.scene.matrixAutoUpdate = false;
 
         // Create web renderer
-        this.canvasElement = document.createElement('canvas')
-        this.webRenderer = this.supportWebGL ? new THREE.WebGLRenderer({
-            canvas: this.canvasElement,
-            antialias: false
-        }) : new THREE.CanvasRenderer({
-            canvas: this.canvasElement,
+        this.canvas = document.createElement('canvas')
+        this.webRenderer = new THREE.WebGLRenderer({
+            canvas: this.canvas,
             antialias: false
         });
 
@@ -70,12 +63,15 @@ window.WorldRenderer = class {
 
         // Get context stack of 2d canvas
         this.stack2d = this.canvas2d.getContext('2d');
+        this.stack2d.webkitImageSmoothingEnabled = false;
+        this.stack2d.mozImageSmoothingEnabled = false;
         this.stack2d.imageSmoothingEnabled = false;
 
         // Create texture from rendered graphics.
         this.frameBuffer = new THREE.Texture(this.canvas2d)
         this.frameBuffer.needsUpdate = true;
         this.frameBuffer.minFilter = THREE.LinearFilter;
+        this.frameBuffer.maxFilter = THREE.LinearFilter;
 
         // Create HUD material.
         let material = new THREE.MeshBasicMaterial({

@@ -16,7 +16,7 @@ window.GuiButton = class extends Gui {
     render(stack, mouseX, mouseY, partialTicks) {
         let mouseOver = this.isMouseOver(mouseX, mouseY);
         this.drawSprite(stack, GuiButton.textureGui, 0, mouseOver ? 40 : 20, 200, 20, this.x, this.y, this.width, this.height);
-        this.drawCenteredString(stack, this.string, this.x + this.width / 2, this.y + this.height / 2 + 17);
+        this.drawCenteredString(stack, this.string, this.x + this.width / 2, this.y + this.height / 2 - 5);
     }
 
     mouseClicked(mouseX, mouseY, mouseButton) {

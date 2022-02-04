@@ -84,6 +84,7 @@ loadScripts([
     "src/js/net/minecraft/client/world/generator/WorldGenerator.js",
     "src/js/net/minecraft/client/entity/Player.js",
     "src/js/net/minecraft/client/Minecraft.js",
+    "src/js/net/minecraft/client/render/FontRenderer.js",
     "src/js/net/minecraft/client/render/Tessellator.js",
     "src/js/net/minecraft/client/render/WorldRenderer.js",
     "src/js/net/minecraft/client/render/BlockRenderer.js"

@@ -22,7 +22,7 @@ window.World = class {
                 i--;
                 scope.lightUpdateQueue.shift().updateBlockLightning(scope);
             }
-        }, 1);
+        }, 0);
     }
 
     onTick() {
