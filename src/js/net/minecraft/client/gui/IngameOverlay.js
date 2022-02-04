@@ -41,8 +41,8 @@ window.IngameOverlay = class extends Gui {
                 this.renderBlock(
                     stack,
                     this.textureTerrain, Block.getById(typeId),
-                    x + i * 20,
-                    y
+                    x + i * 20 + 11,
+                    y + 9
                 );
             }
         }

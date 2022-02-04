@@ -2,20 +2,22 @@ window.IsometricRenderer = class {
 
     // http://jsfiddle.net/xzL58dha/3/
 
-    static render(stack, texture, triangle) {
-        IsometricRenderer.drawTriangle(
-            stack,
-            texture,
-            triangle.p0.x, triangle.p0.y,
-            triangle.p1.x, triangle.p1.y,
-            triangle.p2.x, triangle.p2.y,
-            triangle.t0.u, triangle.t0.v,
-            triangle.t1.u, triangle.t1.v,
-            triangle.t2.u, triangle.t2.v
-        );
+    static render(stack, triangles, callback) {
+        for (let triangle of triangles) {
+            IsometricRenderer.drawTriangle(
+                stack,
+                triangle.p0.x, triangle.p0.y,
+                triangle.p1.x, triangle.p1.y,
+                triangle.p2.x, triangle.p2.y,
+                triangle.t0.u, triangle.t0.v,
+                triangle.t1.u, triangle.t1.v,
+                triangle.t2.u, triangle.t2.v,
+                callback
+            );
+        }
     }
 
-    static createTriangles(p1, p2, p3, p4) {
+    static createTriangles(texture, p1, p2, p3, p4) {
         // clear triangles out
         let triangles = [];
 
@@ -28,8 +30,8 @@ window.IsometricRenderer = class {
         let dx2 = p3.x - p2.x;
         let dy2 = p3.y - p2.y;
 
-        let imgW = image.naturalWidth;
-        let imgH = image.naturalHeight;
+        let imgW = texture.naturalWidth;
+        let imgH = texture.naturalHeight;
 
         for (let sub = 0; sub < subs; ++sub) {
             let curRow = sub / subs;
@@ -100,7 +102,7 @@ window.IsometricRenderer = class {
     }
 
 
-    static drawTriangle(stack, image, x0, y0, x1, y1, x2, y2, sx0, sy0, sx1, sy1, sx2, sy2) {
+    static drawTriangle(stack, x0, y0, x1, y1, x2, y2, sx0, sy0, sx1, sy1, sx2, sy2, callback) {
         stack.save();
 
         // Clip the output to the on-screen triangle boundaries.
@@ -114,40 +116,40 @@ window.IsometricRenderer = class {
 
         /*
         ctx.transform(m11, m12, m21, m22, dx, dy) sets the context transform matrix.
-    
+
         The context matrix is:
-    
+
         [ m11 m21 dx ]
         [ m12 m22 dy ]
         [  0   0   1 ]
-    
+
         Coords are column vectors with a 1 in the z coord, so the transform is:
         x_out = m11 * x + m21 * y + dx;
         y_out = m12 * x + m22 * y + dy;
-    
+
         From Maxima, these are the transform values that map the source
         coords to the dest coords:
-    
+
         sy0 (x2 - x1) - sy1 x2 + sy2 x1 + (sy1 - sy2) x0
         [m11 = - -----------------------------------------------------,
         sx0 (sy2 - sy1) - sx1 sy2 + sx2 sy1 + (sx1 - sx2) sy0
-    
+
         sy1 y2 + sy0 (y1 - y2) - sy2 y1 + (sy2 - sy1) y0
         m12 = -----------------------------------------------------,
         sx0 (sy2 - sy1) - sx1 sy2 + sx2 sy1 + (sx1 - sx2) sy0
-    
+
         sx0 (x2 - x1) - sx1 x2 + sx2 x1 + (sx1 - sx2) x0
         m21 = -----------------------------------------------------,
         sx0 (sy2 - sy1) - sx1 sy2 + sx2 sy1 + (sx1 - sx2) sy0
-    
+
         sx1 y2 + sx0 (y1 - y2) - sx2 y1 + (sx2 - sx1) y0
         m22 = - -----------------------------------------------------,
         sx0 (sy2 - sy1) - sx1 sy2 + sx2 sy1 + (sx1 - sx2) sy0
-    
+
         sx0 (sy2 x1 - sy1 x2) + sy0 (sx1 x2 - sx2 x1) + (sx2 sy1 - sx1 sy2) x0
         dx = ----------------------------------------------------------------------,
         sx0 (sy2 - sy1) - sx1 sy2 + sx2 sy1 + (sx1 - sx2) sy0
-    
+
         sx0 (sy2 y1 - sy1 y2) + sy0 (sx1 y2 - sx2 y1) + (sx2 sy1 - sx1 sy2) y0
         dy = ----------------------------------------------------------------------]
         sx0 (sy2 - sy1) - sx1 sy2 + sx2 sy1 + (sx1 - sx2) sy0
@@ -172,7 +174,7 @@ window.IsometricRenderer = class {
         //
         // TODO: figure out if drawImage goes faster if we specify the rectangle that
         // bounds the source coords.
-        stack.drawImage(image, 0, 0);
+        callback();
         stack.restore();
     };
 }

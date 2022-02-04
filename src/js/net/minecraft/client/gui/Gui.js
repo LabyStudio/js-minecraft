@@ -40,24 +40,66 @@ window.Gui = class {
     }
 
     renderBlock(stack, texture, block, x, y) {
+        let scale = 0.18;
+
+        let blockWidth = 32 * scale;
+
+        let sideY = 16 * scale;
+        let sideHeight = 40 * scale;
+        let middleTopHeight = 32 * scale;
+        let middleBottomHeight = 40 * scale;
+
+        let topTip = new Point(0, -middleTopHeight);
+        let center = new Point(0, 0);
+        let bottomTip = new Point(0, middleBottomHeight);
+
+        let topLeft = new Point(-blockWidth, -middleTopHeight + sideY);
+        let bottomLeft = new Point(-blockWidth, -middleTopHeight + sideY + sideHeight);
+
+        let topRight = new Point(blockWidth, -middleTopHeight + sideY);
+        let bottomRight = new Point(blockWidth, -middleTopHeight + sideY + sideHeight);
+
+        let trianglesLeft = IsometricRenderer.createTriangles(
+            texture,
+            topLeft,
+            center,
+            bottomTip,
+            bottomLeft
+        );
+
+        let trianglesRight = IsometricRenderer.createTriangles(
+            texture,
+            center,
+            topRight,
+            bottomRight,
+            bottomTip
+        );
+
+        let trianglesTop = IsometricRenderer.createTriangles(
+            texture,
+            topLeft,
+            topTip,
+            topRight,
+            center
+        );
+
         stack.save();
-        stack.translate(x + 3, y + 3);
-        this.renderBlockFace(stack, texture, block, EnumBlockFace.NORTH);
+        stack.translate(x + 0.5, y + 0.5);
+        stack.imageSmoothingEnabled = true;
+        this.renderBlockFace(stack, texture, block, trianglesLeft, EnumBlockFace.NORTH);
+        this.renderBlockFace(stack, texture, block, trianglesRight, EnumBlockFace.EAST);
+        this.renderBlockFace(stack, texture, block, trianglesTop, EnumBlockFace.TOP);
         stack.restore();
     }
 
-    renderBlockFace(stack, texture, block, face) {
+    renderBlockFace(stack, texture, block, triangles, face) {
         // UV Mapping
         let textureIndex = block.getTextureForFace(face);
         let minU = (textureIndex % 16) / 16.0;
         let minV = Math.floor(textureIndex / 16) / 16.0;
 
         stack.save();
-        this.drawSprite(stack, texture, minU * 256, minV, 16, 16, 0, 0, 16, 16)
-
-       // let triangles = IsometricRenderer.createTriangles(new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1));
-      //  IsometricRenderer.render(stack, texture, triangles);
-
+        IsometricRenderer.render(stack, triangles, _ => this.drawSprite(stack, texture, minU * 256, minV, 16, 16, 0, 0, 256, 256));
         stack.restore();
     }
 
