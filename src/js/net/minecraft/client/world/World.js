@@ -3,7 +3,7 @@ window.World = class {
     static TOTAL_HEIGHT = ChunkSection.SIZE * 8 - 1; // ChunkSection.SIZE * 16 - 1;
 
     constructor(minecraft) {
-        this.minecrat = minecraft;
+        this.minecraft = minecraft;
 
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
@@ -17,7 +17,7 @@ window.World = class {
         // Update lights async
         let scope = this;
         setInterval(function () {
-            let i = 1000;
+            let i = scope.minecraft.loadingScreen === null ? 1000 : 100000;
             while (scope.lightUpdateQueue.length >= 10 && i > 0) {
                 i--;
                 scope.lightUpdateQueue.shift().updateBlockLightning(scope);
@@ -26,7 +26,7 @@ window.World = class {
     }
 
     onTick() {
-        let player = this.minecrat.player;
+        let player = this.minecraft.player;
         let cameraChunkX = Math.floor(player.x >> 4);
         let cameraChunkZ = Math.floor(player.z >> 4);
 

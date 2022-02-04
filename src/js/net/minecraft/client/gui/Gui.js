@@ -4,7 +4,7 @@ window.Gui = class {
         stack.save();
         stack.fillStyle = color;
         stack.globalAlpha = alpha;
-        stack.fillRect(left, top, right - left, bottom - top);
+        stack.fillRect(Math.floor(left), Math.floor(top), Math.floor(right - left), Math.floor(bottom - top));
         stack.restore();
     }
 
