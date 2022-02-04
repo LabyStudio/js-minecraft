@@ -9,7 +9,16 @@ window.GameWindow = class {
         this.mouseMotionY = 0;
         this.mouseLocked = false;
 
+        // Get canvas wrapper
         this.wrapper = document.getElementById(this.canvasWrapperId);
+
+        // Create world renderer
+        this.canvas = document.createElement('canvas');
+        this.wrapper.appendChild(this.canvas);
+
+        // Create screen renderer
+        this.canvas2d = document.createElement('canvas');
+        this.wrapper.appendChild(this.canvas2d);
 
         // Stats
         this.stats = new Stats()
@@ -30,7 +39,7 @@ window.GameWindow = class {
         document.addEventListener('mousemove', event => this.onMouseMove(event), false);
 
         // Losing focus event
-        window.addEventListener("mouseout", function () {
+        this.canvas.addEventListener("mouseout", function () {
             if (minecraft.currentScreen === null) {
                 minecraft.displayScreen(new GuiIngameMenu());
             }
@@ -76,28 +85,26 @@ window.GameWindow = class {
     }
 
     requestFocus() {
-        let scope = this;
+        window.focus();
+        this.canvas.requestPointerLock();
+        document.body.style.cursor = 'none';
+        this.mouseLocked = true;
+    }
 
-        setTimeout(function () {
-            window.focus();
-            scope.renderer.canvas.requestPointerLock();
-        }, 0);
+    exitFocus() {
+        document.exitPointerLock();
+        document.body.style.cursor = 'default';
     }
 
     loadRenderer(renderer) {
         this.renderer = renderer;
-
-        let canvas = this.renderer.canvas;
-
-        // Add web renderer canvas to wrapper
-        this.wrapper.appendChild(canvas);
 
         // Initialize window size
         this.onResize();
 
         // Request focus
         let scope = this;
-        canvas.onclick = function () {
+        document.onclick = function () {
             if (scope.minecraft.currentScreen === null) {
                 scope.requestFocus();
             }
@@ -105,28 +112,33 @@ window.GameWindow = class {
     }
 
     updateWindowSize() {
-        this.scaleFactor = 1;
-        this.width = this.wrapper.offsetWidth;
-        this.height = this.wrapper.offsetHeight;
+        let wrapperWidth = this.wrapper.offsetWidth;
+        let wrapperHeight = this.wrapper.offsetHeight;
 
-        for (this.scaleFactor = 1; this.width / (this.scaleFactor + 1) >= 320 && this.height / (this.scaleFactor + 1) >= 240; this.scaleFactor++) {
+        let scale;
+        for (scale = 1; wrapperWidth / (scale + 1) >= 320 && wrapperHeight / (scale + 1) >= 240; scale++) {
+            // Empty
         }
 
-        this.width = this.width / this.scaleFactor;
-        this.height = this.height / this.scaleFactor;
-
-        if (!(this.renderer === null)) {
-            this.renderer.webRenderer.setPixelRatio(/*this.minecraft.currentScreen === null ? 1 :*/ 1 / this.scaleFactor);
-        }
+        this.scaleFactor = scale;
+        this.width = wrapperWidth / scale;
+        this.height = wrapperHeight / scale;
     }
 
     onResize() {
         this.updateWindowSize();
 
-        // Adjust camera
+        let wrapperWidth = this.width * this.scaleFactor;
+        let wrapperHeight = this.height * this.scaleFactor;
+
+        // Update world renderer size and camera
         this.renderer.camera.aspect = this.width / this.height;
         this.renderer.camera.updateProjectionMatrix();
-        this.renderer.webRenderer.setSize(this.width * this.scaleFactor, this.height * this.scaleFactor);
+        this.renderer.webRenderer.setSize(wrapperWidth, wrapperHeight);
+
+        // Update canvas 2d size
+        this.canvas2d.style.width = wrapperWidth + "px";
+        this.canvas2d.style.height = wrapperHeight + "px";
 
         // Reinitialize gui
         this.renderer.initializeGui();
@@ -138,7 +150,7 @@ window.GameWindow = class {
     }
 
     onFocusChanged() {
-        this.mouseLocked = document.pointerLockElement === this.renderer.canvas;
+        this.mouseLocked = document.pointerLockElement === this.canvas;
     }
 
     onMouseMove(event) {
@@ -148,7 +160,7 @@ window.GameWindow = class {
         this.mouseX = event.clientX / this.scaleFactor;
         this.mouseY = event.clientY / this.scaleFactor;
 
-        if (!this.mouseLocked && this.minecraft.currentScreen === null) {
+        if (document.pointerLockElement !== this.canvas && this.minecraft.currentScreen === null) {
             this.requestFocus();
         }
     }

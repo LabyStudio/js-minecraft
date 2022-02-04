@@ -119,6 +119,7 @@ window.Minecraft = class {
         if (screen === null) {
             this.window.requestFocus();
         } else {
+            this.window.exitFocus();
             screen.setup(this, this.window.width, this.window.height);
         }
     }
