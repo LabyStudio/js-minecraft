@@ -54,6 +54,10 @@ window.Gui = class {
 
         stack.save();
         this.drawSprite(stack, texture, minU * 256, minV, 16, 16, 0, 0, 16, 16)
+
+       // let triangles = IsometricRenderer.createTriangles(new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1));
+      //  IsometricRenderer.render(stack, texture, triangles);
+
         stack.restore();
     }
 
