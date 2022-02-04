@@ -89,7 +89,8 @@ loadScripts([
     "src/js/net/minecraft/client/render/isometric/Point.js",
     "src/js/net/minecraft/client/render/isometric/TextCoord.js",
     "src/js/net/minecraft/client/render/isometric/Triangle.js",
-    "src/js/net/minecraft/client/render/FontRenderer.js",
+    "src/js/net/minecraft/client/render/gui/FontRenderer.js",
+    "src/js/net/minecraft/client/render/gui/ScreenRenderer.js",
     "src/js/net/minecraft/client/render/Tessellator.js",
     "src/js/net/minecraft/client/render/WorldRenderer.js",
     "src/js/net/minecraft/client/render/BlockRenderer.js"

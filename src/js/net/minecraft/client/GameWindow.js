@@ -3,7 +3,6 @@ window.GameWindow = class {
     constructor(minecraft, canvasWrapperId) {
         this.minecraft = minecraft;
         this.canvasWrapperId = canvasWrapperId;
-        this.renderer = null;
 
         this.mouseMotionX = 0;
         this.mouseMotionY = 0;
@@ -21,17 +20,26 @@ window.GameWindow = class {
         this.canvas2d = document.createElement('canvas');
         this.wrapper.appendChild(this.canvas2d);
 
+        // Create screen item renderer
+        this.canvasItems = document.createElement('canvas');
+        this.wrapper.appendChild(this.canvasItems);
+
         // Stats
         this.stats = new Stats()
         this.stats.showPanel(0);
         this.wrapper.appendChild(this.stats.dom);
 
-        // Initialize window size
-        this.updateWindowSize();
-
         // On resize
         let scope = this;
-        window.addEventListener('resize', _ => scope.onResize(), false);
+
+        // Request focus
+        document.onclick = function () {
+            if (scope.minecraft.currentScreen === null) {
+                scope.requestFocus();
+            }
+        }
+
+        window.addEventListener('resize', _ => scope.updateWindowSize(), false);
 
         // Focus listener
         document.addEventListener('pointerlockchange', _ => this.onFocusChanged(), false);
@@ -97,22 +105,33 @@ window.GameWindow = class {
         document.body.style.cursor = 'default';
     }
 
-    loadRenderer(renderer) {
-        this.renderer = renderer;
+    updateWindowSize() {
+        this.updateScaleFactor();
 
-        // Initialize window size
-        this.onResize();
+        let wrapperWidth = this.width * this.scaleFactor;
+        let wrapperHeight = this.height * this.scaleFactor;
 
-        // Request focus
-        let scope = this;
-        document.onclick = function () {
-            if (scope.minecraft.currentScreen === null) {
-                scope.requestFocus();
-            }
+        let worldRenderer = this.minecraft.worldRenderer;
+
+        // Update world renderer size and camera
+        worldRenderer.camera.aspect = this.width / this.height;
+        worldRenderer.camera.updateProjectionMatrix();
+        worldRenderer.webRenderer.setSize(wrapperWidth, wrapperHeight);
+
+        // Update canvas 2d size
+        this.canvas2d.style.width = wrapperWidth + "px";
+        this.canvas2d.style.height = wrapperHeight + "px";
+
+        // Reinitialize gui
+        this.minecraft.screenRenderer.initialize();
+
+        // Reinitialize current screen
+        if (!(this.minecraft.currentScreen === null)) {
+            this.minecraft.currentScreen.setup(this.minecraft, this.width, this.height);
         }
     }
 
-    updateWindowSize() {
+    updateScaleFactor() {
         let wrapperWidth = this.wrapper.offsetWidth;
         let wrapperHeight = this.wrapper.offsetHeight;
 
@@ -124,30 +143,6 @@ window.GameWindow = class {
         this.scaleFactor = scale;
         this.width = wrapperWidth / scale;
         this.height = wrapperHeight / scale;
-    }
-
-    onResize() {
-        this.updateWindowSize();
-
-        let wrapperWidth = this.width * this.scaleFactor;
-        let wrapperHeight = this.height * this.scaleFactor;
-
-        // Update world renderer size and camera
-        this.renderer.camera.aspect = this.width / this.height;
-        this.renderer.camera.updateProjectionMatrix();
-        this.renderer.webRenderer.setSize(wrapperWidth, wrapperHeight);
-
-        // Update canvas 2d size
-        this.canvas2d.style.width = wrapperWidth + "px";
-        this.canvas2d.style.height = wrapperHeight + "px";
-
-        // Reinitialize gui
-        this.renderer.initializeGui();
-
-        // Reinitialize current screen
-        if (!(this.minecraft.currentScreen === null)) {
-            this.minecraft.currentScreen.setup(this.minecraft, this.width, this.height);
-        }
     }
 
     onFocusChanged() {
