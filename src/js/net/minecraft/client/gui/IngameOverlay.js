@@ -38,12 +38,19 @@ window.IngameOverlay = class extends Gui {
             let typeId = this.minecraft.inventory.getItemInSlot(i);
 
             if (typeId !== 0) {
-                this.renderBlock(
+                /*this.renderBlock(
                     stack,
                     this.textureTerrain, Block.getById(typeId),
                     x + i * 20 + 11,
                     y + 9
-                );
+                );*/
+
+                // UV Mapping
+                let textureIndex = Block.getById(typeId).getTextureForFace(EnumBlockFace.NORTH);
+                let minU = (textureIndex % 16) / 16.0;
+                let minV = Math.floor(textureIndex / 16) / 16.0;
+
+                this.drawSprite(stack, this.textureTerrain, minU * 256, minV, 16, 16, x + 3, y + 3, 16, 16)
             }
         }
     }
