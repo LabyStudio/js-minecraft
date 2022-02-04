@@ -42,7 +42,7 @@ window.GameWindow = class {
 
             // Handle mouse click on screen
             if (!(minecraft.currentScreen === null)) {
-                minecraft.currentScreen.mouseClicked(event.x, event.y, event.code);
+                minecraft.currentScreen.mouseClicked(event.x / scope.scaleFactor, event.y / scope.scaleFactor, event.code);
             }
         }, false);
 
@@ -71,14 +71,14 @@ window.GameWindow = class {
 
         setTimeout(function () {
             window.focus();
-            scope.renderer.canvasElement.requestPointerLock();
+            scope.renderer.canvas.requestPointerLock();
         }, 0);
     }
 
     loadRenderer(renderer) {
         this.renderer = renderer;
 
-        let canvas = this.renderer.canvasElement;
+        let canvas = this.renderer.canvas;
 
         // Add web renderer canvas to wrapper
         this.wrapper.appendChild(canvas);
@@ -96,8 +96,15 @@ window.GameWindow = class {
     }
 
     updateWindowSize() {
+        this.scaleFactor = 1;
         this.width = this.wrapper.offsetWidth;
         this.height = this.wrapper.offsetHeight;
+
+        for (this.scaleFactor = 1; this.width / (this.scaleFactor + 1) >= 320 && this.height / (this.scaleFactor + 1) >= 240; this.scaleFactor++) {
+        }
+
+        this.width = this.width / this.scaleFactor;
+        this.height = this.height / this.scaleFactor;
     }
 
     onResize() {
@@ -106,7 +113,7 @@ window.GameWindow = class {
         // Adjust camera
         this.renderer.camera.aspect = this.width / this.height;
         this.renderer.camera.updateProjectionMatrix();
-        this.renderer.webRenderer.setSize(this.width, this.height);
+        this.renderer.webRenderer.setSize(this.width * this.scaleFactor, this.height * this.scaleFactor);
 
         // Reinitialize gui
         this.renderer.initializeGui();
@@ -118,19 +125,15 @@ window.GameWindow = class {
     }
 
     onFocusChanged() {
-        this.mouseLocked = document.pointerLockElement === this.renderer.canvasElement;
-
-        if (!this.mouseLocked && this.minecraft.currentScreen === null) {
-            this.minecraft.displayScreen(new GuiIngameMenu());
-        }
+        this.mouseLocked = document.pointerLockElement === this.renderer.canvas;
     }
 
     onMouseMove(event) {
         this.mouseMotionX = event.movementX;
         this.mouseMotionY = -event.movementY;
 
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
+        this.mouseX = event.clientX / this.scaleFactor;
+        this.mouseY = event.clientY / this.scaleFactor;
 
         if (!this.mouseLocked && this.minecraft.currentScreen === null) {
             this.requestFocus();

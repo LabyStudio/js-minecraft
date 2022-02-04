@@ -11,10 +11,10 @@ window.GuiLoadingScreen = class extends GuiScreen {
         this.drawBackground(stack, this.textureBackground, this.width, this.height);
 
         // Render title
-        this.drawString(stack, this.title, this.width / 2, this.height / 2 - 20, '#FFFFFF');
+        this.drawCenteredString(stack, this.title, this.width / 2, this.height / 2 - 20);
 
-        let progressWidth = 300;
-        let progressHeight = 5;
+        let progressWidth = 100;
+        let progressHeight = 2;
 
         // Render background of progress
         this.drawRect(

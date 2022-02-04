@@ -13,7 +13,7 @@ window.Minecraft = class {
         this.timer = new Timer(20);
 
         // Create current screen and overlay
-        this.ingameOverlay = new IngameOverlay(this.window);
+        this.ingameOverlay = new IngameOverlay(this, this.window);
 
         // Display loading screen
         this.loadingScreen = new GuiLoadingScreen();
@@ -114,8 +114,10 @@ window.Minecraft = class {
 
         // Initialize new screen
         if (screen === null) {
+            this.worldRenderer.webRenderer.setPixelRatio(1);
             this.window.requestFocus();
         } else {
+            this.worldRenderer.webRenderer.setPixelRatio(1 / this.window.scaleFactor);
             screen.setup(this, this.window.width, this.window.height);
         }
     }
