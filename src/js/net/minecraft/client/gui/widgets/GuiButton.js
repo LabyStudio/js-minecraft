@@ -19,8 +19,16 @@ window.GuiButton = class extends Gui {
         this.drawCenteredString(stack, this.string, this.x + this.width / 2, this.y + this.height / 2 - 5);
     }
 
-    mouseClicked(mouseX, mouseY, mouseButton) {
+    onPress() {
         this.callback();
+    }
+
+    mouseClicked(mouseX, mouseY, mouseButton) {
+        this.onPress();
+    }
+
+    keyTyped(key) {
+
     }
 
     isMouseOver(mouseX, mouseY) {

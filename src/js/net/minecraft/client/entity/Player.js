@@ -311,9 +311,9 @@ window.Player = class {
         let sneaking = false;
 
         if (this.minecraft.hasInGameFocus()) {
-            if (Keyboard.isKeyDown("KeyR")) { // R
+            /*if (Keyboard.isKeyDown("KeyR")) { // R
                 this.respawn();
-            }
+            }*/
             if (Keyboard.isKeyDown("KeyW")) { // W
                 moveForward++;
             }
@@ -329,14 +329,14 @@ window.Player = class {
             if (Keyboard.isKeyDown("Space")) { // Space
                 jumping = true;
             }
-            if (Keyboard.isKeyDown("ShiftLeft")) { // Shift
+            if (Keyboard.isKeyDown(this.minecraft.settings.sprinting)) {
                 if (this.moveForward > 0 && !this.sneaking && !this.sprinting && this.motionX !== 0 && this.motionZ !== 0) {
                     this.sprinting = true;
 
                     this.updateFOVModifier();
                 }
             }
-            if (Keyboard.isKeyDown("KeyQ")) { // Q
+            if (Keyboard.isKeyDown(this.minecraft.settings.crouching)) { // Q
                 sneaking = true;
             }
 

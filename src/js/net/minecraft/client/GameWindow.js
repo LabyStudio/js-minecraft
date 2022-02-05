@@ -79,16 +79,12 @@ window.GameWindow = class {
 
         // Keyboard interaction with screen
         window.addEventListener('keydown', function (event) {
+            event.preventDefault();
+
             if (!(minecraft.currentScreen === null)) {
                 // Handle key type on screen
-                let consumed = minecraft.currentScreen.keyTyped(event.code);
-
-                if (consumed) {
-                    // Cancel browser interaction
-                    event.preventDefault();
-                }
+                minecraft.currentScreen.keyTyped(event.code);
             } else if (event.code === 'Escape') {
-                event.preventDefault();
                 minecraft.displayScreen(new GuiIngameMenu());
             } else {
                 minecraft.onKeyPressed(event.code);
