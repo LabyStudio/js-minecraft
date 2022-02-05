@@ -17,7 +17,7 @@ window.IngameOverlay = class extends Gui {
         this.renderHotbar(stack, this.window.width / 2 - 91, this.window.height - 22);
 
         // Debug
-        this.drawString(stack, Math.floor(this.minecraft.timer.fps) + " fps," +
+        this.drawString(stack, Math.floor(this.minecraft.fps) + " fps," +
             " " + this.minecraft.world.lightUpdateQueue.length + " light updates," +
             " " + this.minecraft.worldRenderer.chunkSectionUpdateQueue.length + " chunk updates", 1, 1);
         this.drawString(stack, Math.floor(this.minecraft.player.x) + ", " + Math.floor(this.minecraft.player.y) + ", " + Math.floor(this.minecraft.player.z)

@@ -7,6 +7,8 @@ window.Minecraft = class {
         this.currentScreen = null;
         this.loadingScreen = null;
 
+        this.fps = 0;
+
         // Tick timer
         this.timer = new Timer(20);
 
@@ -96,8 +98,7 @@ window.Minecraft = class {
 
         // Loop if a second passed
         while (Date.now() >= this.lastTime + 1000) {
-            //console.log(this.frames + " fps");
-
+            this.fps = this.frames;
             this.lastTime += 1000;
             this.frames = 0;
         }
