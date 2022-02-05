@@ -8,7 +8,7 @@ window.BlockRenderer = class {
         this.tessellator.bindTexture(worldRenderer.terrainTexture);
     }
 
-    renderBlock(world, group, block, x, y, z) {
+    renderBlock(world, block, x, y, z) {
         let boundingBox = block.getBoundingBox(world, x, y, z);
 
         // Render all faces
@@ -47,7 +47,8 @@ window.BlockRenderer = class {
 
         // Classic lightning
         if (BlockRenderer.CLASSIC_LIGHTNING) {
-            let brightness = 0.9 / 15.0 * world.getTotalLightAt(minX + face.x, minY + face.y, minZ + face.z) + 0.1;
+            let level = world === null ? 15 : world.getTotalLightAt(minX + face.x, minY + face.y, minZ + face.z);
+            let brightness = 0.9 / 15.0 * level + 0.1;
             let color = brightness * face.getShading();
             this.tessellator.setColor(color, color, color);
         }
@@ -112,6 +113,10 @@ window.BlockRenderer = class {
     }
 
     getAverageLightLevelAt(world, x, y, z) {
+        if (world === null) {
+            return 15;
+        }
+
         let totalLightLevel = 0;
         let totalBlocks = 0;
 
@@ -134,5 +139,29 @@ window.BlockRenderer = class {
 
         // Calculate the average light level of all surrounding blocks
         return totalBlocks === 0 ? 0 : totalLightLevel / totalBlocks;
+    }
+
+    renderGuiBlock(group, block, x, y, size) {
+        this.tessellator.startDrawing();
+
+        let boundingBox = block.getBoundingBox(null, 0, 0, 0);
+        this.renderFace(null, block, boundingBox, EnumBlockFace.TOP, 0, 0, 0);
+        this.renderFace(null, block, boundingBox, EnumBlockFace.NORTH, 0, 0, 0);
+        this.renderFace(null, block, boundingBox, EnumBlockFace.EAST, 0, 0, 0);
+
+        let mesh = this.tessellator.draw(group);
+        mesh.geometry.center();
+
+        mesh.rotation.x = -MathHelper.toRadians(45 / 1.5);
+        mesh.rotation.y = MathHelper.toRadians(45);
+
+        mesh.position.x = x;
+        mesh.position.y = -y;
+        mesh.position.z = -3;
+
+        //let scale = Math.cos(Date.now() / 1000) * 100;
+        mesh.scale.x = size;
+        mesh.scale.y = size;
+        mesh.scale.z = size;
     }
 }

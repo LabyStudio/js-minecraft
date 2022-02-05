@@ -15,6 +15,10 @@ window.WorldRenderer = class {
         // Block Renderer
         this.blockRenderer = new BlockRenderer(this);
 
+        this.initialize();
+    }
+
+    initialize() {
         // Create world camera
         this.camera = new THREE.PerspectiveCamera(0, 1, 0.001, 1000);
         this.camera.rotation.order = 'ZYX';
