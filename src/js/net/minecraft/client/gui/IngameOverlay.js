@@ -21,7 +21,7 @@ window.IngameOverlay = class extends Gui {
             " " + this.minecraft.world.lightUpdateQueue.length + " light updates," +
             " " + this.minecraft.worldRenderer.chunkSectionUpdateQueue.length + " chunk updates", 1, 1);
         this.drawString(stack, Math.floor(this.minecraft.player.x) + ", " + Math.floor(this.minecraft.player.y) + ", " + Math.floor(this.minecraft.player.z)
-            + " (" + Math.floor(this.minecraft.player.x >> 4) + ", " + Math.floor(this.minecraft.player.y >> 4) + ", " + Math.floor(this.minecraft.player.z >> 4) + ")", 1, 1 + 9);
+            + " (" + Math.floor(Math.floor(this.minecraft.player.x) >> 4) + ", " + Math.floor(Math.floor(this.minecraft.player.y) >> 4) + ", " + Math.floor(Math.floor(this.minecraft.player.z) >> 4) + ")", 1, 1 + 9);
     }
 
     renderCrosshair(stack, x, y) {

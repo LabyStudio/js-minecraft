@@ -211,7 +211,7 @@ window.World = class {
     }
 
     getTotalLightAt(x, y, z) {
-        if (y < 0) {
+        if (!this.blockExists(x, y, z)) {
             return 15;
         }
 
