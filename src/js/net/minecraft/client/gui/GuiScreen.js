@@ -25,11 +25,18 @@ window.GuiScreen = class extends Gui {
         }
     }
 
-    keyTyped(code) {
-        if (code === "Escape") {
+    keyTyped(key) {
+        if (key === "Escape") {
             this.minecraft.displayScreen(null);
             return true;
         }
+
+        for (let i in this.buttonList) {
+            let button = this.buttonList[i];
+
+            button.keyTyped(key);
+        }
+
         return false;
     }
 

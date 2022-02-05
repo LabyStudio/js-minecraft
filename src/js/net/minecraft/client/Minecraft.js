@@ -10,6 +10,8 @@ window.Minecraft = class {
         // Tick timer
         this.timer = new Timer(20);
 
+        this.settings = new GameSettings();
+
         // Create window and world renderer
         this.window = new GameWindow(this, canvasWrapperId);
 
@@ -125,6 +127,11 @@ window.Minecraft = class {
     }
 
     displayScreen(screen) {
+        if (typeof screen === "undefined") {
+            console.log("Tried to display an undefined screen");
+            return;
+        }
+
         // Switch screen
         this.currentScreen = screen;
 
