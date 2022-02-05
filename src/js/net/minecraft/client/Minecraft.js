@@ -56,7 +56,11 @@ window.Minecraft = class {
 
     init() {
         // Load spawn chunk
-        this.world.getChunkAt(0, 0);
+        for (let x = -WorldRenderer.RENDER_DISTANCE; x <= WorldRenderer.RENDER_DISTANCE; x++) {
+            for (let z = -WorldRenderer.RENDER_DISTANCE; z <= WorldRenderer.RENDER_DISTANCE; z++) {
+                this.world.getChunkAt(x, z);
+            }
+        }
         this.player.respawn();
 
         // Start render loop
@@ -109,7 +113,7 @@ window.Minecraft = class {
 
     onRender(partialTicks) {
         // Player rotation
-        if (this.hasInGameFocus()) {
+        if (!this.isPaused()) {
             this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
 
             this.window.mouseMotionX = 0;
@@ -122,7 +126,9 @@ window.Minecraft = class {
         }
 
         // Render the game
-        this.worldRenderer.render(partialTicks);
+        if (this.hasInGameFocus()) {
+            this.worldRenderer.render(partialTicks);
+        }
         this.screenRenderer.render(partialTicks);
         this.itemRenderer.render(partialTicks);
     }
@@ -149,11 +155,13 @@ window.Minecraft = class {
     }
 
     onTick() {
-        // Tick world
-        this.world.onTick();
+        if (!this.isPaused()) {
+            // Tick world
+            this.world.onTick();
 
-        // Tick the player
-        this.player.onTick();
+            // Tick the player
+            this.player.onTick();
+        }
 
         // Update loading progress
         if (!(this.loadingScreen === null)) {
@@ -222,4 +230,8 @@ window.Minecraft = class {
         this.inventory.shiftSelectedSlot(delta);
     }
 
+    isPaused() {
+        return false;
+        //return !this.hasInGameFocus() && this.loadingScreen === null;
+    }
 }
