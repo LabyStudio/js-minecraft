@@ -25,9 +25,15 @@ window.GameWindow = class {
         this.wrapper.appendChild(this.canvasItems);
 
         // Stats
-        this.stats = new Stats()
-        this.stats.showPanel(0);
-        this.wrapper.appendChild(this.stats.dom);
+        this.statsFps = new Stats()
+        this.statsFps.showPanel(0);
+        this.statsFps.domElement.style.cssText = 'position:absolute;top:0px;right:80px;float:right';
+        this.wrapper.appendChild(this.statsFps.dom);
+
+        this.statsMs = new Stats()
+        this.statsMs.showPanel(1);
+        this.statsMs.domElement.style.cssText = 'position:absolute;top:0px;right:160px;float:right';
+        this.wrapper.appendChild(this.statsMs.dom);
 
         // On resize
         let scope = this;
@@ -112,11 +118,17 @@ window.GameWindow = class {
         let wrapperHeight = this.height * this.scaleFactor;
 
         let worldRenderer = this.minecraft.worldRenderer;
+        let itemRenderer = this.minecraft.itemRenderer;
 
         // Update world renderer size and camera
         worldRenderer.camera.aspect = this.width / this.height;
         worldRenderer.camera.updateProjectionMatrix();
         worldRenderer.webRenderer.setSize(wrapperWidth, wrapperHeight);
+
+        // Update item renderer size and camera
+        itemRenderer.camera.aspect = this.width / this.height;
+        itemRenderer.camera.updateProjectionMatrix();
+        itemRenderer.webRenderer.setSize(wrapperWidth, wrapperHeight);
 
         // Update canvas 2d size
         this.canvas2d.style.width = wrapperWidth + "px";

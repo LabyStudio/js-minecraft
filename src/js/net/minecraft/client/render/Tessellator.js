@@ -3,7 +3,8 @@ window.Tessellator = class {
     constructor() {
         this.material = new THREE.MeshBasicMaterial({
             vertexColors: THREE.VertexColors,
-            side: THREE.BackSide,
+            //side: THREE.BackSide,
+            side: THREE.DoubleSide,
             transparent: true,
             depthTest: true
         });
@@ -66,6 +67,7 @@ window.Tessellator = class {
         let mesh = new THREE.Mesh(geometry, this.material);
         group.matrixAutoUpdate = false;
         group.add(mesh);
+        return mesh;
     }
 
 }

@@ -7,30 +7,34 @@ window.Minecraft = class {
         this.currentScreen = null;
         this.loadingScreen = null;
 
-        // Create window and world renderer
-        this.window = new GameWindow(this, canvasWrapperId);
-        this.worldRenderer = new WorldRenderer(this, this.window);
+        // Tick timer
         this.timer = new Timer(20);
 
-        // Create screen renderer
+        // Create window and world renderer
+        this.window = new GameWindow(this, canvasWrapperId);
+
+        // Create renderers
+        this.worldRenderer = new WorldRenderer(this, this.window);
         this.screenRenderer = new ScreenRenderer(this, this.window);
+        this.itemRenderer = new ItemRenderer(this, this.window);
 
         // Create current screen and overlay
         this.ingameOverlay = new IngameOverlay(this, this.window);
 
-        // Update window size
-        this.window.updateWindowSize();
-
         // Display loading screen
         this.loadingScreen = new GuiLoadingScreen();
         this.loadingScreen.setTitle("Building terrain...");
-        this.displayScreen(this.loadingScreen);
 
         this.frames = 0;
         this.lastTime = Date.now();
 
         // Create all blocks
         Block.create();
+
+        this.itemRenderer.initialize();
+
+        // Update window size
+        this.window.updateWindowSize();
 
         // Create world
         this.world = new World(this);
@@ -39,6 +43,8 @@ window.Minecraft = class {
         // Create player
         this.player = new Player(this, this.world);
         this.inventory = new Inventory();
+
+        this.displayScreen(this.loadingScreen);
 
         // Initialize
         this.init();
@@ -69,7 +75,8 @@ window.Minecraft = class {
     }
 
     onLoop() {
-        this.window.stats.begin();
+        this.window.statsFps.begin();
+        this.window.statsMs.begin();
 
         // Update the timer
         this.timer.advanceTime();
@@ -93,7 +100,8 @@ window.Minecraft = class {
             this.frames = 0;
         }
 
-        this.window.stats.end();
+        this.window.statsFps.end();
+        this.window.statsMs.end();
     }
 
     onRender(partialTicks) {
@@ -113,6 +121,7 @@ window.Minecraft = class {
         // Render the game
         this.worldRenderer.render(partialTicks);
         this.screenRenderer.render(partialTicks);
+        this.itemRenderer.render(partialTicks);
     }
 
     displayScreen(screen) {

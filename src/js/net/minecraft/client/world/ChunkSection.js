@@ -62,7 +62,7 @@ window.ChunkSection = class {
                         let absoluteZ = this.z * ChunkSection.SIZE + z;
 
                         let block = Block.getById(typeId);
-                        renderer.blockRenderer.renderBlock(this.world, this.group, block, absoluteX, absoluteY, absoluteZ);
+                        renderer.blockRenderer.renderBlock(this.world, block, absoluteX, absoluteY, absoluteZ);
                     }
                 }
             }
