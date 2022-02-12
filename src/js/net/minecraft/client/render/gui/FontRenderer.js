@@ -8,15 +8,14 @@ window.FontRenderer = class {
     constructor() {
         this.charWidths = [];
 
-        let scope = this;
-        this.texture = Gui.loadTexture("font.png", function () {
-            let bitMap = scope.createBitMap(scope.texture);
+        this.texture = Gui.loadTexture("font.png")
 
-            // Calculate character width
-            for (let i = 0; i < 128; i++) {
-                scope.charWidths[i] = scope.calculateCharacterWidthAt(bitMap, i % FontRenderer.BITMAP_SIZE, Math.floor(i / FontRenderer.BITMAP_SIZE)) + 2;
-            }
-        });
+        let bitMap = this.createBitMap(this.texture);
+
+        // Calculate character width
+        for (let i = 0; i < 128; i++) {
+            this.charWidths[i] = this.calculateCharacterWidthAt(bitMap, i % FontRenderer.BITMAP_SIZE, Math.floor(i / FontRenderer.BITMAP_SIZE)) + 2;
+        }
     }
 
     calculateCharacterWidthAt(bitMap, indexX, indexY) {
