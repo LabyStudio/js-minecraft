@@ -235,6 +235,9 @@ window.World = class {
 
         let section = this.getChunkSectionAt(x >> 4, y >> 4, z >> 4)
         section.setLightAt(sourceType, x & 15, y & 15, z & 15, lightLevel);
+
+        // Rebuild chunk
+        this.onBlockChanged(x, y, z);
     }
 
     isSolidBlockAt(x, y, z) {
@@ -288,7 +291,7 @@ window.World = class {
         for (let x = minX; x <= maxX; x++) {
             for (let y = minY; y <= maxY; y++) {
                 for (let z = minZ; z <= maxZ; z++) {
-                    if (this.chunkExists(x >> 4, z >> 4)) {
+                    if (this.chunkExists(x, z)) {
                         this.getChunkSectionAt(x, y, z).isModified = true;
                     }
                 }
