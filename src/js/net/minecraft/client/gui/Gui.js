@@ -110,11 +110,7 @@ window.Gui = class {
         stack.restore();
     }
 
-    static loadTexture(path, callback) {
-        let img = new Image();
-        img.src = "src/resources/" + path;
-        img.onload = callback;
-        return img;
+    static loadTexture(path) {
+        return document.textures[path];
     }
-
 }
