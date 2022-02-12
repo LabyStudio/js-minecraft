@@ -52,7 +52,7 @@ window.FontRenderer = class {
         stack.save();
 
         if (isShadow) {
-            stack.filter = "brightness(0%)";
+            stack.filter = "brightness(20%)";
         }
 
         // For each character
