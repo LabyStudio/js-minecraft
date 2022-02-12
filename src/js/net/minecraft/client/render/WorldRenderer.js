@@ -7,10 +7,15 @@ window.WorldRenderer = class {
         this.window = window;
         this.chunkSectionUpdateQueue = [];
 
-        // Load terrain
-        this.terrainTexture = new THREE.TextureLoader().load('src/resources/terrain.png');
-        this.terrainTexture.magFilter = THREE.NearestFilter;
-        this.terrainTexture.minFilter = THREE.NearestFilter;
+        // Load terrain texture
+        this.textureTerrain = new THREE.TextureLoader().load('src/resources/terrain/terrain.png');
+        this.textureTerrain.magFilter = THREE.NearestFilter;
+        this.textureTerrain.minFilter = THREE.NearestFilter;
+
+        // Load sun texture
+        this.textureSun = new THREE.TextureLoader().load('src/resources/terrain/sun.png');
+        this.textureSun.magFilter = THREE.NearestFilter;
+        this.textureSun.minFilter = THREE.NearestFilter;
 
         // Block Renderer
         this.blockRenderer = new BlockRenderer(this);
@@ -34,7 +39,8 @@ window.WorldRenderer = class {
         // Create web renderer
         this.webRenderer = new THREE.WebGLRenderer({
             canvas: this.window.canvas,
-            antialias: false
+            antialias: false,
+            alpha: true
         });
 
         // Settings
@@ -45,6 +51,8 @@ window.WorldRenderer = class {
         this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
+
+        this.generateSky();
     }
 
     render(partialTicks) {
@@ -57,7 +65,10 @@ window.WorldRenderer = class {
         let cameraChunkZ = Math.floor(player.z >> 4);
         this.renderChunks(cameraChunkX, cameraChunkZ);
 
-        // Render actual scene and hud
+        // Render sky
+        this.renderSky(partialTicks);
+
+        // Render actual scene
         this.webRenderer.render(this.scene, this.camera);
     }
 
@@ -82,10 +93,10 @@ window.WorldRenderer = class {
         this.camera.updateProjectionMatrix();
 
         // Setup fog
-        this.setupFog(player.isHeadInWater());
+        this.setupFog(x, z, player.isHeadInWater(), partialTicks);
     }
 
-    setupFog(inWater) {
+    setupFog(x, z, inWater, partialTicks) {
         if (inWater) {
             let color = new THREE.Color(0.2, 0.2, 0.4);
             this.scene.background = color;
@@ -93,8 +104,12 @@ window.WorldRenderer = class {
         } else {
             let viewDistance = WorldRenderer.RENDER_DISTANCE * ChunkSection.SIZE;
 
-            let color = new THREE.Color(0x9299ff);
-            this.scene.background = color;
+            let color = this.minecraft.world.getSkyColor(x, z, partialTicks);
+            this.scene.background = new THREE.Color(
+                ((color >> 16) & 0xFF) / 255,
+                ((color >> 8) & 0xFF) / 255,
+                (color & 0xFF) / 255
+            );
             this.scene.fog = new THREE.Fog(color, 0.0025, viewDistance);
         }
     }
@@ -164,5 +179,36 @@ window.WorldRenderer = class {
                 }
             }
         }
+    }
+
+    generateSky() {
+        // Create sky group
+        this.skyGroup = new THREE.Scene();
+        this.scene.add(this.skyGroup);
+
+        // Create sun
+        let geometry = new THREE.PlaneGeometry(1, 1);
+        let material = new THREE.MeshBasicMaterial({
+            color: 0xffff00,
+            side: THREE.FrontSide,
+            map: this.textureSun,
+            alphaMap: this.textureSun,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        this.sun = new THREE.Mesh(geometry, material);
+        this.sun.translateZ(-2);
+        this.sun.renderOrder = 999;
+        this.sun.material.depthTest = false;
+        this.skyGroup.add(this.sun);
+    }
+
+    renderSky(partialTicks) {
+        // Center sky
+        this.skyGroup.position.copy(this.camera.position);
+
+        // Rotate sky
+        let angle = this.minecraft.world.getCelestialAngle(partialTicks);
+        this.skyGroup.rotation.set(angle * Math.PI * 2 + Math.PI / 2, 0, 0);
     }
 }

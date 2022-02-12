@@ -5,7 +5,7 @@ window.BlockRenderer = class {
     constructor(worldRenderer) {
         this.worldRenderer = worldRenderer;
         this.tessellator = new Tessellator();
-        this.tessellator.bindTexture(worldRenderer.terrainTexture);
+        this.tessellator.bindTexture(worldRenderer.textureTerrain);
     }
 
     renderBlock(world, block, x, y, z) {

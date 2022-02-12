@@ -15,7 +15,7 @@ canvas {
 }
 
 #background {
-    background-image: url(src/resources/background.png);
+    background-image: url(src/resources/gui/background.png);
     background-size: 128px 128px;
     image-rendering: pixelated;
     filter: brightness(0.5);

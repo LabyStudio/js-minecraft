@@ -3,7 +3,7 @@ window.GuiLoadingScreen = class extends GuiScreen {
     constructor() {
         super();
 
-        this.textureBackground = Gui.loadTexture("background.png");
+        this.textureBackground = Gui.loadTexture("gui/background.png");
     }
 
     drawScreen(stack, mouseX, mouseY, partialTicks) {
@@ -48,6 +48,10 @@ window.GuiLoadingScreen = class extends GuiScreen {
             return;
         }
         this.progress = progress;
+    }
+
+    keyTyped(key) {
+        // Cancel key inputs
     }
 
 }
