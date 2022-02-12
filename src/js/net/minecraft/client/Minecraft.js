@@ -231,7 +231,6 @@ window.Minecraft = class {
     }
 
     isPaused() {
-        return false;
-        //return !this.hasInGameFocus() && this.loadingScreen === null;
+        return !this.hasInGameFocus() && this.loadingScreen === null;
     }
 }

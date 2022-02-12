@@ -311,9 +311,9 @@ window.Player = class {
         let sneaking = false;
 
         if (this.minecraft.hasInGameFocus()) {
-            /*if (Keyboard.isKeyDown("KeyR")) { // R
-                this.respawn();
-            }*/
+            if (Keyboard.isKeyDown("KeyR")) { // R
+                // this.respawn();
+            }
             if (Keyboard.isKeyDown("KeyW")) { // W
                 moveForward++;
             }
