@@ -13,6 +13,7 @@ window.Minecraft = class {
         this.timer = new Timer(20);
 
         this.settings = new GameSettings();
+        this.settings.load();
 
         // Create window and world renderer
         this.window = new GameWindow(this, canvasWrapperId);
@@ -137,6 +138,11 @@ window.Minecraft = class {
         if (typeof screen === "undefined") {
             console.log("Tried to display an undefined screen");
             return;
+        }
+
+        // Close previous screen
+        if (!(this.currentScreen === null)) {
+            this.currentScreen.onClose();
         }
 
         // Switch screen

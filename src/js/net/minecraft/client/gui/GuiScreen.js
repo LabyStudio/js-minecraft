@@ -18,6 +18,10 @@ window.GuiScreen = class extends Gui {
         this.buttonList = [];
     }
 
+    onClose() {
+
+    }
+
     drawScreen(stack, mouseX, mouseY, partialTicks) {
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
