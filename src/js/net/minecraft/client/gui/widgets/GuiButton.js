@@ -1,6 +1,6 @@
 window.GuiButton = class extends Gui {
 
-    static textureGui = Gui.loadTexture("gui.png");
+    static textureGui = Gui.loadTexture("gui/gui.png");
 
     constructor(string, x, y, width, height, callback) {
         super();

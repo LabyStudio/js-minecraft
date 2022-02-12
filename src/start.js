@@ -69,11 +69,13 @@ function updatePreStatus(message) {
 
 // Load textures
 loadTexture([
-    "font.png",
-    "gui.png",
-    "background.png",
-    "terrain.png",
-    "icons.png"
+    "gui/font.png",
+    "gui/gui.png",
+    "gui/background.png",
+    "gui/icons.png",
+    "terrain/terrain.png",
+    "terrain/sun.png",
+    "terrain/moon.png"
 ]).then(() => {
     // Load scripts
     loadScripts([

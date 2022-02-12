@@ -8,7 +8,7 @@ window.FontRenderer = class {
     constructor() {
         this.charWidths = [];
 
-        this.texture = Gui.loadTexture("font.png")
+        this.texture = Gui.loadTexture("gui/font.png")
 
         let bitMap = this.createBitMap(this.texture);
 

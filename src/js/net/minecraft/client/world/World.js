@@ -11,6 +11,8 @@ window.World = class {
         this.chunks = new Map();
         this.lightUpdateQueue = [];
 
+        this.time = 0;
+
         // Load world
         this.generator = new WorldGenerator(this, Date.now() % 100000);
 
@@ -36,6 +38,9 @@ window.World = class {
             let distance2 = Math.floor(Math.pow(b.chunkX - cameraChunkX, 2) + Math.pow(b.chunkZ - cameraChunkZ, 2));
             return distance2 - distance1;
         });
+
+        // Update world time
+        this.time++;
     }
 
     getChunkAt(x, z) {
@@ -133,7 +138,9 @@ window.World = class {
         }
 
         // Add light update region to queue
-        this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
+        if (this.lightUpdateQueue.length < 10000) {
+            this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
+        }
 
         // Max light updates in queue
         if (this.lightUpdateQueue.length > 100000) {
@@ -414,7 +421,49 @@ window.World = class {
         }
 
         return lastHit;
-
     }
 
+    getCelestialAngle(partialTicks) {
+        return MathHelper.calculateCelestialAngle(this.time, partialTicks);
+    }
+
+    getTemperature(x, z) {
+        return 1.24;
+    }
+
+    getSkyColor(x, z, partialTicks) {
+        let angle = this.getCelestialAngle(partialTicks);
+        let brightness = Math.cos(angle * 3.141593 * 2.0) * 2.0 + 0.5;
+
+        if (brightness < 0.0) {
+            brightness = 0.0;
+        }
+        if (brightness > 1.0) {
+            brightness = 1.0;
+        }
+
+        let temperature = this.getTemperature(x, z);
+        let rgb = this.getSkyColorByTemp(temperature);
+
+        let red = (rgb >> 16 & 0xff) / 255;
+        let green = (rgb >> 8 & 0xff) / 255;
+        let blue = (rgb & 0xff) / 255;
+
+        red *= brightness;
+        green *= brightness;
+        blue *= brightness;
+
+        return (Math.round(red * 255) << 16) | (Math.round(green * 255) << 8) | Math.round(blue * 255);
+    }
+
+    getSkyColorByTemp(temperature) {
+        temperature /= 3;
+        if (temperature < -1) {
+            temperature = -1;
+        }
+        if (temperature > 1.0) {
+            temperature = 1.0;
+        }
+        return MathHelper.hsbToRgb(0.6222222 - temperature * 0.05, 0.5 + temperature * 0.1, 1.0);
+    }
 }

@@ -5,8 +5,8 @@ window.IngameOverlay = class extends Gui {
         this.minecraft = minecraft;
         this.window = window;
 
-        this.textureCrosshair = Gui.loadTexture("icons.png");
-        this.textureHotbar = Gui.loadTexture("gui.png");
+        this.textureCrosshair = Gui.loadTexture("gui/icons.png");
+        this.textureHotbar = Gui.loadTexture("gui/gui.png");
     }
 
     render(stack, mouseX, mouseY, partialTicks) {
