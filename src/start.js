@@ -80,6 +80,7 @@ loadTexture([
         // Dependencies
         "libraries/three.min.js",
         "libraries/stats.min.js",
+        "libraries/context-filter-polyfill.min.js",
 
         // Minecraft Source
         "src/js/net/minecraft/util/EnumBlockFace.js",
