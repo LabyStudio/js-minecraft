@@ -3,8 +3,7 @@ window.Tessellator = class {
     constructor() {
         this.material = new THREE.MeshBasicMaterial({
             vertexColors: THREE.VertexColors,
-            //side: THREE.BackSide,
-            side: THREE.DoubleSide,
+            side: THREE.BackSide,
             transparent: true,
             depthTest: true
         });

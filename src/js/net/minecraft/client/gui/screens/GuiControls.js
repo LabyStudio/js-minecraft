@@ -37,4 +37,9 @@ window.GuiControls = class extends GuiScreen {
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }
 
+    onClose() {
+        // Save settings
+        this.minecraft.settings.save();
+    }
+
 }
