@@ -5,6 +5,9 @@ window.BlockTorch = class extends Block {
 
         this.boundingBox = new BoundingBox(0.4, 0.0, 0.4, 0.6, 0.6, 0.6);
 
+        // Sound
+        this.sound = Block.sounds.wood;
+
         // Create data faces
         this.dataFaces = [
             EnumBlockFace.WEST,

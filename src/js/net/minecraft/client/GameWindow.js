@@ -62,6 +62,11 @@ window.GameWindow = class {
 
         // Mouse buttons
         document.addEventListener('click', function (event) {
+            // Create sound engine (It has to be created after user interaction)
+            if(!minecraft.soundManager.isCreated()) {
+                minecraft.soundManager.create(minecraft.worldRenderer);
+            }
+
             // Handle in-game mouse click
             minecraft.onMouseClicked(event.button);
 

@@ -106,6 +106,8 @@ loadTexture([
         "src/js/net/minecraft/client/gui/screens/GuiControls.js",
         "src/js/net/minecraft/client/gui/screens/GuiIngameMenu.js",
         "src/js/net/minecraft/client/GameWindow.js",
+        "src/js/net/minecraft/client/sound/SoundManager.js",
+        "src/js/net/minecraft/client/world/block/sound/Sound.js",
         "src/js/net/minecraft/client/world/block/Block.js",
         "src/js/net/minecraft/client/world/block/BlockStone.js",
         "src/js/net/minecraft/client/world/block/BlockGrass.js",
