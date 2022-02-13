@@ -58,7 +58,7 @@ window.SoundManager = class {
         return sound;
     }
 
-    playSound(name, x, y, z, pitch) {
+    playSound(name, x, y, z, volume, pitch) {
         let pool = this.soundPool[name];
 
         if (typeof pool === "undefined") {
@@ -76,7 +76,8 @@ window.SoundManager = class {
             // Update position
             sound.position.set(x, y, z);
 
-            // Update pitch
+            // Update volume and pitch
+            sound.setVolume(volume);
             sound.filters[0].frequency.setValueAtTime(12000 * pitch, sound.context.currentTime);
 
             // Play sound
