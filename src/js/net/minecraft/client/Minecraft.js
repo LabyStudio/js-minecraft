@@ -224,7 +224,13 @@ window.Minecraft = class {
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
                         let typeId = this.inventory.getItemInSelectedSlot();
                         if (typeId !== 0) {
+
+                            // Place block
                             this.world.setBlockAt(x, y, z, typeId);
+
+                            // Handle block abilities
+                            let block = Block.getById(typeId);
+                            block.onBlockPlaced(this.world, x, y, z, hitResult.face);
                         }
                     }
                 }

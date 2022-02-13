@@ -29,7 +29,7 @@ window.Chunk = class {
         // Calculate height map
         for (let x = 0; x < 16; x++) {
             for (let z = 0; z < 16; z++) {
-                this.setHeightAt(x, z, 0); // TODO set to 0 to calculate proper lightning
+                this.setHeightAt(x, z, 0);
                 this.updateHeightMap(x, World.TOTAL_HEIGHT, z);
             }
         }
@@ -238,19 +238,32 @@ window.Chunk = class {
         section.setLightAt(sourceType, x, y & 15, z, level);
     }
 
-    setBlockAt(x, y, z, typeId) {
+    setBlockDataAt(x, y, z, data) {
+        this.setBlockAt(x, y, z, this.getBlockAt(x, y, z), data);
+    }
+
+    setBlockAt(x, y, z, typeId, data = 0) {
+        let section = this.getSection(y >> 4);
+        let yInSection = y & 15;
+
         let height = this.getHeightAt(x, z);
-        let prevTypeId = this.getBlockAt(x, y, z);
-        if (prevTypeId === typeId) {
+        let prevTypeId = section.getBlockAt(x, yInSection, z);
+        let prevData = section.getBlockDataAt(x, yInSection, z);
+
+        // Check if block type has changed
+        if (prevTypeId === typeId && prevData === data) {
             return false;
         }
 
-        this.getSection(y >> 4).setBlockAt(x, y & 15, z, typeId);
+        // Update block type and data
+        section.setBlockAt(x, yInSection, z, typeId);
+        section.setBlockDataAt(x, yInSection, z, data);
 
         if (!this.loaded) {
             return;
         }
 
+        // Update height map
         let block = Block.getById(typeId);
         if (typeId !== 0 && block.isSolid()) {
             if (y >= height) {
@@ -263,11 +276,18 @@ window.Chunk = class {
         let totalX = this.x * 16 + x;
         let totalZ = this.z * 16 + z;
 
+        // Update light
         this.world.updateLight(EnumSkyBlock.SKY, totalX, y, totalZ, totalX, y, totalZ);
         this.world.updateLight(EnumSkyBlock.BLOCK, totalX, y, totalZ, totalX, y, totalZ);
 
+        // Notify surrounding blocks
         this.notifyNeighbors(x, z);
-        this.setModifiedAllSections();
+
+        // Handle block abilities
+        if (typeId !== 0) {
+            block.onBlockAdded(this.world, totalX, y, totalZ);
+        }
+
         return true;
     }
 
@@ -277,6 +297,10 @@ window.Chunk = class {
 
     getBlockAt(x, y, z) {
         return this.getSection(y >> 4).getBlockAt(x, y & 15, z);
+    }
+
+    getBlockDataAt(x, y, z) {
+        return this.getSection(y >> 4).getBlockDataAt(x, y & 15, z);
     }
 
     getSection(y) {

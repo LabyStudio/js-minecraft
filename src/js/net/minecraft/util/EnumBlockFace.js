@@ -22,6 +22,31 @@ window.EnumBlockFace = class {
         return this.z !== 0;
     }
 
+    opposite() {
+        if (this === EnumBlockFace.TOP) {
+            return EnumBlockFace.BOTTOM;
+        }
+        if (this === EnumBlockFace.BOTTOM) {
+            return EnumBlockFace.TOP;
+        }
+
+        if (this === EnumBlockFace.NORTH) {
+            return EnumBlockFace.SOUTH;
+        }
+        if (this === EnumBlockFace.SOUTH) {
+            return EnumBlockFace.NORTH;
+        }
+
+        if (this === EnumBlockFace.EAST) {
+            return EnumBlockFace.WEST;
+        }
+        if (this === EnumBlockFace.WEST) {
+            return EnumBlockFace.EAST;
+        }
+
+        return null;
+    }
+
     static values() {
         return [
             EnumBlockFace.TOP,

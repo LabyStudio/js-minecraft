@@ -25,7 +25,9 @@ window.ScreenRenderer = class {
         this.stack2d.clearRect(0, 0, this.window.width, this.window.height);
 
         // Render in-game overlay
-        this.minecraft.ingameOverlay.render(this.stack2d, mouseX, mouseY, partialTicks);
+        if (this.minecraft.loadingScreen === null) {
+            this.minecraft.ingameOverlay.render(this.stack2d, mouseX, mouseY, partialTicks);
+        }
 
         // Render current screen
         if (!(this.minecraft.currentScreen === null)) {

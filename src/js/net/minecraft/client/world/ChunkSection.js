@@ -23,6 +23,7 @@ window.ChunkSection = class {
         this.isModified = false;
 
         this.blocks = [];
+        this.blocksData = [];
         this.blockLight = [];
         this.skyLight = [];
 
@@ -32,6 +33,7 @@ window.ChunkSection = class {
                 for (let tZ = 0; tZ < ChunkSection.SIZE; tZ++) {
                     let index = tY << 8 | tZ << 4 | tX;
                     this.blocks[index] = 0;
+                    this.blocksData[index] = 0;
                     this.blockLight[index] = 0;
                     this.skyLight[index] = 0;
                 }
@@ -77,9 +79,21 @@ window.ChunkSection = class {
         return this.blocks[index];
     }
 
+    getBlockDataAt(x, y, z) {
+        let index = y << 8 | z << 4 | x;
+        return this.blocksData[index];
+    }
+
     setBlockAt(x, y, z, typeId) {
         let index = y << 8 | z << 4 | x;
         this.blocks[index] = typeId;
+
+        this.isModified = true;
+    }
+
+    setBlockDataAt(x, y, z, data) {
+        let index = y << 8 | z << 4 | x;
+        this.blocksData[index] = data;
 
         this.isModified = true;
     }

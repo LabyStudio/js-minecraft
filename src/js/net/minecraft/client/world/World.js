@@ -278,9 +278,18 @@ window.World = class {
         this.onBlockChanged(x, y, z);
     }
 
+    setBlockDataAt(x, y, z, data) {
+        this.getChunkAt(x >> 4, z >> 4).setBlockDataAt(x & 15, y, z & 15, data);
+    }
+
     getBlockAt(x, y, z) {
         let chunkSection = this.getChunkAtBlock(x, y, z);
         return chunkSection == null ? 0 : chunkSection.getBlockAt(x & 15, y & 15, z & 15);
+    }
+
+    getBlockDataAt(x, y, z) {
+        let chunkSection = this.getChunkAtBlock(x, y, z);
+        return chunkSection == null ? 0 : chunkSection.getBlockDataAt(x & 15, y & 15, z & 15);
     }
 
     getBlockAtFace(x, y, z, face) {
