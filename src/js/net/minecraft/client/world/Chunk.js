@@ -45,6 +45,60 @@ window.Chunk = class {
         this.setModifiedAllSections();
     }
 
+    generateBlockLightMap() {
+        let targetY = 32;
+        for (let x = 0; x < 16; x++) {
+            for (let z = 0; z < 16; z++) {
+                for (let y = 0; y < World.TOTAL_HEIGHT; y++) {
+                    let section = this.getSection(y >> 4);
+
+                    let typeId = section.getBlockAt(x, y & 15, z);
+                    let block = Block.getById(typeId);
+                    let blockLight = typeId === 0 ? 0 : block.getLightValue();
+
+                    if (blockLight > 0) {
+                        section.setLightAt(EnumSkyBlock.BLOCK, x, y & 15, z, blockLight);
+                    }
+                }
+
+                let level = 15;
+                for (let y = targetY - 2; y < 128 && level > 0;) {
+                    y++;
+
+                    let section = this.getSection(y >> 4);
+
+                    let typeId = section.getBlockAt(x, y & 15, z);
+                    let block = Block.getById(typeId);
+
+                    let opacity = block.getOpacity();
+                    let blockLight = typeId === 0 ? 0 : block.getLightValue();
+
+                    if (opacity === 0) {
+                        opacity = 1;
+                    }
+
+                    level -= opacity;
+
+                    if (blockLight > level) {
+                        level = blockLight;
+                    }
+
+                    if (level < 0) {
+                        level = 0;
+                    }
+
+                    section.setLightAt(EnumSkyBlock.BLOCK, x, y & 15, z, blockLight);
+                }
+            }
+        }
+
+        this.world.updateLight(EnumSkyBlock.Block,
+            this.x * 16, targetY - 1, this.z * 16,
+            this.x * 16 + 16, targetY + 1, this.z * 16 + 16
+        );
+        this.setModifiedAllSections();
+    }
+
     updateBlockLight() {
         this.setModifiedAllSections();
     }

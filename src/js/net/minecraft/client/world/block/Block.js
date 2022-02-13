@@ -1,7 +1,7 @@
 window.Block = class {
 
     static blocks = new Map();
-    
+
     static create() {
         Block.STONE = new BlockStone(1, 0);
         Block.GRASS = new BlockGrass(2, 1);
@@ -10,6 +10,7 @@ window.Block = class {
         Block.LEAVE = new BlockLeave(18, 6);
         Block.WATER = new BlockWater(9, 7);
         Block.SAND = new BlockSand(12, 8)
+        Block.TORCH = new BlockTorch(50, 9)
     }
 
     constructor(id, textureSlotId = id) {
@@ -26,6 +27,10 @@ window.Block = class {
         return this.id;
     }
 
+    getRenderType() {
+        return BlockRenderType.BLOCK;
+    }
+
     getTextureForFace(face) {
         return this.textureSlotId;
     }
@@ -36,7 +41,7 @@ window.Block = class {
 
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || Block.getById(typeId).isTransparent();
+        return typeId === 0 || !Block.getById(typeId).isSolid();
     }
 
     getLightValue() {
@@ -51,7 +56,7 @@ window.Block = class {
         return 1.0;
     }
 
-    canCollide() {
+    canInteract() {
         return true;
     }
 

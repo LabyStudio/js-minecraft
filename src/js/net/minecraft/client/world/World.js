@@ -39,6 +39,15 @@ window.World = class {
             return distance2 - distance1;
         });
 
+        // Update skylight subtracted (To make the night dark)
+        let lightLevel = this.calculateSkylightSubtracted(1.0);
+        if (lightLevel !== this.skylightSubtracted) {
+            this.skylightSubtracted = lightLevel;
+
+            // Rebuild all chunks
+            this.minecraft.worldRenderer.rebuildAll();
+        }
+
         // Update world time
         this.time++;
     }
@@ -54,6 +63,7 @@ window.World = class {
 
             // Init
             chunk.generateSkylightMap();
+            chunk.generateBlockLightMap();
 
             // Register
             chunk.loaded = true;
@@ -171,9 +181,12 @@ window.World = class {
                 level = 15;
             }
         } else if (sourceType === EnumSkyBlock.BLOCK) {
-            let i1 = this.getBlockAt(x, y, z);
-            if (0 > level) { // TODO
-                level = 0;
+            let typeId = this.getBlockAt(x, y, z);
+            let block = Block.getById(typeId);
+            let blockLight = typeId === 0 ? 0 : block.getLightValue();
+
+            if (blockLight > level) {
+                level = blockLight;
             }
         }
         if (this.getSavedLightValue(sourceType, x, y, z) !== level) {
@@ -318,7 +331,7 @@ window.World = class {
         let blockId = this.getBlockAt(x, y, z);
         let block = Block.getById(blockId);
 
-        if (block != null && block.canCollide()) {
+        if (block != null && block.canInteract()) {
             let hit = block.collisionRayTrace(x, y, z, from, to);
             if (hit != null) {
                 return hit;
@@ -412,7 +425,7 @@ window.World = class {
             let blockId = this.getBlockAt(x, y, z);
             let block = Block.getById(blockId);
 
-            if (block != null && block.canCollide()) {
+            if (block != null && block.canInteract()) {
                 let hit = block.collisionRayTrace(x, y, z, from, to);
                 if (hit != null) {
                     return hit;
@@ -465,5 +478,17 @@ window.World = class {
             temperature = 1.0;
         }
         return MathHelper.hsbToRgb(0.6222222 - temperature * 0.05, 0.5 + temperature * 0.1, 1.0);
+    }
+
+    calculateSkylightSubtracted(partialTicks) {
+        let angle = this.getCelestialAngle(partialTicks);
+        let level = 1.0 - (Math.cos(angle * 3.141593 * 2.0) * 2.0 + 0.5);
+        if (level < 0.0) {
+            level = 0.0;
+        }
+        if (level > 1.0) {
+            level = 1.0;
+        }
+        return Math.floor(level * 11);
     }
 }

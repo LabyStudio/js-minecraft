@@ -12,7 +12,7 @@ window.BlockWater = class extends Block {
         return false;
     }
 
-    canCollide() {
+    canInteract() {
         return false;
     }
 
