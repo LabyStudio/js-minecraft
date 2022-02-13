@@ -4,7 +4,7 @@ window.Keyboard = class {
 
     static create() {
         window.addEventListener('keydown', function (event) {
-            event.preventDefault();
+            //event.preventDefault();
             Keyboard.state[event.code] = true;
             //console.log("Key " + event.code + " down");
         });
@@ -14,6 +14,14 @@ window.Keyboard = class {
             //console.log("Key " + event.code + " up");
         });
     };
+
+    static setState(key, state) {
+        Keyboard.state[key] = state;
+    }
+
+    static unPressAll() {
+        Keyboard.state = {};
+    }
 
     static isKeyDown(key) {
         return Keyboard.state[key];
