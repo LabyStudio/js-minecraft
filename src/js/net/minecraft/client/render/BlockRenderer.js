@@ -158,18 +158,44 @@ window.BlockRenderer = class {
     }
 
     renderTorch(world, block, x, y, z) {
-        let boundingBox = block.getBoundingBox(world, x, y, z);
-
         // Thickness of the torch
         let size = 1 / 16;
 
+        let distortX = 0;
+        let distortZ = 0;
+
+        // Attach torch at wall
+        switch (world.getBlockDataAt(x, y, z)) {
+            case 1:
+                distortX = -0.2;
+                break;
+            case 2:
+                distortX = 0.2;
+                break;
+            case 3:
+                distortZ = -0.2;
+                break;
+            case 4:
+                distortZ = 0.2;
+                break;
+        }
+
+        // Model type
+        let centerX = 0.5 + distortX * 1.5;
+        let centerZ = 0.5 + distortZ * 1.5;
+
+        // Lift the torch up
+        if (distortX !== 0 || distortZ !== 0) {
+            y += 0.2;
+        }
+
         // Vertex mappings
-        let minX = x + 0.5 - size;
+        let minX = x + centerX - size;
         let minY = y;
-        let minZ = z + 0.5 - size;
-        let maxX = x + 0.5 + size;
+        let minZ = z + centerZ - size;
+        let maxX = x + centerX + size;
         let maxY = y + 10 / 16;
-        let maxZ = z + 0.5 + size;
+        let maxZ = z + centerZ + size;
 
         // UV Mapping
         let textureIndex = block.getTextureForFace(EnumBlockFace.NORTH);
@@ -191,36 +217,39 @@ window.BlockRenderer = class {
         // Set color with shading
         this.tessellator.setColor(1, 1, 1);
 
-        // Add faceS to tessellator
-        this.addFace(world, EnumBlockFace.NORTH, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
-        this.addFace(world, EnumBlockFace.EAST, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
-        this.addFace(world, EnumBlockFace.SOUTH, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
-        this.addFace(world, EnumBlockFace.WEST, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
+        // Add faces to tessellator
+        this.addDistortFace(world, EnumBlockFace.NORTH, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, distortX, distortZ);
+        this.addDistortFace(world, EnumBlockFace.EAST, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, distortX, distortZ);
+        this.addDistortFace(world, EnumBlockFace.SOUTH, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, distortX, distortZ);
+        this.addDistortFace(world, EnumBlockFace.WEST, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, distortX, distortZ);
         this.addFace(world, EnumBlockFace.TOP, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV + 8 / 256);
     }
 
-    renderGuiItem(block) {
-        // Vertex mappings
-        let minX = 0;
-        let minY = 0;
-        let minZ = 0;
-        let maxX = 1;
-        let maxY = 1;
-        let maxZ = 1;
-
-        // UV Mapping
-        let textureIndex = block.getTextureForFace(EnumBlockFace.NORTH);
-        let minU = (textureIndex % 16) / 16.0;
-        let maxU = minU + (16 / 256);
-        let minV = Math.floor(textureIndex / 16) / 16.0;
-        let maxV = minV + (16 / 256);
-
-        // Flip V
-        minV = 1 - minV;
-        maxV = 1 - maxV;
-
-        // Render item
-        this.addFace(null, EnumBlockFace.NORTH, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
+    addDistortFace(world, face, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, distortX, distortZ) {
+        if (face === EnumBlockFace.NORTH) {
+            this.addBlockCorner(world, face, minX, maxY, minZ, minU, minV);
+            this.addBlockCorner(world, face, minX + distortX, minY, minZ + distortZ, minU, maxV);
+            this.addBlockCorner(world, face, maxX + distortX, minY, minZ + distortZ, maxU, maxV);
+            this.addBlockCorner(world, face, maxX, maxY, minZ, maxU, minV);
+        }
+        if (face === EnumBlockFace.SOUTH) {
+            this.addBlockCorner(world, face, minX, maxY, maxZ, maxU, minV);
+            this.addBlockCorner(world, face, maxX, maxY, maxZ, minU, minV);
+            this.addBlockCorner(world, face, maxX + distortX, minY, maxZ + distortZ, minU, maxV);
+            this.addBlockCorner(world, face, minX + distortX, minY, maxZ + distortZ, maxU, maxV);
+        }
+        if (face === EnumBlockFace.WEST) {
+            this.addBlockCorner(world, face, minX + distortX, minY, maxZ + distortZ, minU, maxV);
+            this.addBlockCorner(world, face, minX + distortX, minY, minZ + distortZ, maxU, maxV);
+            this.addBlockCorner(world, face, minX, maxY, minZ, maxU, minV);
+            this.addBlockCorner(world, face, minX, maxY, maxZ, minU, minV);
+        }
+        if (face === EnumBlockFace.EAST) {
+            this.addBlockCorner(world, face, maxX, maxY, maxZ, maxU, minV);
+            this.addBlockCorner(world, face, maxX, maxY, minZ, minU, minV);
+            this.addBlockCorner(world, face, maxX + distortX, minY, minZ + distortZ, minU, maxV);
+            this.addBlockCorner(world, face, maxX + distortX, minY, maxZ + distortZ, maxU, maxV);
+        }
     }
 
     renderGuiBlock(group, block, x, y, size) {
@@ -265,5 +294,29 @@ window.BlockRenderer = class {
         mesh.scale.x = size;
         mesh.scale.y = size;
         mesh.scale.z = size;
+    }
+
+    renderGuiItem(block) {
+        // Vertex mappings
+        let minX = 0;
+        let minY = 0;
+        let minZ = 0;
+        let maxX = 1;
+        let maxY = 1;
+        let maxZ = 1;
+
+        // UV Mapping
+        let textureIndex = block.getTextureForFace(EnumBlockFace.NORTH);
+        let minU = (textureIndex % 16) / 16.0;
+        let maxU = minU + (16 / 256);
+        let minV = Math.floor(textureIndex / 16) / 16.0;
+        let maxV = minV + (16 / 256);
+
+        // Flip V
+        minV = 1 - minV;
+        maxV = 1 - maxV;
+
+        // Render item
+        this.addFace(null, EnumBlockFace.NORTH, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
     }
 }

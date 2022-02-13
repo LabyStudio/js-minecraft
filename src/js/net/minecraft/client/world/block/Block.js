@@ -64,6 +64,14 @@ window.Block = class {
         return this.boundingBox;
     }
 
+    onBlockAdded(world, x, y, z) {
+
+    }
+
+    onBlockPlaced(world, x, y, z, face) {
+
+    }
+
     collisionRayTrace(x, y, z, start, end) {
         start = start.addVector(-x, -y, -z);
         end = end.addVector(-x, -y, -z);
