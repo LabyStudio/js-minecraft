@@ -44,6 +44,12 @@ window.Tessellator = class {
         this.colors.push(this.blue);
     }
 
+    transformBrightness(brightness) {
+        for (let i in this.colors) {
+            this.colors[i] *= brightness;
+        }
+    }
+
     draw(group) {
         let geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.vertices), 3));
