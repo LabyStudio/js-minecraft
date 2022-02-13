@@ -5,6 +5,7 @@ window.BlockTorch = class extends Block {
 
         this.boundingBox = new BoundingBox(0.4, 0.0, 0.4, 0.6, 0.6, 0.6);
 
+        // Create data faces
         this.dataFaces = [
             EnumBlockFace.WEST,
             EnumBlockFace.EAST,
@@ -31,24 +32,52 @@ window.BlockTorch = class extends Block {
             let dataFace = this.dataFaces[i];
 
             if (world.isSolidBlockAt(x + dataFace.x, y + dataFace.y, z + dataFace.z)) {
-                world.setBlockDataAt(x, y, z, i + 1);
+                let data = i + 1;
+
+                // Update block data in world
+                world.setBlockDataAt(x, y, z, data);
                 break;
             }
         }
     }
 
     onBlockPlaced(world, x, y, z, face) {
-        let meta = world.getBlockDataAt(x, y, z);
+        let data = world.getBlockDataAt(x, y, z);
 
         for (let i in this.dataFaces) {
             let dataFace = this.dataFaces[i];
 
             if (face === dataFace.opposite() && world.isSolidBlockAt(x + dataFace.x, y + dataFace.y, z + dataFace.z)) {
-                meta = parseInt(i) + 1;
+                data = parseInt(i) + 1;
                 break;
             }
         }
 
-        world.getChunkSectionAt(x >> 4, y >> 4, z >> 4).setBlockDataAt(x & 15, y & 15, z & 15, meta);
+        // Update block data in chunk section directly to avoid notify
+        world.getChunkSectionAt(x >> 4, y >> 4, z >> 4).setBlockDataAt(x & 15, y & 15, z & 15, data);
+    }
+
+    collisionRayTrace(world, x, y, z, start, end) {
+        let data = world.getBlockDataAt(x, y, z) & 7;
+
+        switch (data) {
+            case 1:
+                this.boundingBox = new BoundingBox(0.0, 0.2, 0.35, 0.3, 0.8, 0.65);
+                break;
+            case 2:
+                this.boundingBox = new BoundingBox(0.7, 0.2, 0.35, 1.0, 0.8, 0.65);
+                break;
+            case 3:
+                this.boundingBox = new BoundingBox(0.35, 0.2, 0.0, 0.65, 0.8, 0.3);
+                break;
+            case 4:
+                this.boundingBox = new BoundingBox(0.35, 0.2, 0.7, 0.65, 0.8, 1.0);
+                break;
+            default:
+                this.boundingBox = new BoundingBox(0.4, 0.0, 0.4, 0.6, 0.6, 0.6);
+                break;
+        }
+
+        return super.collisionRayTrace(world, x, y, z, start, end);
     }
 }

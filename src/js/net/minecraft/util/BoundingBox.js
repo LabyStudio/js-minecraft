@@ -21,6 +21,17 @@ window.BoundingBox = class {
         this.maxZ = maxZ;
     }
 
+    width() {
+        return this.maxX - this.minX;
+    }
+
+    height() {
+        return this.maxY - this.minY;
+    }
+
+    depth() {
+        return this.maxZ - this.minZ;
+    }
 
     /**
      * Copy the current bounding box object

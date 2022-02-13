@@ -57,7 +57,16 @@ window.WorldRenderer = class {
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
 
+        // Create sky
         this.generateSky();
+
+        // Create block hit box
+        let geometry = new THREE.BoxGeometry(1, 1, 1);
+        let edges = new THREE.EdgesGeometry(geometry);
+        this.blockHitBox = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({
+            color: 0x000000,
+        }));
+        this.scene.add(this.blockHitBox);
     }
 
     render(partialTicks) {
@@ -72,6 +81,9 @@ window.WorldRenderer = class {
 
         // Render sky
         this.renderSky(partialTicks);
+
+        // Render target block
+        this.renderBlockHitBox(player, partialTicks);
 
         // Render actual scene
         this.webRenderer.render(this.scene, this.camera);
@@ -235,5 +247,44 @@ window.WorldRenderer = class {
         // Rotate sky
         let angle = this.minecraft.world.getCelestialAngle(partialTicks);
         this.skyGroup.rotation.set(angle * Math.PI * 2 + Math.PI / 2, 0, 0);
+    }
+
+    renderBlockHitBox(player, partialTicks) {
+        let hitResult = player.rayTrace(5, partialTicks);
+        let hitBoxVisible = !(hitResult === null);
+        if ((this.blockHitBox.visible = hitBoxVisible)) {
+            let x = hitResult.x;
+            let y = hitResult.y;
+            let z = hitResult.z;
+
+            // Get block type
+            let world = this.minecraft.world;
+            let typeId = world.getBlockAt(x, y, z);
+            let block = Block.getById(typeId);
+
+            if (typeId !== 0) {
+                let boundingBox = block.getBoundingBox(world, x, y, z);
+
+                let offset = 0.01;
+
+                let width = boundingBox.width() + offset;
+                let height = boundingBox.height() + offset;
+                let depth = boundingBox.depth() + offset;
+
+                // Update size of hit box
+                this.blockHitBox.scale.set(
+                    width,
+                    height,
+                    depth
+                );
+
+                // Update position of hit box
+                this.blockHitBox.position.set(
+                    x + width / 2 / width - 0.5 + boundingBox.maxX - width / 2 + offset / 2,
+                    y + height / 2 / height - 0.5 + boundingBox.maxY - height / 2 + offset / 2,
+                    z + depth / 2 / depth - 0.5 + boundingBox.maxZ - depth / 2 + offset / 2,
+                );
+            }
+        }
     }
 }
