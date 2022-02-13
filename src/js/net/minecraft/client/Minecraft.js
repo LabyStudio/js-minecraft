@@ -211,7 +211,14 @@ window.Minecraft = class {
                         let soundName = block.getSound().getBreakSound();
 
                         // Play sound
-                        this.soundManager.playSound(soundName, hitResult.x + 0.5, hitResult.y + 0.5, hitResult.z + 0.5, 1.0);
+                        this.soundManager.playSound(
+                            soundName,
+                            hitResult.x + 0.5,
+                            hitResult.y + 0.5,
+                            hitResult.z + 0.5,
+                            1.0,
+                            1.0
+                        );
 
                         // Destroy block
                         this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
@@ -241,7 +248,11 @@ window.Minecraft = class {
                     // Don't place blocks if the player is standing there
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
                         let typeId = this.inventory.getItemInSelectedSlot();
-                        if (typeId !== 0) {
+
+                        // Get previous block
+                        let prevTypeId = this.world.getBlockAt(x, y, z);
+
+                        if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
                             this.world.setBlockAt(x, y, z, typeId);
 
@@ -252,7 +263,14 @@ window.Minecraft = class {
                             // Play sound
                             let sound = block.getSound();
                             let soundName = sound.getStepSound();
-                            this.soundManager.playSound(soundName, hitResult.x + 0.5, hitResult.y + 0.5, hitResult.z + 0.5, sound.getPitch() * 0.8);
+                            this.soundManager.playSound(
+                                soundName,
+                                hitResult.x + 0.5,
+                                hitResult.y + 0.5,
+                                hitResult.z + 0.5,
+                                1.0,
+                                sound.getPitch() * 0.8
+                            );
                         }
                     }
                 }

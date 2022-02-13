@@ -296,7 +296,7 @@ window.Player = class {
 
                 // Play sound
                 if (!block.isLiquid()) {
-                    this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, sound.getPitch());
+                    this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.15, sound.getPitch());
                 }
             }
         }
