@@ -83,7 +83,7 @@ window.FontRenderer = class {
                 this.texture,
                 textureOffsetX, textureOffsetY,
                 FontRenderer.FIELD_SIZE, FontRenderer.FIELD_SIZE,
-                x, y,
+                Math.floor(x), Math.floor(y),
                 FontRenderer.FIELD_SIZE, FontRenderer.FIELD_SIZE
             );
 
