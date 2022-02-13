@@ -38,7 +38,9 @@ window.SoundManager = class {
     }
 
     loadSound(path) {
-        let scope = this;
+        if (!this.isCreated()) {
+            return;
+        }
 
         // Create sound
         let sound = new THREE.PositionalAudio(this.audioListener);
@@ -47,6 +49,7 @@ window.SoundManager = class {
         sound.setFilter(sound.context.createBiquadFilter());
 
         // Load sound
+        let scope = this;
         this.audioLoader.load(path, function (buffer) {
             sound.setBuffer(buffer);
             scope.scene.add(sound);
