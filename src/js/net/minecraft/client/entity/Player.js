@@ -45,7 +45,7 @@ window.Player = class {
         this.timeFovChanged = 0;
 
         this.distanceWalked = 0;
-        this.nextStepDistance = 0;
+        this.nextStepDistance = 1;
     }
 
     respawn() {
@@ -248,6 +248,8 @@ window.Player = class {
         let prevX = this.x;
         let prevZ = this.z;
 
+        let isSlow = this.onGround && this.sneaking;
+
         let value = 0.16277136 / (prevSlipperiness * prevSlipperiness * prevSlipperiness);
         let friction;
 
@@ -275,25 +277,27 @@ window.Player = class {
         this.motionY *= 0.98;
         this.motionZ *= slipperiness;
 
-        let blockX = MathHelper.floor_double(this.x);
-        let blockY = MathHelper.floor_double(this.y - 0.2);
-        let blockZ = MathHelper.floor_double(this.z);
-        let typeId = this.world.getBlockAt(blockX, blockY, blockZ);
-
-        let distanceX = this.x - prevX;
-        let distanceZ = this.z - prevZ;
-
         // Step sound
-        this.distanceWalked += Math.sqrt(distanceX * distanceX + distanceZ * distanceZ) * 0.6;
-        if (this.distanceWalked > this.nextStepDistance && typeId !== 0) {
-            this.nextStepDistance++;
+        if (!isSlow) {
+            let blockX = MathHelper.floor_double(this.x);
+            let blockY = MathHelper.floor_double(this.y - 0.2);
+            let blockZ = MathHelper.floor_double(this.z);
+            let typeId = this.world.getBlockAt(blockX, blockY, blockZ);
 
-            let block = Block.getById(typeId);
-            let sound = block.getSound();
+            let distanceX = this.x - prevX;
+            let distanceZ = this.z - prevZ;
 
-            // Play sound
-            if (!block.isLiquid()) {
-                this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, sound.getPitch());
+            this.distanceWalked += Math.sqrt(distanceX * distanceX + distanceZ * distanceZ) * 0.6;
+            if (this.distanceWalked > this.nextStepDistance && typeId !== 0) {
+                this.nextStepDistance = this.distanceWalked + 1;
+
+                let block = Block.getById(typeId);
+                let sound = block.getSound();
+
+                // Play sound
+                if (!block.isLiquid()) {
+                    this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, sound.getPitch());
+                }
             }
         }
     }
