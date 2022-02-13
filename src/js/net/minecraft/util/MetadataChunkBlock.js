@@ -46,7 +46,7 @@ window.MetadataChunkBlock = class {
                             level = 15;
                         }
                     } else if (this.type === EnumSkyBlock.BLOCK) {
-                        level = 0; // TODO
+                        level = typeId === 0 ? 0 : block.getLightValue();
                     }
 
                     if (opacity >= 15 && level === 0) {

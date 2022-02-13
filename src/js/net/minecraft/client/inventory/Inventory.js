@@ -3,6 +3,15 @@ window.Inventory = class {
     constructor() {
         this.selectedSlotIndex = 0;
         this.items = [];
+
+        // Default items in inventory
+        this.items[0] = 1;
+        this.items[1] = 2;
+        this.items[2] = 3;
+        this.items[3] = 17;
+        this.items[4] = 18;
+        this.items[5] = 12;
+        this.items[6] = 50;
     }
 
     setItemInSelectedSlot(typeId) {

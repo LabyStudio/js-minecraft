@@ -17,6 +17,11 @@ window.WorldRenderer = class {
         this.textureSun.magFilter = THREE.NearestFilter;
         this.textureSun.minFilter = THREE.NearestFilter;
 
+        // Load moon texture
+        this.textureMoon = new THREE.TextureLoader().load('src/resources/terrain/moon.png');
+        this.textureMoon.magFilter = THREE.NearestFilter;
+        this.textureMoon.minFilter = THREE.NearestFilter;
+
         // Block Renderer
         this.blockRenderer = new BlockRenderer(this);
 
@@ -181,6 +186,13 @@ window.WorldRenderer = class {
         }
     }
 
+    rebuildAll() {
+        let world = this.minecraft.world;
+        for (let [index, chunk] of world.chunks) {
+            chunk.setModifiedAllSections();
+        }
+    }
+
     generateSky() {
         // Create sky group
         this.skyGroup = new THREE.Scene();
@@ -188,19 +200,32 @@ window.WorldRenderer = class {
 
         // Create sun
         let geometry = new THREE.PlaneGeometry(1, 1);
-        let material = new THREE.MeshBasicMaterial({
-            color: 0xffff00,
+        let materialSun = new THREE.MeshBasicMaterial({
             side: THREE.FrontSide,
             map: this.textureSun,
             alphaMap: this.textureSun,
             blending: THREE.AdditiveBlending,
             transparent: true
         });
-        this.sun = new THREE.Mesh(geometry, material);
+        this.sun = new THREE.Mesh(geometry, materialSun);
         this.sun.translateZ(-2);
         this.sun.renderOrder = 999;
         this.sun.material.depthTest = false;
         this.skyGroup.add(this.sun);
+
+        // Create moon
+        let materialMoon = new THREE.MeshBasicMaterial({
+            side: THREE.BackSide,
+            map: this.textureMoon,
+            alphaMap: this.textureMoon,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        this.moon = new THREE.Mesh(geometry, materialMoon);
+        this.moon.translateZ(2);
+        this.moon.renderOrder = 999;
+        this.moon.material.depthTest = false;
+        this.skyGroup.add(this.moon);
     }
 
     renderSky(partialTicks) {

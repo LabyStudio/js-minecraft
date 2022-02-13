@@ -99,7 +99,7 @@ window.ChunkSection = class {
 
     getTotalLightAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        let skyLight = this.skyLight[index];
+        let skyLight = this.skyLight[index] - this.world.skylightSubtracted;
         let blockLight = this.blockLight[index];
         if (blockLight > skyLight) {
             skyLight = blockLight;
