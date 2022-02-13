@@ -53,21 +53,35 @@ window.ItemRenderer = class {
         if (typeof meta === "undefined") {
             let meta = {};
 
+            // To make the items darker
+            let paused = this.minecraft.isPaused();
+
+            // Render item
             let group = new THREE.Group();
-            this.minecraft.worldRenderer.blockRenderer.renderGuiBlock(group, block, x, y, 10);
+            this.minecraft.worldRenderer.blockRenderer.renderGuiBlock(group, block, x, y, 10, paused ? 0.5 : 1);
             this.scene.add(group);
 
+            // Create meta
             meta.group = group;
             meta.typeId = block.getId();
             meta.x = x;
             meta.y = y;
+            meta.dirty = false;
             this.items[renderId] = meta;
         } else {
-            if (meta.typeId !== block.getId() || meta.x !== x || meta.y !== y) {
+            // Check if rendered item has changed
+            if (meta.dirty || meta.typeId !== block.getId() || meta.x !== x || meta.y !== y) {
+                // Rebuild item
                 this.scene.remove(meta.group);
                 delete this.items[renderId];
                 this.renderItemInGui(renderId, block, x, y);
             }
+        }
+    }
+
+    rebuildAllItems() {
+        for (let i in this.items) {
+            this.items[i].dirty = true;
         }
     }
 }

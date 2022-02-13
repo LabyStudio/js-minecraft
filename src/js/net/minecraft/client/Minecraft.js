@@ -158,6 +158,9 @@ window.Minecraft = class {
             this.window.exitFocus();
             screen.setup(this, this.window.width, this.window.height);
         }
+
+        // Update items
+        this.itemRenderer.rebuildAllItems();
     }
 
     onTick() {

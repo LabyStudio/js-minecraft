@@ -252,7 +252,7 @@ window.BlockRenderer = class {
         }
     }
 
-    renderGuiBlock(group, block, x, y, size) {
+    renderGuiBlock(group, block, x, y, size, brightness) {
         this.tessellator.startDrawing();
 
         let boundingBox = block.getBoundingBox(null, 0, 0, 0);
@@ -268,6 +268,9 @@ window.BlockRenderer = class {
                 this.renderGuiItem(block);
                 break;
         }
+
+        // Change brightness
+        this.tessellator.transformBrightness(brightness);
 
         // Create mesh
         let mesh = this.tessellator.draw(group);
