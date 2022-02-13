@@ -12,6 +12,10 @@ window.BlockWater = class extends Block {
         return false;
     }
 
+    isLiquid() {
+        return true;
+    }
+
     canInteract() {
         return false;
     }

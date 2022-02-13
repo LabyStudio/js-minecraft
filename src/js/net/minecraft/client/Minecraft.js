@@ -45,6 +45,9 @@ window.Minecraft = class {
         this.world = new World(this);
         this.worldRenderer.scene.add(this.world.group);
 
+        // Create sound manager
+        this.soundManager = new SoundManager();
+
         // Create player
         this.player = new Player(this, this.world);
         this.inventory = new Inventory();
@@ -200,7 +203,19 @@ window.Minecraft = class {
             // Destroy block
             if (button === 0) {
                 if (hitResult != null) {
-                    this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                    // Get previous block
+                    let typeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
+                    let block = Block.getById(typeId);
+
+                    if (typeId !== 0) {
+                        let soundName = block.getSound().getBreakSound();
+
+                        // Play sound
+                        this.soundManager.playSound(soundName, hitResult.x + 0.5, hitResult.y + 0.5, hitResult.z + 0.5, 1.0);
+
+                        // Destroy block
+                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                    }
                 }
             }
 
@@ -227,13 +242,17 @@ window.Minecraft = class {
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
                         let typeId = this.inventory.getItemInSelectedSlot();
                         if (typeId !== 0) {
-
                             // Place block
                             this.world.setBlockAt(x, y, z, typeId);
 
                             // Handle block abilities
                             let block = Block.getById(typeId);
                             block.onBlockPlaced(this.world, x, y, z, hitResult.face);
+
+                            // Play sound
+                            let sound = block.getSound();
+                            let soundName = sound.getStepSound();
+                            this.soundManager.playSound(soundName, hitResult.x + 0.5, hitResult.y + 0.5, hitResult.z + 0.5, sound.getPitch() * 0.8);
                         }
                     }
                 }

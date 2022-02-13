@@ -2,7 +2,18 @@ window.Block = class {
 
     static blocks = new Map();
 
+    static sounds = {};
+
     static create() {
+        // Sounds
+        Block.sounds.stone = new Sound("stone", 1.0);
+        Block.sounds.wood = new Sound("wood", 1.0);
+        Block.sounds.gravel = new Sound("gravel", 1.0);
+        Block.sounds.grass = new Sound("grass", 1.0);
+        Block.sounds.cloth = new Sound("cloth", 1.0);
+        Block.sounds.sand = new Sound("sand", 1.0);
+
+        // Blocks
         Block.STONE = new BlockStone(1, 0);
         Block.GRASS = new BlockGrass(2, 1);
         Block.DIRT = new BlockDirt(3, 2);
@@ -17,7 +28,11 @@ window.Block = class {
         this.id = id;
         this.textureSlotId = textureSlotId;
 
+        // Bounding box
         this.boundingBox = new BoundingBox(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+
+        // Default sound
+        this.sound = Block.sounds.stone;
 
         // Register block
         Block.blocks.set(id, this);
@@ -58,6 +73,14 @@ window.Block = class {
 
     canInteract() {
         return true;
+    }
+
+    isLiquid() {
+        return false;
+    }
+
+    getSound() {
+        return this.sound;
     }
 
     getBoundingBox(world, x, y, z) {

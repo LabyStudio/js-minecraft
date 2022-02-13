@@ -43,6 +43,9 @@ window.Player = class {
         this.prevFovModifier = 0;
         this.fovModifier = 0;
         this.timeFovChanged = 0;
+
+        this.distanceWalked = 0;
+        this.nextStepDistance = 0;
     }
 
     respawn() {
@@ -242,6 +245,9 @@ window.Player = class {
     travel(forward, vertical, strafe) {
         let prevSlipperiness = this.getBlockSlipperiness() * 0.91;
 
+        let prevX = this.x;
+        let prevZ = this.z;
+
         let value = 0.16277136 / (prevSlipperiness * prevSlipperiness * prevSlipperiness);
         let friction;
 
@@ -268,6 +274,28 @@ window.Player = class {
         this.motionX *= slipperiness;
         this.motionY *= 0.98;
         this.motionZ *= slipperiness;
+
+        let blockX = MathHelper.floor_double(this.x);
+        let blockY = MathHelper.floor_double(this.y - 0.2);
+        let blockZ = MathHelper.floor_double(this.z);
+        let typeId = this.world.getBlockAt(blockX, blockY, blockZ);
+
+        let distanceX = this.x - prevX;
+        let distanceZ = this.z - prevZ;
+
+        // Step sound
+        this.distanceWalked += Math.sqrt(distanceX * distanceX + distanceZ * distanceZ) * 0.6;
+        if (this.distanceWalked > this.nextStepDistance && typeId !== 0) {
+            this.nextStepDistance++;
+
+            let block = Block.getById(typeId);
+            let sound = block.getSound();
+
+            // Play sound
+            if (!block.isLiquid()) {
+                this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, sound.getPitch());
+            }
+        }
     }
 
     getBlockSlipperiness() {
