@@ -341,7 +341,7 @@ window.World = class {
         let block = Block.getById(blockId);
 
         if (block != null && block.canInteract()) {
-            let hit = block.collisionRayTrace(x, y, z, from, to);
+            let hit = block.collisionRayTrace(this, x, y, z, from, to);
             if (hit != null) {
                 return hit;
             }
@@ -435,7 +435,7 @@ window.World = class {
             let block = Block.getById(blockId);
 
             if (block != null && block.canInteract()) {
-                let hit = block.collisionRayTrace(x, y, z, from, to);
+                let hit = block.collisionRayTrace(this, x, y, z, from, to);
                 if (hit != null) {
                     return hit;
                 }

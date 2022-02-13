@@ -72,7 +72,7 @@ window.Block = class {
 
     }
 
-    collisionRayTrace(x, y, z, start, end) {
+    collisionRayTrace(world, x, y, z, start, end) {
         start = start.addVector(-x, -y, -z);
         end = end.addVector(-x, -y, -z);
 
