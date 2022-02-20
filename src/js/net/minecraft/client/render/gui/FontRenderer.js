@@ -13,7 +13,7 @@ window.FontRenderer = class {
         let bitMap = this.createBitMap(this.texture);
 
         // Calculate character width
-        for (let i = 0; i < 128; i++) {
+        for (let i = 0; i < 256; i++) {
             this.charWidths[i] = this.calculateCharacterWidthAt(bitMap, i % FontRenderer.BITMAP_SIZE, Math.floor(i / FontRenderer.BITMAP_SIZE)) + 2;
         }
     }
@@ -33,7 +33,7 @@ window.FontRenderer = class {
                 let alpha = bitMap[i + 3];
 
                 // Return width if there is a white pixel
-                if (red !== 0 || green !== 0 || blue !== 0 || alpha !== 0) {
+                if (red > 1 || green > 1 || blue > 1 || alpha > 1) {
                     return x - indexX * FontRenderer.FIELD_SIZE;
                 }
             }
