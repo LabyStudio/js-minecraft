@@ -3,6 +3,8 @@ window.GameSettings = class {
     constructor() {
         this.crouching = 'ShiftLeft';
         this.sprinting = 'ControlLeft';
+        this.togglePerspective =  'F5';
+        this.thirdPersonView = 0;
     }
 
     load() {

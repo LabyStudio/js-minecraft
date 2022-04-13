@@ -22,6 +22,11 @@ window.GuiControls = class extends GuiScreen {
             scope.init();
         }));
 
+        this.buttonList.push(new GuiKeyButton("Toggle Perspective", settings.togglePerspective, this.width / 2 - 100, this.height / 2 + 30, 200, 20, function (key) {
+            settings.togglePerspective = key;
+            scope.init();
+        }));
+
         this.buttonList.push(new GuiButton("Done", this.width / 2 - 100, this.height / 2 + 70, 200, 20, function () {
             scope.minecraft.displayScreen(scope.previousScreen);
         }));

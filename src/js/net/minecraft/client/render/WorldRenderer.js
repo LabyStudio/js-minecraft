@@ -1,6 +1,7 @@
 window.WorldRenderer = class {
 
     static RENDER_DISTANCE = 4;
+    static THIRD_PERSON_DISTANCE = 4;
 
     constructor(minecraft, window) {
         this.minecraft = minecraft;
@@ -90,7 +91,10 @@ window.WorldRenderer = class {
 
         // Render entities
         for (let entity of this.minecraft.world.entities) {
-            this.renderEntity(entity);
+            if (entity === player && this.minecraft.settings.thirdPersonView === 0) {
+                continue;
+            }
+            this.renderEntity(entity, partialTicks);
         }
 
         // Render actual scene
@@ -100,14 +104,37 @@ window.WorldRenderer = class {
     orientCamera(partialTicks) {
         let player = this.minecraft.player;
 
-        // Rotation
-        this.camera.rotation.y = -MathHelper.toRadians(player.yaw + 180);
-        this.camera.rotation.x = -MathHelper.toRadians(player.pitch);
+        let rotationY = -MathHelper.toRadians(player.yaw + 180);
+        let rotationX = -MathHelper.toRadians(player.pitch);
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
         let y = player.prevY + (player.y - player.prevY) * partialTicks;
         let z = player.prevZ + (player.z - player.prevZ) * partialTicks;
+
+        // Add camera offset
+        let mode = this.minecraft.settings.thirdPersonView;
+        if (mode !== 0) {
+            // Flip for front view
+            if (mode === 2) {
+                rotationY += Math.PI;
+            }
+
+            // Shift camera
+            let cameraOffsetX = Math.sin(rotationY) * Math.cos(rotationX);
+            let cameraOffsetY = Math.sin(-rotationX);
+            let cameraOffsetZ = Math.cos(rotationY) * Math.cos(rotationX);
+
+            x += cameraOffsetX * WorldRenderer.THIRD_PERSON_DISTANCE;
+            y += cameraOffsetY * WorldRenderer.THIRD_PERSON_DISTANCE;
+            z += cameraOffsetZ * WorldRenderer.THIRD_PERSON_DISTANCE;
+        }
+
+        // Update rotation
+        this.camera.rotation.y = rotationY;
+        this.camera.rotation.x = rotationX;
+
+        // Update camera positionWC
         this.camera.position.set(x, y + player.getEyeHeight(), z);
 
         // Update frustum
@@ -296,8 +323,8 @@ window.WorldRenderer = class {
         }
     }
 
-    renderEntity(entity) {
+    renderEntity(entity, partialTicks) {
         let entityRenderer = this.entityRenderManager.getEntityRendererByEntity(entity);
-        entityRenderer.render(entity);
+        entityRenderer.render(entity, partialTicks);
     }
 }
