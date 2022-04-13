@@ -5,6 +5,8 @@ window.World = class {
     constructor(minecraft) {
         this.minecraft = minecraft;
 
+        this.entities = [];
+
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
 
@@ -499,5 +501,32 @@ window.World = class {
             level = 1.0;
         }
         return Math.floor(level * 11);
+    }
+
+    addEntity(entity) {
+        this.entities.push(entity);
+        this.group.add(entity.group);
+
+        let tessellator = new Tessellator();
+
+        // Rebuild entity model
+        let worldRenderer = this.minecraft.worldRenderer;
+        let renderer = worldRenderer.entityRenderManager.getEntityRendererByEntity(entity);
+        renderer.rebuild(tessellator, entity);
+    }
+
+    removeEntityById(id) {
+        let entity = this.getEntityById(id);
+        this.entities.remove(entity);
+        this.group.remove(entity.group);
+    }
+
+    getEntityById(id) {
+        for (let entity of this.entities) {
+            if (entity.id === id) {
+                return entity;
+            }
+        }
+        return null;
     }
 }

@@ -75,7 +75,8 @@ loadTexture([
     "gui/icons.png",
     "terrain/terrain.png",
     "terrain/sun.png",
-    "terrain/moon.png"
+    "terrain/moon.png",
+    "char.png"
 ]).then(() => {
     // Load scripts
     loadScripts([
@@ -125,7 +126,8 @@ loadTexture([
         "src/js/net/minecraft/client/world/generator/noise/NoiseGeneratorOctaves.js",
         "src/js/net/minecraft/client/world/generator/noise/NoiseGeneratorCombined.js",
         "src/js/net/minecraft/client/world/generator/WorldGenerator.js",
-        "src/js/net/minecraft/client/entity/Player.js",
+        "src/js/net/minecraft/client/entity/Entity.js",
+        "src/js/net/minecraft/client/entity/PlayerEntity.js",
         "src/js/net/minecraft/client/inventory/Inventory.js",
         "src/js/net/minecraft/client/GameSettings.js",
         "src/js/net/minecraft/client/Minecraft.js",
@@ -137,6 +139,14 @@ loadTexture([
         "src/js/net/minecraft/client/render/gui/ScreenRenderer.js",
         "src/js/net/minecraft/client/render/gui/ItemRenderer.js",
         "src/js/net/minecraft/client/render/Tessellator.js",
+        "src/js/net/minecraft/client/render/model/ModelBase.js",
+        "src/js/net/minecraft/client/render/model/renderer/Vertex.js",
+        "src/js/net/minecraft/client/render/model/renderer/Polygon.js",
+        "src/js/net/minecraft/client/render/model/renderer/ModelRenderer.js",
+        "src/js/net/minecraft/client/render/model/model/ModelPlayer.js",
+        "src/js/net/minecraft/client/render/entity/EntityRenderer.js",
+        "src/js/net/minecraft/client/render/entity/entity/PlayerRenderer.js",
+        "src/js/net/minecraft/client/render/entity/EntityRenderManager.js",
         "src/js/net/minecraft/client/render/WorldRenderer.js",
         "src/js/net/minecraft/client/render/BlockRenderer.js"
     ]).then(() => {

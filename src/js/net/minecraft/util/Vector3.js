@@ -6,7 +6,6 @@ window.Vector3 = class {
         this.z = z;
     }
 
-
     addVector(x, y, z) {
         return new Vector3(this.x + x, this.y + y, this.z + z);
     }
@@ -67,6 +66,21 @@ window.Vector3 = class {
             let d3 = (z - this.z) / d2;
             return d3 >= 0.0 && d3 <= 1.0 ? new Vector3(this.x + d0 * d3, this.y + d1 * d3, this.z + d2 * d3) : null;
         }
+    }
+
+    /**
+     * Create an interpolated vector from the current vector position to the given one
+     *
+     * @param vector       The end vector
+     * @param partialTicks Interpolation progress
+     * @return Interpolated vector between the two positions
+     */
+    interpolateTo(vector, partialTicks) {
+        let interpolatedX = this.x + (vector.x - this.x) * partialTicks;
+        let interpolatedY = this.y + (vector.y - this.y) * partialTicks;
+        let interpolatedZ = this.z + (vector.z - this.z) * partialTicks;
+
+        return new Vector3(interpolatedX, interpolatedY, interpolatedZ);
     }
 
 }

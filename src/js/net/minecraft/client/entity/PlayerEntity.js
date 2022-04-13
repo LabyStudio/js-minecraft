@@ -1,6 +1,10 @@
-window.Player = class {
+window.PlayerEntity = class extends Entity {
+
+    static name = "PlayerEntity";
 
     constructor(minecraft, world) {
+        super();
+
         this.minecraft = minecraft;
         this.world = world;
 

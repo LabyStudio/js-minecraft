@@ -25,6 +25,9 @@ window.WorldRenderer = class {
         // Block Renderer
         this.blockRenderer = new BlockRenderer(this);
 
+        // Entity render manager
+        this.entityRenderManager = new EntityRenderManager();
+
         this.initialize();
     }
 
@@ -84,6 +87,11 @@ window.WorldRenderer = class {
 
         // Render target block
         this.renderBlockHitBox(player, partialTicks);
+
+        // Render entities
+        for (let entity of this.minecraft.world.entities) {
+            this.renderEntity(entity);
+        }
 
         // Render actual scene
         this.webRenderer.render(this.scene, this.camera);
@@ -286,5 +294,10 @@ window.WorldRenderer = class {
                 );
             }
         }
+    }
+
+    renderEntity(entity) {
+        let entityRenderer = this.entityRenderManager.getEntityRendererByEntity(entity);
+        entityRenderer.render(entity);
     }
 }
