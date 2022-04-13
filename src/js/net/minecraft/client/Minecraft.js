@@ -49,7 +49,8 @@ window.Minecraft = class {
         this.soundManager = new SoundManager();
 
         // Create player
-        this.player = new Player(this, this.world);
+        this.player = new PlayerEntity(this, this.world);
+        this.world.addEntity(this.player);
         this.inventory = new Inventory();
 
         this.displayScreen(this.loadingScreen);
