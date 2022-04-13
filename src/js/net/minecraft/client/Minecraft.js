@@ -173,7 +173,7 @@ window.Minecraft = class {
             this.world.onTick();
 
             // Tick the player
-            this.player.onTick();
+            this.player.onUpdate();
         }
 
         // Update loading progress
