@@ -18,14 +18,19 @@ window.EntityRenderer = class {
 
         // Translate using interpolated position
         group.position.setX(interpolatedX);
-        group.position.setY(interpolatedY);
+        group.position.setY(interpolatedY + 1.4);
         group.position.setZ(interpolatedZ);
 
         // Actual size of the entity
         let scale = 7.0 / 120.0;
-        group.scale.set(scale, scale, scale);
+        group.scale.set(scale, -scale, scale);
 
-        this.model.render(group, 0);
+        // Rotate entity model
+        group.rotation.y = MathHelper.toRadians(-entity.yaw + 180);
+
+        // Render entity model
+        let time = Date.now() / 100;
+        this.model.render(group, time);
     }
 
 }

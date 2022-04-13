@@ -2,13 +2,13 @@ window.ModelRenderer = class {
 
     /**
      * Create cube object
-     *
-     * @param textureOffsetX x offset position on the texture
-     * @param textureOffsetY y offset position on the texture
      */
-    constructor(textureOffsetX, textureOffsetY) {
-        this.textureOffsetX = textureOffsetX;
-        this.textureOffsetY = textureOffsetY;
+    constructor(textureWidth, textureHeight) {
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
+
+        this.textureOffsetX = 0;
+        this.textureOffsetY = 0;
 
         this.xRotation = 0;
         this.yRotation = 0;
@@ -31,9 +31,7 @@ window.ModelRenderer = class {
         this.textureOffsetX = textureOffsetX;
         this.textureOffsetY = textureOffsetY;
 
-        this.xRotation = 0;
-        this.yRotation = 0;
-        this.zRotation = 0;
+        return this;
     }
 
     /**
@@ -54,16 +52,16 @@ window.ModelRenderer = class {
         let z = offsetZ + depth;
 
         // Create bottom vertex points of cube
-        let vertexBottom1 = new Vertex(offsetX, offsetY, offsetZ, 0.0, 0.0);
-        let vertexBottom2 = new Vertex(x, offsetY, offsetZ, 0.0, 8.0);
-        let vertexBottom3 = new Vertex(offsetX, offsetY, z, 0.0, 0.0);
-        let vertexBottom4 = new Vertex(x, offsetY, z, 0.0, 8.0);
+        let vertexBottom1 = new Vertex(offsetX, offsetY, offsetZ);
+        let vertexBottom2 = new Vertex(x, offsetY, offsetZ);
+        let vertexBottom3 = new Vertex(offsetX, offsetY, z);
+        let vertexBottom4 = new Vertex(x, offsetY, z);
 
         // Create top vertex points of cube
-        let vertexTop1 = new Vertex(x, y, z, 8.0, 8.0);
-        let vertexTop2 = new Vertex(offsetX, y, z, 8.0, 0.0);
-        let vertexTop3 = new Vertex(x, y, offsetZ, 8.0, 8.0);
-        let vertexTop4 = new Vertex(offsetX, y, offsetZ, 8.0, 0.0);
+        let vertexTop1 = new Vertex(x, y, z);
+        let vertexTop2 = new Vertex(offsetX, y, z);
+        let vertexTop3 = new Vertex(x, y, offsetZ);
+        let vertexTop4 = new Vertex(offsetX, y, offsetZ);
 
         // Create polygons for each cube side
         this.polygons[0] = new Polygon(
@@ -71,7 +69,8 @@ window.ModelRenderer = class {
             this.textureOffsetX + depth + width,
             this.textureOffsetY + depth,
             this.textureOffsetX + depth + width + depth,
-            this.textureOffsetY + depth + height
+            this.textureOffsetY + depth + height,
+            this.textureWidth, this.textureHeight
         );
 
         this.polygons[1] = new Polygon(
@@ -79,7 +78,8 @@ window.ModelRenderer = class {
             this.textureOffsetX,
             this.textureOffsetY + depth,
             this.textureOffsetX + depth,
-            this.textureOffsetY + depth + height
+            this.textureOffsetY + depth + height,
+            this.textureWidth, this.textureHeight
         );
 
         this.polygons[2] = new Polygon(
@@ -87,7 +87,8 @@ window.ModelRenderer = class {
             this.textureOffsetX + depth,
             this.textureOffsetY,
             this.textureOffsetX + depth + width,
-            this.textureOffsetY + depth
+            this.textureOffsetY + depth,
+            this.textureWidth, this.textureHeight
         );
 
         this.polygons[3] = new Polygon(
@@ -95,7 +96,8 @@ window.ModelRenderer = class {
             this.textureOffsetX + depth + width,
             this.textureOffsetY,
             this.textureOffsetX + depth + width + width,
-            this.textureOffsetY + depth
+            this.textureOffsetY + depth,
+            this.textureWidth, this.textureHeight
         );
 
         this.polygons[4] = new Polygon(
@@ -103,7 +105,8 @@ window.ModelRenderer = class {
             this.textureOffsetX + depth,
             this.textureOffsetY + depth,
             this.textureOffsetX + depth + width,
-            this.textureOffsetY + depth + height
+            this.textureOffsetY + depth + height,
+            this.textureWidth, this.textureHeight
         );
 
         this.polygons[5] = new Polygon(
@@ -111,7 +114,8 @@ window.ModelRenderer = class {
             this.textureOffsetX + depth + width + depth,
             this.textureOffsetY + depth,
             this.textureOffsetX + depth + width + depth + width,
-            this.textureOffsetY + depth + height
+            this.textureOffsetY + depth + height,
+            this.textureWidth, this.textureHeight
         );
 
         return this;
@@ -128,6 +132,7 @@ window.ModelRenderer = class {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
     }
 
     rebuild(tessellator, group) {
@@ -154,6 +159,8 @@ window.ModelRenderer = class {
         this.bone.rotation.x = this.xRotation;
         this.bone.rotation.y = this.yRotation;
         this.bone.rotation.z = this.zRotation;
+
+        this.bone.updateMatrix();
     }
 
 }

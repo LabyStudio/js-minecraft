@@ -1,23 +1,23 @@
 window.Polygon = class {
 
-    /**
-     * Bind UV mappings on the vertices
-     *
-     * @param vertices Vertex array
-     * @param minU     Minimum U coordinate
-     * @param minV     Minimum V coordinate
-     * @param maxU     Maximum U coordinate
-     * @param maxV     Maximum V coordinate
-     */
-    constructor(vertices, minU, minV, maxU, maxV) {
+    constructor(vertices, minU, minV, maxU, maxV, textureWidth, textureHeight) {
         this.vertices = vertices;
         this.vertexCount = vertices.length;
 
+        minU /= textureWidth;
+        minV /= textureHeight;
+        maxU /= textureWidth;
+        maxV /= textureHeight;
+
+        // Flip V
+        minV = 1 - minV;
+        maxV = 1 - maxV;
+
         // Map UV on vertices
-        vertices[0] = vertices[0].remap(maxU, minV);
-        vertices[1] = vertices[1].remap(minU, minV);
-        vertices[2] = vertices[2].remap(minU, maxV);
-        vertices[3] = vertices[3].remap(maxU, maxV);
+        vertices[0] = Vertex.create(vertices[0].position).withUV(maxU, minV);
+        vertices[1] = Vertex.create(vertices[1].position).withUV(minU, minV);
+        vertices[2] = Vertex.create(vertices[2].position).withUV(minU, maxV);
+        vertices[3] = Vertex.create(vertices[3].position).withUV(maxU, maxV);
     }
 
     render(tessellator) {
@@ -29,13 +29,7 @@ window.Polygon = class {
             let vertex = this.vertices[i];
 
             // Bind UV mappings and render vertex
-            tessellator.addVertexWithUV(
-                vertex.position.x,
-                vertex.position.y,
-                vertex.position.z,
-                vertex.u / 64.0,
-                vertex.v / 32.0
-            );
+            tessellator.addVertexWithUV(vertex.position.x, vertex.position.y, vertex.position.z, vertex.u, vertex.v);
         }
     }
 }
