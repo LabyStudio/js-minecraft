@@ -51,15 +51,15 @@ window.PlayerEntity = class extends EntityLiving {
     }
 
     turn(motionX, motionY) {
-        this.yaw = this.yaw + motionX * 0.15;
-        this.pitch = this.pitch - motionY * 0.15;
+        this.rotationYaw = this.rotationYaw + motionX * 0.15;
+        this.rotationPitch = this.rotationPitch - motionY * 0.15;
 
-        if (this.pitch < -90.0) {
-            this.pitch = -90.0;
+        if (this.rotationPitch < -90.0) {
+            this.rotationPitch = -90.0;
         }
 
-        if (this.pitch > 90.0) {
-            this.pitch = 90.0;
+        if (this.rotationPitch > 90.0) {
+            this.rotationPitch = 90.0;
         }
     }
 
@@ -131,7 +131,7 @@ window.PlayerEntity = class extends EntityLiving {
         this.motionY = 0.42;
 
         if (this.sprinting) {
-            let radiansYaw = MathHelper.toRadians(this.yaw + 180);
+            let radiansYaw = MathHelper.toRadians(this.rotationYaw + 180);
             this.motionX -= Math.sin(radiansYaw) * 0.2;
             this.motionZ += Math.cos(radiansYaw) * 0.2;
         }
@@ -259,7 +259,7 @@ window.PlayerEntity = class extends EntityLiving {
             up = up * distance;
             forward = forward * distance;
 
-            let yawRadians = MathHelper.toRadians(this.yaw + 180);
+            let yawRadians = MathHelper.toRadians(this.rotationYaw + 180);
             let sin = Math.sin(yawRadians);
             let cos = Math.cos(yawRadians);
 
@@ -469,7 +469,7 @@ window.PlayerEntity = class extends EntityLiving {
      */
     getLook(partialTicks) {
         // TODO interpolation
-        return this.getVectorForRotation(this.pitch, this.yaw);
+        return this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
     }
 
     /**

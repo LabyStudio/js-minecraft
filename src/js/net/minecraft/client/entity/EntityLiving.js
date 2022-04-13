@@ -9,18 +9,70 @@ window.EntityLiving = class extends Entity {
 
         this.moveForward = 0.0;
         this.moveStrafing = 0.0;
+
+        this.swingProgress = 0;
+
+        this.renderYawOffset = 0;
+        this.rotationYawHead = 0;
+
+        this.prevRotationYawHead = 0;
+        this.prevRenderYawOffset = 0;
+
+        this.limbSwing = 0;
+        this.limbSwingAmount = 0;
+        this.prevLimbSwingAmount = 0;
     }
 
     onUpdate() {
         super.onUpdate();
         this.onLivingUpdate();
 
+        let motionX = this.x - this.prevX;
+        let motionZ = this.z - this.prevZ;
+
+        let bodyRotation = this.renderYawOffset;
+
+        let distanceTravelled = motionX * motionX + motionZ * motionZ;
+        let distanceTravelledSqrt = 0.0;
+
+        if (distanceTravelled > 0.0025000002) {
+            distanceTravelledSqrt = Math.sqrt(distanceTravelled) * 3.0;
+            bodyRotation = Math.atan2(motionZ, motionX) * 180.0 / Math.PI - 90.0;
+        }
+
+        if (this.swingProgress > 0.0) {
+            bodyRotation = this.rotationYaw;
+        }
+
+        // TODO handle travel distance
+        distanceTravelledSqrt = this.updateBodyRotation(bodyRotation, distanceTravelledSqrt);
+
+        while (this.rotationYaw - this.prevRotationYaw < -180.0) {
+            this.prevRotationYaw -= 360.0;
+        }
+        while (this.rotationYaw - this.prevRotationYaw >= 180.0) {
+            this.prevRotationYaw += 360.0;
+        }
+
         while (this.renderYawOffset - this.prevRenderYawOffset < -180.0) {
             this.prevRenderYawOffset -= 360.0;
         }
-
         while (this.renderYawOffset - this.prevRenderYawOffset >= 180.0) {
             this.prevRenderYawOffset += 360.0;
+        }
+
+        while (this.rotationPitch - this.prevRotationPitch < -180.0) {
+            this.prevRotationPitch -= 360.0;
+        }
+        while (this.rotationPitch - this.prevRotationPitch >= 180.0) {
+            this.prevRotationPitch += 360.0;
+        }
+
+        while (this.rotationYawHead - this.prevRotationYawHead < -180.0) {
+            this.prevRotationYawHead -= 360.0;
+        }
+        while (this.rotationYawHead - this.prevRotationYawHead >= 180.0) {
+            this.prevRotationYawHead += 360.0;
         }
     }
 
@@ -39,6 +91,8 @@ window.EntityLiving = class extends Entity {
         if (Math.abs(this.motionZ) < 0.003) {
             this.motionZ = 0.0;
         }
+
+        this.rotationYawHead = this.rotationYaw;
 
         // Jump
         if (this.jumping) {
@@ -70,13 +124,60 @@ window.EntityLiving = class extends Entity {
                 this.travel(moveForward, 0, moveStrafing);
             }
         }
+
+        this.prevLimbSwingAmount = this.limbSwingAmount;
+
+        let motionX = this.x - this.prevX;
+        let motionZ = this.z - this.prevZ;
+
+        let distance = Math.sqrt(motionX * motionX + motionZ * motionZ) * 4.0;
+        if (distance > 1.0) {
+            distance = 1.0;
+        }
+        this.limbSwingAmount += (distance - this.limbSwingAmount) * 0.4;
+        this.limbSwing += this.limbSwingAmount;
     }
 
     onEntityUpdate() {
         this.prevRenderYawOffset = this.renderYawOffset;
+        this.prevRotationYawHead = this.rotationYawHead;
 
         super.onEntityUpdate();
+    }
 
+    updateBodyRotation(bodyRotation, distanceTravelledSqrt) {
+        let bodyRotationDifference = MathHelper.wrapAngleTo180(bodyRotation - this.renderYawOffset);
+        this.renderYawOffset += bodyRotationDifference * 0.3;
+
+        let yaw = MathHelper.wrapAngleTo180(this.rotationYaw - this.renderYawOffset);
+        let turn = yaw < -90.0 || yaw >= 90.0;
+
+        if (yaw < -75.0) {
+            yaw = -75.0;
+        }
+        if (yaw >= 75.0) {
+            yaw = 75.0;
+        }
+        this.renderYawOffset = this.rotationYaw - yaw;
+
+        if (yaw * yaw > 2500.0) {
+            this.renderYawOffset += yaw * 0.2;
+        }
+        if (turn) {
+            distanceTravelledSqrt *= -1.0;
+        }
+        return distanceTravelledSqrt;
+    }
+
+    computeAngleWithBound(value, subtract, limit) {
+        let wrapped = MathHelper.wrapAngleTo180(value - subtract);
+        if (wrapped < -limit) {
+            wrapped = -limit;
+        }
+        if (wrapped >= limit) {
+            wrapped = limit;
+        }
+        return value - wrapped;
     }
 
 }

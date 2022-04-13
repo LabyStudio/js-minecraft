@@ -104,8 +104,8 @@ window.WorldRenderer = class {
     orientCamera(partialTicks) {
         let player = this.minecraft.player;
 
-        let rotationY = -MathHelper.toRadians(player.yaw + 180);
-        let rotationX = -MathHelper.toRadians(player.pitch);
+        let rotationY = -MathHelper.toRadians(player.rotationYaw + 180);
+        let rotationX = -MathHelper.toRadians(player.rotationPitch);
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
@@ -116,8 +116,10 @@ window.WorldRenderer = class {
         let mode = this.minecraft.settings.thirdPersonView;
         if (mode !== 0) {
             // Flip for front view
-            if (mode === 2) {
+            let frontView = mode === 2;
+            if (frontView) {
                 rotationY += Math.PI;
+                rotationX *= -1;
             }
 
             // Shift camera

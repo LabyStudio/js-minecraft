@@ -11,8 +11,14 @@ window.EntityRenderer = class {
     render(entity, partialTicks) {
         let group = entity.group;
 
-        let rotationOffset = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
+        let rotationBody = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
         let rotationHead = this.interpolateRotation(entity.prevRotationYawHead, entity.rotationYawHead, partialTicks);
+
+        let limbSwing = entity.prevLimbSwingAmount + (entity.limbSwingAmount - entity.prevLimbSwingAmount) * partialTicks;
+        let limbSwingAmount = entity.limbSwing - entity.limbSwingAmount * (1.0 - partialTicks);
+
+        let yaw = rotationHead - rotationBody;
+        let pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 
         // Interpolate entity position
         let interpolatedX = entity.prevX + (entity.x - entity.prevX) * partialTicks;
@@ -29,11 +35,11 @@ window.EntityRenderer = class {
         group.scale.set(scale, -scale, scale);
 
         // Rotate entity model
-        group.rotation.y = MathHelper.toRadians(-entity.yaw + 180);
+        group.rotation.y = MathHelper.toRadians(-rotationBody + 180);
 
         // Render entity model
-        let time = Date.now() / 100;
-        this.model.render(group, time);
+        let timeAlive = entity.ticksExisted + partialTicks;
+        this.model.render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch);
     }
 
     interpolateRotation(prevValue, value, partialTicks) {

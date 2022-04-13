@@ -10,13 +10,13 @@ window.ModelRenderer = class {
         this.textureOffsetX = 0;
         this.textureOffsetY = 0;
 
-        this.xRotation = 0;
-        this.yRotation = 0;
-        this.zRotation = 0;
+        this.rotateAngleX = 0;
+        this.rotateAngleY = 0;
+        this.rotateAngleZ = 0;
 
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
+        this.rotationPointX = 0;
+        this.rotationPointY = 0;
+        this.rotationPointZ = 0;
 
         this.bone = new THREE.Object3D();
     }
@@ -128,10 +128,10 @@ window.ModelRenderer = class {
      * @param y Absolute y position of cube
      * @param z Absolute z position of cube
      */
-    setPosition(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    setRotationPoint(x, y, z) {
+        this.rotationPointX = x;
+        this.rotationPointY = y;
+        this.rotationPointZ = z;
         return this;
     }
 
@@ -151,14 +151,14 @@ window.ModelRenderer = class {
     }
 
     render(group) {
-        this.bone.position.setX(this.x);
-        this.bone.position.setY(this.y);
-        this.bone.position.setZ(this.z);
+        this.bone.position.setX(this.rotationPointX);
+        this.bone.position.setY(this.rotationPointY);
+        this.bone.position.setZ(this.rotationPointZ);
 
         this.bone.rotation.order = 'ZYX';
-        this.bone.rotation.x = this.xRotation;
-        this.bone.rotation.y = this.yRotation;
-        this.bone.rotation.z = this.zRotation;
+        this.bone.rotation.x = this.rotateAngleX;
+        this.bone.rotation.y = -this.rotateAngleY;
+        this.bone.rotation.z = this.rotateAngleZ;
 
         this.bone.updateMatrix();
     }
