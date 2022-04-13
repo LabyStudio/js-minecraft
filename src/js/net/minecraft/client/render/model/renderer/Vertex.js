@@ -6,24 +6,21 @@ window.Vertex = class {
      * @param x X position
      * @param y Y position
      * @param z Z position
-     * @param u U mapping
-     * @param v V mapping
      */
-    constructor(x, y, z, u, v) {
+    constructor(x, y, z) {
         this.position = new Vector3(x, y, z);
-        this.u = u;
-        this.v = v;
+        this.u = 0;
+        this.v = 0;
     }
 
-    /**
-     * Create a new vertex of the current one with different UV mappings
-     *
-     * @param u New U mapping
-     * @param v New V mapping
-     * @return New vertex with the vector position of the current one
-     */
-    remap(u, v) {
-        return new Vertex(this.position.x, this.position.y, this.position.z, u, v);
+    withUV(u, v) {
+        this.u = u;
+        this.v = v;
+        return this;
+    }
+
+    static create(vector) {
+        return new Vertex(vector.x, vector.y, vector.z);
     }
 
 }

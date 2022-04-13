@@ -17,7 +17,7 @@ window.ModelBase = class {
      * @param time Animation offset
      */
     render(group, time) {
-
+        group.updateMatrix();
     }
 
 }

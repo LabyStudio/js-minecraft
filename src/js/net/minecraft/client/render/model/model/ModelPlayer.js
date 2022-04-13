@@ -6,33 +6,42 @@ window.ModelPlayer = class extends ModelBase {
     constructor() {
         super();
 
+        let width = 64;
+        let height = 32;
+
         // Create head ModelRenderer
-        this.head = new ModelRenderer(0, 0)
+        this.head = new ModelRenderer(width, height)
+            .setTextureOffset(0, 0)
             .setBox(-4.0, -8.0, -4.0, 8, 8, 8);
 
         // Create body ModelRenderer
-        this.body = new ModelRenderer(16, 16)
+        this.body = new ModelRenderer(width, height)
+            .setTextureOffset(16, 16)
             .setBox(-4.0, 0.0, -2.0, 8, 12, 4);
 
         // Right arm ModelRenderer
-        this.rightArm = new ModelRenderer(40, 16)
+        this.rightArm = new ModelRenderer(width, height)
+            .setTextureOffset(40, 16)
+            .setPosition(-5.0, 2.0, 0.0)
             .setBox(-3.0, -2.0, -2.0, 4, 12, 4);
-        this.rightArm.setPosition(-5.0, 2.0, 0.0);
 
         // Left arm ModelRenderer
-        this.leftArm = new ModelRenderer(40, 16)
+        this.leftArm = new ModelRenderer(width, height)
+            .setTextureOffset(40, 16)
+            .setPosition(5.0, 2.0, 0.0)
             .setBox(-1.0, -2.0, -2.0, 4, 12, 4);
-        this.leftArm.setPosition(5.0, 2.0, 0.0);
 
         // Right Legs ModelRenderer
-        this.rightLeg = new ModelRenderer(0, 16)
+        this.rightLeg = new ModelRenderer(width, height)
+            .setTextureOffset(0, 16)
+            .setPosition(-2.0, 12.0, 0.0)
             .setBox(-2.0, 0.0, -2.0, 4, 12, 4);
-        this.rightLeg.setPosition(-2.0, 12.0, 0.0);
 
         // Left leg ModelRenderer
-        this.leftLeg = new ModelRenderer(0, 16)
+        this.leftLeg = new ModelRenderer(width, height)
+            .setTextureOffset(0, 16)
+            .setPosition(2.0, 12.0, 0.0)
             .setBox(-2.0, 0.0, -2.0, 4, 12, 4);
-        this.leftLeg.setPosition(2.0, 12.0, 0.0);
     }
 
     rebuild(tessellator, group) {
@@ -70,6 +79,8 @@ window.ModelPlayer = class extends ModelBase {
         this.leftArm.render(group);
         this.rightLeg.render(group);
         this.leftLeg.render(group);
+
+        super.render(group, time);
     }
 
 }
