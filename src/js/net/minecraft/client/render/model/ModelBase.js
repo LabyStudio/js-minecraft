@@ -10,14 +10,8 @@ window.ModelBase = class {
 
     }
 
-    /**
-     * Render the model
-     *
-     * @param group Group to render
-     * @param time Animation offset
-     */
-    render(group, time) {
-        group.updateMatrix();
+    render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch) {
+        entity.group.updateMatrix();
     }
 
 }

@@ -33,6 +33,17 @@ window.MathHelper = class {
         return angle;
     }
 
+    static wrapAngleTo180(value) {
+        value = value % 360.0;
+        if (value >= 180.0) {
+            value -= 360.0;
+        }
+        if (value < -180.0) {
+            value += 360.0;
+        }
+        return value;
+    }
+
     static hsbToRgb(hue, saturation, brightness) {
         let r = 0, g = 0, b = 0;
         if (saturation === 0) {

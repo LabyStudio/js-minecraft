@@ -18,20 +18,20 @@ window.Entity = class {
 
         this.sneaking = false;
 
-        this.yaw = 0;
-        this.pitch = 0;
-        this.renderYawOffset = 0;
+        this.rotationYaw = 0;
+        this.rotationPitch = 0;
 
         this.prevX = 0;
         this.prevY = 0;
         this.prevZ = 0;
 
-        this.prevYaw = 0;
-        this.prevPitch = 0;
-        this.prevRenderYawOffset = 0;
+        this.prevRotationYaw = 0;
+        this.prevRotationPitch = 0;
 
         this.distanceWalked = 0;
         this.nextStepDistance = 1;
+
+        this.ticksExisted = 0;
     }
 
     onUpdate() {
@@ -43,8 +43,10 @@ window.Entity = class {
         this.prevY = this.y;
         this.prevZ = this.z;
 
-        this.prevPitch = this.pitch;
-        this.prevYaw = this.yaw;
+        this.prevRotationPitch = this.rotationPitch;
+        this.prevRotationYaw = this.rotationYaw;
+
+        this.ticksExisted++;
     }
 
 }
