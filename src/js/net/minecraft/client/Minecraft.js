@@ -195,6 +195,10 @@ window.Minecraft = class {
                 this.inventory.selectedSlotIndex = i - 1;
             }
         }
+
+        if (button === this.settings.togglePerspective) {
+            this.settings.thirdPersonView = (this.settings.thirdPersonView + 1) % 3;
+        }
     }
 
     onMouseClicked(button) {

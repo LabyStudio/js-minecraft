@@ -35,21 +35,24 @@ window.ModelPlayer = class extends ModelBase {
         this.leftLeg.setPosition(2.0, 12.0, 0.0);
     }
 
-    rebuild(tessellator, entity) {
-        this.head.rebuild(tessellator, entity);
-        this.body.rebuild(tessellator, entity);
-        this.leftArm.rebuild(tessellator, entity);
-        this.rightArm.rebuild(tessellator, entity);
-        this.leftLeg.rebuild(tessellator, entity);
-        this.rightLeg.rebuild(tessellator, entity);
+    rebuild(tessellator, group) {
+        super.rebuild(tessellator, group);
+
+        this.head.rebuild(tessellator, group);
+        this.body.rebuild(tessellator, group);
+        this.leftArm.rebuild(tessellator, group);
+        this.rightArm.rebuild(tessellator, group);
+        this.leftLeg.rebuild(tessellator, group);
+        this.rightLeg.rebuild(tessellator, group);
     }
 
     /**
      * Render the model
      *
+     * @param group Group to update position and rotation of
      * @param time Animation offset
      */
-    render(entity, time) {
+    render(group, time) {
         // Set rotation of cubes
         this.head.yRotation = Math.sin(time * 0.83);
         this.head.xRotation = Math.sin(time) * 0.8;
@@ -61,12 +64,12 @@ window.ModelPlayer = class extends ModelBase {
         this.leftLeg.xRotation = Math.sin(time * 0.6662 + Math.PI) * 1.4;
 
         // Render cubes
-        this.head.render(entity);
-        this.body.render(entity);
-        this.rightArm.render(entity);
-        this.leftArm.render(entity);
-        this.rightLeg.render(entity);
-        this.leftLeg.render(entity);
+        this.head.render(group);
+        this.body.render(group);
+        this.rightArm.render(group);
+        this.leftArm.render(group);
+        this.rightLeg.render(group);
+        this.leftLeg.render(group);
     }
 
 }

@@ -14,8 +14,8 @@ window.PlayerRenderer = class extends EntityRenderer {
         super.rebuild(tessellator, entity);
     }
 
-    render(entity) {
-        super.render(entity);
+    render(entity, partialTicks) {
+        super.render(entity, partialTicks);
 
     }
 

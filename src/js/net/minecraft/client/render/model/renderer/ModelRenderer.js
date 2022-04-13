@@ -17,6 +17,8 @@ window.ModelRenderer = class {
         this.x = 0;
         this.y = 0;
         this.z = 0;
+
+        this.bone = new THREE.Object3D();
     }
 
     /**
@@ -128,7 +130,7 @@ window.ModelRenderer = class {
         this.z = z;
     }
 
-    rebuild(tessellator, entity) {
+    rebuild(tessellator, group) {
         // Start drawing
         tessellator.startDrawing();
 
@@ -139,18 +141,19 @@ window.ModelRenderer = class {
         }
 
         // Finish drawing
-        tessellator.draw(entity.group);
+        tessellator.draw(this.bone);
+        group.add(this.bone);
     }
 
-    render(entity) {
-        entity.group.position.setX(this.x);
-        entity.group.position.setY(this.y);
-        entity.group.position.setZ(this.z);
+    render(group) {
+        this.bone.position.setX(this.x);
+        this.bone.position.setY(this.y);
+        this.bone.position.setZ(this.z);
 
-        entity.group.rotation.order = 'ZYX';
-        entity.group.rotation.x = this.xRotation;
-        entity.group.rotation.y = this.yRotation;
-        entity.group.rotation.z = this.zRotation;
+        this.bone.rotation.order = 'ZYX';
+        this.bone.rotation.x = this.xRotation;
+        this.bone.rotation.y = this.yRotation;
+        this.bone.rotation.z = this.zRotation;
     }
 
 }
