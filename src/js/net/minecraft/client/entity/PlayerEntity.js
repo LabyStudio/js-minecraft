@@ -1,29 +1,9 @@
-window.PlayerEntity = class extends Entity {
+window.PlayerEntity = class extends EntityLiving {
 
     static name = "PlayerEntity";
 
     constructor(minecraft, world) {
-        super();
-
-        this.minecraft = minecraft;
-        this.world = world;
-
-        this.prevX = 0;
-        this.prevY = 0;
-        this.prevZ = 0;
-
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-
-        this.motionX = 0;
-        this.motionY = 0;
-        this.motionZ = 0;
-
-        this.yaw = 0;
-        this.pitch = 0;
-
-        this.onGround = false;
+        super(minecraft, world);
 
         this.collision = false;
 
@@ -32,24 +12,15 @@ window.PlayerEntity = class extends Entity {
         this.flySpeed = 0.05;
         this.stepHeight = 0.5;
 
-        this.moveForward = 0.0;
-        this.moveStrafing = 0.0;
-
-        this.jumpTicks = 0;
         this.flyToggleTimer = 0;
         this.sprintToggleTimer = 0;
 
-        this.jumping = false;
         this.sprinting = false;
-        this.sneaking = false;
         this.flying = false;
 
         this.prevFovModifier = 0;
         this.fovModifier = 0;
         this.timeFovChanged = 0;
-
-        this.distanceWalked = 0;
-        this.nextStepDistance = 1;
     }
 
     respawn() {
@@ -92,7 +63,18 @@ window.PlayerEntity = class extends Entity {
         }
     }
 
-    onTick() {
+    onUpdate() {
+        super.onUpdate();
+    }
+
+    onLivingUpdate() {
+        if (this.sprintToggleTimer > 0) {
+            --this.sprintToggleTimer;
+        }
+        if (this.flyToggleTimer > 0) {
+            --this.flyToggleTimer;
+        }
+
         let prevMoveForward = this.moveForward;
         let prevJumping = this.jumping;
 
@@ -122,70 +104,18 @@ window.PlayerEntity = class extends Entity {
             }
         }
 
-        if (this.jumpTicks > 0) {
-            --this.jumpTicks;
+        if (this.sprinting && (this.moveForward <= 0 || this.collision || this.sneaking)) {
+            this.sprinting = false;
+
+            this.updateFOVModifier();
         }
 
-        if (this.flyToggleTimer > 0) {
-            --this.flyToggleTimer;
-        }
-
-        if (this.sprintToggleTimer > 0) {
-            --this.sprintToggleTimer;
-        }
-
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
-
-        // Stop if too slow
-        if (Math.abs(this.motionX) < 0.003) {
-            this.motionX = 0.0;
-        }
-        if (Math.abs(this.motionY) < 0.003) {
-            this.motionY = 0.0;
-        }
-        if (Math.abs(this.motionZ) < 0.003) {
-            this.motionZ = 0.0;
-        }
-
-        // Jump
-        if (this.jumping) {
-            if (this.isInWater()) {
-                this.motionY += 0.04;
-            } else if (this.onGround && this.jumpTicks === 0) {
-                this.jump();
-                this.jumpTicks = 10;
-            }
-        } else {
-            this.jumpTicks = 0;
-        }
-
-        this.moveStrafing *= 0.98;
-        this.moveForward *= 0.98;
-
-        if (this.flying) {
-            this.travelFlying(this.moveForward, 0, this.moveStrafing);
-        } else {
-            if (this.isInWater()) {
-                // Is inside of water
-                this.travelInWater(this.moveForward, 0, this.moveStrafing);
-            } else {
-                // Is on land
-                this.travel(this.moveForward, 0, this.moveStrafing);
-            }
-        }
+        super.onLivingUpdate();
 
         this.jumpMovementFactor = this.speedInAir;
 
         if (this.sprinting) {
             this.jumpMovementFactor = this.jumpMovementFactor + this.speedInAir * 0.3;
-
-            if (this.moveForward <= 0 || this.collision || this.sneaking) {
-                this.sprinting = false;
-
-                this.updateFOVModifier();
-            }
         }
     }
 

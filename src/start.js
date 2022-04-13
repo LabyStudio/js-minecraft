@@ -127,6 +127,7 @@ loadTexture([
         "src/js/net/minecraft/client/world/generator/noise/NoiseGeneratorCombined.js",
         "src/js/net/minecraft/client/world/generator/WorldGenerator.js",
         "src/js/net/minecraft/client/entity/Entity.js",
+        "src/js/net/minecraft/client/entity/EntityLiving.js",
         "src/js/net/minecraft/client/entity/PlayerEntity.js",
         "src/js/net/minecraft/client/inventory/Inventory.js",
         "src/js/net/minecraft/client/GameSettings.js",

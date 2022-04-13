@@ -11,6 +11,9 @@ window.EntityRenderer = class {
     render(entity, partialTicks) {
         let group = entity.group;
 
+        let rotationOffset = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
+        let rotationHead = this.interpolateRotation(entity.prevRotationYawHead, entity.rotationYawHead, partialTicks);
+
         // Interpolate entity position
         let interpolatedX = entity.prevX + (entity.x - entity.prevX) * partialTicks;
         let interpolatedY = entity.prevY + (entity.y - entity.prevY) * partialTicks;
@@ -31,6 +34,15 @@ window.EntityRenderer = class {
         // Render entity model
         let time = Date.now() / 100;
         this.model.render(group, time);
+    }
+
+    interpolateRotation(prevValue, value, partialTicks) {
+        let factor;
+        for (factor = value - prevValue; factor < -180.0; factor += 360.0) {}
+        while (factor >= 180.0) {
+            factor -= 360.0;
+        }
+        return prevValue + partialTicks * factor;
     }
 
 }
