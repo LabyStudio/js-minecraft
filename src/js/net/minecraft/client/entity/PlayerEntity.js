@@ -5,6 +5,8 @@ window.PlayerEntity = class extends EntityLiving {
     constructor(minecraft, world) {
         super(minecraft, world);
 
+        this.inventory = new Inventory();
+
         this.collision = false;
 
         this.jumpMovementFactor = 0.02;
@@ -124,7 +126,12 @@ window.PlayerEntity = class extends EntityLiving {
     }
 
     isHeadInWater() {
-        return this.world.getBlockAt(this.getBlockPosX(), Math.floor(this.y + this.getEyeHeight() + 0.12), this.getBlockPosZ()) === Block.WATER.getId();
+        let cameraPosition = this.world.minecraft.worldRenderer.camera.position;
+        return this.world.getBlockAt(
+            Math.floor(cameraPosition.x),
+            Math.floor(cameraPosition.y + 0.12),
+            Math.floor(cameraPosition.z)
+        ) === Block.WATER.getId()
     }
 
     jump() {

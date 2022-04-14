@@ -13,7 +13,7 @@ window.EntityLiving = class extends Entity {
         this.swingProgress = 0;
         this.prevSwingProgress = 0;
         this.swingProgressInt = 0;
-        this.swingInProgress = false;
+        this.isSwingInProgress = false;
 
         this.renderYawOffset = 0;
         this.rotationYawHead = 0;
@@ -29,26 +29,7 @@ window.EntityLiving = class extends Entity {
     onUpdate() {
         super.onUpdate();
         this.onLivingUpdate();
-
-        let motionX = this.x - this.prevX;
-        let motionZ = this.z - this.prevZ;
-
-        let bodyRotation = this.renderYawOffset;
-
-        let distanceTravelled = motionX * motionX + motionZ * motionZ;
-        let distanceTravelledSqrt = 0.0;
-
-        if (distanceTravelled > 0.0025000002) {
-            distanceTravelledSqrt = Math.sqrt(distanceTravelled) * 3.0;
-            bodyRotation = Math.atan2(motionZ, motionX) * 180.0 / Math.PI - 90.0;
-        }
-
-        if (this.swingProgress > 0.0) {
-            bodyRotation = this.rotationYaw;
-        }
-
-        // TODO handle travel distance
-        distanceTravelledSqrt = this.updateBodyRotation(bodyRotation, distanceTravelledSqrt);
+        this.updateBodyRotation();
 
         while (this.rotationYaw - this.prevRotationYaw < -180.0) {
             this.prevRotationYaw -= 360.0;
@@ -151,13 +132,25 @@ window.EntityLiving = class extends Entity {
         super.onEntityUpdate();
     }
 
-    updateBodyRotation(bodyRotation, distanceTravelledSqrt) {
+    updateBodyRotation() {
+        let motionX = this.x - this.prevX;
+        let motionZ = this.z - this.prevZ;
+
+        let bodyRotation = this.renderYawOffset;
+
+        let distanceTravelled = motionX * motionX + motionZ * motionZ;
+        if (distanceTravelled > 0.0025000002) {
+            bodyRotation = Math.atan2(motionZ, motionX) * 180.0 / Math.PI - 90.0;
+        }
+
+        if (this.swingProgress > 0.0) {
+            bodyRotation = this.rotationYaw;
+        }
+
         let bodyRotationDifference = MathHelper.wrapAngleTo180(bodyRotation - this.renderYawOffset);
         this.renderYawOffset += bodyRotationDifference * 0.3;
 
         let yaw = MathHelper.wrapAngleTo180(this.rotationYaw - this.renderYawOffset);
-        let turn = yaw < -90.0 || yaw >= 90.0;
-
         if (yaw < -75.0) {
             yaw = -75.0;
         }
@@ -169,10 +162,6 @@ window.EntityLiving = class extends Entity {
         if (yaw * yaw > 2500.0) {
             this.renderYawOffset += yaw * 0.2;
         }
-        if (turn) {
-            distanceTravelledSqrt *= -1.0;
-        }
-        return distanceTravelledSqrt;
     }
 
     swingArm() {
@@ -185,7 +174,6 @@ window.EntityLiving = class extends Entity {
 
     updateArmSwingProgress() {
         let swingAnimationEnd = 6;
-
         if (this.isSwingInProgress) {
             ++this.swingProgressInt;
 

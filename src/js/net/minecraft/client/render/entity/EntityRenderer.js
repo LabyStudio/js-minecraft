@@ -6,19 +6,41 @@ window.EntityRenderer = class {
     }
 
     rebuild(entity) {
-        let brightness = entity.getEntityBrightness();
-        entity.lastRenderedBrightness = brightness;
+        // Create meta for group
+        let group = entity.group;
+        let meta = {};
+        this.fillMeta(entity, meta);
+        group.buildMeta = meta;
 
-        // Apply brightness
+        // Clear meshes
+        group.clear();
+
+        // Apply brightness and rebuild
+        let brightness = group.buildMeta.brightness;
         this.tessellator.setColor(brightness, brightness, brightness);
+        this.model.rebuild(this.tessellator, group);
+    }
 
-        // Rebuild
-        this.model.rebuild(this.tessellator, entity.group);
+    fillMeta(entity, meta) {
+        meta.brightness = entity.getEntityBrightness();
+        meta.itemInHand = entity.inventory.getItemInSelectedSlot();
+    }
+
+    isRebuildRequired(entity) {
+        let group = entity.group;
+        if (typeof group.buildMeta === "undefined") {
+            return true;
+        }
+
+        // Compare meta of group
+        let currentMeta = {};
+        this.fillMeta(entity, currentMeta);
+        let previousMeta = group.buildMeta;
+        return JSON.stringify(currentMeta) !== JSON.stringify(previousMeta);
     }
 
     render(entity, partialTicks) {
-        let brightness = entity.getEntityBrightness();
-        if (entity.lastRenderedBrightness !== brightness) {
+        if (this.isRebuildRequired(entity)) {
             this.rebuild(entity);
         }
 
@@ -45,7 +67,7 @@ window.EntityRenderer = class {
 
         // Actual size of the entity
         let scale = 7.0 / 120.0;
-        group.scale.set(-scale,- scale, scale);
+        group.scale.set(-scale, -scale, scale);
 
         // Rotate entity model
         group.rotation.y = MathHelper.toRadians(-rotationBody + 180);

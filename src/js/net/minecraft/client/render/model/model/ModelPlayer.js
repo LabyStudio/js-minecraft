@@ -58,8 +58,11 @@ window.ModelPlayer = class extends ModelBase {
     render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch, partialTicks) {
         let group = entity.group;
 
+        // Head rotation
         this.head.rotateAngleY = MathHelper.toRadians(yaw);
         this.head.rotateAngleX = MathHelper.toRadians(pitch);
+
+        // Limb swing leg animation
         this.rightArm.rotateAngleX = Math.cos(limbSwingAmount * 0.6662 + Math.PI) * 2.0 * limbSwing * 0.5;
         this.leftArm.rotateAngleX = Math.cos(limbSwingAmount * 0.6662) * 2.0 * limbSwing * 0.5;
         this.rightArm.rotateAngleZ = 0.0;
@@ -69,9 +72,15 @@ window.ModelPlayer = class extends ModelBase {
         this.rightLeg.rotateAngleY = 0.0;
         this.leftLeg.rotateAngleY = 0.0;
 
+        // Reset arms for swing progress
         this.rightArm.rotateAngleY = 0.0;
         this.rightArm.rotateAngleZ = 0.0;
         this.leftArm.rotateAngleY = 0.0;
+
+        // Held item animation
+        if (entity.inventory.getItemInSelectedSlot() !== 0) {
+            this.rightArm.rotateAngleX = this.rightArm.rotateAngleX * 0.5 - (Math.PI / 10);
+        }
 
         // Swing progress
         let swingProgress = entity.swingProgress - entity.prevSwingProgress;
@@ -106,6 +115,7 @@ window.ModelPlayer = class extends ModelBase {
             this.rightArm.rotateAngleZ += Math.sin(interpolatedSwingProgress * Math.PI) * -0.4;
         }
 
+        // Sneaking animation
         if (entity.sneaking) {
             this.body.rotateAngleX = 0.5;
             this.rightArm.rotateAngleX += 0.4;
@@ -126,6 +136,7 @@ window.ModelPlayer = class extends ModelBase {
             this.head.rotationPointY = 0.0;
         }
 
+        // Limb swing arm animation
         this.rightArm.rotateAngleZ += Math.cos(timeAlive * 0.09) * 0.05 + 0.05;
         this.leftArm.rotateAngleZ -= Math.cos(timeAlive * 0.09) * 0.05 + 0.05;
         this.rightArm.rotateAngleX += Math.sin(timeAlive * 0.067) * 0.05;

@@ -27,7 +27,7 @@ window.WorldRenderer = class {
         this.blockRenderer = new BlockRenderer(this);
 
         // Entity render manager
-        this.entityRenderManager = new EntityRenderManager();
+        this.entityRenderManager = new EntityRenderManager(this);
 
         this.initialize();
     }
@@ -92,8 +92,8 @@ window.WorldRenderer = class {
         // Render entities
         for (let entity of this.minecraft.world.entities) {
             if (entity === player && this.minecraft.settings.thirdPersonView === 0) {
-                entity.group.clear();
-                entity.lastRenderedBrightness = -1; // TODO: Find a better way to trigger this
+                entity.group.clear(); // Remove entity from scene
+                delete entity.group.buildMeta; // To trigger a rebuild on the next render
                 continue;
             }
             this.renderEntity(entity, partialTicks);

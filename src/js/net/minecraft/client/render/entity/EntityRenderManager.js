@@ -1,8 +1,10 @@
 window.EntityRenderManager = class {
 
-    constructor() {
+    constructor(worldRenderer) {
+        this.worldRenderer = worldRenderer;
+
         this.renderers = [];
-        this.push(PlayerEntity, new PlayerRenderer());
+        this.push(PlayerEntity, new PlayerRenderer(worldRenderer));
     }
 
     push(entityType, entityRenderer) {

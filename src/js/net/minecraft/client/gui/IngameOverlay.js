@@ -37,13 +37,13 @@ window.IngameOverlay = class extends Gui {
             this.textureHotbar,
             0, 22,
             24, 24,
-            x + this.minecraft.inventory.selectedSlotIndex * 20 - 1, y - 1,
+            x + this.minecraft.player.inventory.selectedSlotIndex * 20 - 1, y - 1,
             24, 24
         )
 
         // Render items
         for (let i = 0; i < 9; i++) {
-            let typeId = this.minecraft.inventory.getItemInSlot(i);
+            let typeId = this.minecraft.player.inventory.getItemInSlot(i);
             if (typeId !== 0) {
                 let renderId = "hotbar" + i;
                 let block = Block.getById(typeId);
