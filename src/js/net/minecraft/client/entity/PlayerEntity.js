@@ -213,9 +213,9 @@ window.PlayerEntity = class extends EntityLiving {
 
         // Step sound
         if (!isSlow) {
-            let blockX = MathHelper.floor_double(this.x);
-            let blockY = MathHelper.floor_double(this.y - 0.2);
-            let blockZ = MathHelper.floor_double(this.z);
+            let blockX = MathHelper.floor(this.x);
+            let blockY = MathHelper.floor(this.y - 0.2);
+            let blockZ = MathHelper.floor(this.z);
             let typeId = this.world.getBlockAt(blockX, blockY, blockZ);
 
             let distanceX = this.x - prevX;

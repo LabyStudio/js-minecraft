@@ -19,17 +19,17 @@ window.ModelPlayer = class extends ModelBase {
             .setTextureOffset(16, 16)
             .setBox(-4.0, 0.0, -2.0, 8, 12, 4);
 
-        // Right arm ModelRenderer
-        this.rightArm = new ModelRenderer(width, height)
-            .setTextureOffset(40, 16)
-            .setRotationPoint(-5.0, 2.0, 0.0)
-            .setBox(-3.0, -2.0, -2.0, 4, 12, 4);
-
         // Left arm ModelRenderer
         this.leftArm = new ModelRenderer(width, height)
             .setTextureOffset(40, 16)
-            .setRotationPoint(5.0, 2.0, 0.0)
+            .setRotationPoint(-5.0, 2.0, 0.0)
             .setBox(-1.0, -2.0, -2.0, 4, 12, 4);
+
+        // Right arm ModelRenderer
+        this.rightArm = new ModelRenderer(width, height)
+            .setTextureOffset(40, 16)
+            .setRotationPoint(-3.0, 2.0, -2.0)
+            .setBox(-3.0, -2.0, -2.0, 4, 12, 4);
 
         // Right Legs ModelRenderer
         this.rightLeg = new ModelRenderer(width, height)
@@ -55,7 +55,7 @@ window.ModelPlayer = class extends ModelBase {
         this.rightLeg.rebuild(tessellator, group);
     }
 
-    render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch) {
+    render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch, partialTicks) {
         let group = entity.group;
 
         this.head.rotateAngleY = MathHelper.toRadians(yaw);
@@ -71,6 +71,40 @@ window.ModelPlayer = class extends ModelBase {
 
         this.rightArm.rotateAngleY = 0.0;
         this.rightArm.rotateAngleZ = 0.0;
+        this.leftArm.rotateAngleY = 0.0;
+
+        // Swing progress
+        let swingProgress = entity.swingProgress - entity.prevSwingProgress;
+        if (swingProgress < 0.0) {
+            swingProgress++;
+        }
+        let interpolatedSwingProgress = entity.prevSwingProgress + swingProgress * partialTicks;
+        if (interpolatedSwingProgress > -9990.0) {
+            let swingProgress = interpolatedSwingProgress;
+
+            this.body.rotateAngleY = Math.sin(Math.sqrt(swingProgress) * Math.PI * 2.0) * 0.2;
+
+            this.rightArm.rotationPointZ = Math.sin(this.body.rotateAngleY) * 5.0;
+            this.rightArm.rotationPointX = -Math.cos(this.body.rotateAngleY) * 5.0;
+            this.leftArm.rotationPointZ = -Math.sin(this.body.rotateAngleY) * 5.0;
+            this.leftArm.rotationPointX = Math.cos(this.body.rotateAngleY) * 5.0;
+
+            this.rightArm.rotateAngleY += this.body.rotateAngleY;
+            this.leftArm.rotateAngleY += this.body.rotateAngleY;
+            this.leftArm.rotateAngleX += this.body.rotateAngleY;
+
+            swingProgress = 1.0 - interpolatedSwingProgress;
+            swingProgress = swingProgress * swingProgress;
+            swingProgress = swingProgress * swingProgress;
+            swingProgress = 1.0 - swingProgress;
+
+            let value1 = Math.sin(swingProgress * Math.PI);
+            let value2 = Math.sin(interpolatedSwingProgress * Math.PI) * -(this.head.rotateAngleX - 0.7) * 0.75;
+
+            this.rightArm.rotateAngleX = (this.rightArm.rotateAngleX - (value1 * 1.2 + value2));
+            this.rightArm.rotateAngleY += this.body.rotateAngleY * 2.0;
+            this.rightArm.rotateAngleZ += Math.sin(interpolatedSwingProgress * Math.PI) * -0.4;
+        }
 
         if (entity.sneaking) {
             this.body.rotateAngleX = 0.5;

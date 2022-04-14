@@ -92,6 +92,8 @@ window.WorldRenderer = class {
         // Render entities
         for (let entity of this.minecraft.world.entities) {
             if (entity === player && this.minecraft.settings.thirdPersonView === 0) {
+                entity.group.clear();
+                entity.lastRenderedBrightness = -1; // TODO: Find a better way to trigger this
                 continue;
             }
             this.renderEntity(entity, partialTicks);

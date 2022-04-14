@@ -11,6 +11,9 @@ window.EntityLiving = class extends Entity {
         this.moveStrafing = 0.0;
 
         this.swingProgress = 0;
+        this.prevSwingProgress = 0;
+        this.swingProgressInt = 0;
+        this.swingInProgress = false;
 
         this.renderYawOffset = 0;
         this.rotationYawHead = 0;
@@ -141,6 +144,9 @@ window.EntityLiving = class extends Entity {
     onEntityUpdate() {
         this.prevRenderYawOffset = this.renderYawOffset;
         this.prevRotationYawHead = this.rotationYawHead;
+        this.prevSwingProgress = this.swingProgress;
+
+        this.updateArmSwingProgress();
 
         super.onEntityUpdate();
     }
@@ -167,6 +173,31 @@ window.EntityLiving = class extends Entity {
             distanceTravelledSqrt *= -1.0;
         }
         return distanceTravelledSqrt;
+    }
+
+    swingArm() {
+        let swingAnimationEnd = 6;
+        if (!this.isSwingInProgress || this.swingProgressInt >= swingAnimationEnd / 2 || this.swingProgressInt < 0) {
+            this.swingProgressInt = -1;
+            this.isSwingInProgress = true;
+        }
+    }
+
+    updateArmSwingProgress() {
+        let swingAnimationEnd = 6;
+
+        if (this.isSwingInProgress) {
+            ++this.swingProgressInt;
+
+            if (this.swingProgressInt >= swingAnimationEnd) {
+                this.swingProgressInt = 0;
+                this.isSwingInProgress = false;
+            }
+        } else {
+            this.swingProgressInt = 0;
+        }
+
+        this.swingProgress = this.swingProgressInt / swingAnimationEnd;
     }
 
     computeAngleWithBound(value, subtract, limit) {

@@ -229,6 +229,8 @@ window.Minecraft = class {
                         this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
                     }
                 }
+
+                this.player.swingArm();
             }
 
             // Pick block

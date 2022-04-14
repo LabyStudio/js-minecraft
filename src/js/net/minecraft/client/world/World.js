@@ -15,6 +15,13 @@ window.World = class {
 
         this.time = 0;
 
+        // Generate light brightness table
+        this.lightBrightnessTable = [];
+        for (let i = 0; i <= 15; i++) {
+            let brightness = 1.0 - i / 15;
+            this.lightBrightnessTable[i] = ((1.0 - brightness) / (brightness * 3 + 1.0)) * (1.0 - 0.05) + 0.05;
+        }
+
         // Load world
         this.generator = new WorldGenerator(this, Date.now() % 100000);
 
@@ -88,12 +95,12 @@ window.World = class {
     getCollisionBoxes(region) {
         let boundingBoxList = [];
 
-        let minX = MathHelper.floor_double(region.minX);
-        let maxX = MathHelper.floor_double(region.maxX + 1.0);
-        let minY = MathHelper.floor_double(region.minY);
-        let maxY = MathHelper.floor_double(region.maxY + 1.0);
-        let minZ = MathHelper.floor_double(region.minZ);
-        let maxZ = MathHelper.floor_double(region.maxZ + 1.0);
+        let minX = MathHelper.floor(region.minX);
+        let maxX = MathHelper.floor(region.maxX + 1.0);
+        let minY = MathHelper.floor(region.minY);
+        let maxY = MathHelper.floor(region.maxY + 1.0);
+        let minZ = MathHelper.floor(region.minZ);
+        let maxZ = MathHelper.floor(region.maxZ + 1.0);
 
         for (let x = minX; x < maxX; x++) {
             for (let y = minY; y < maxY; y++) {
@@ -331,13 +338,13 @@ window.World = class {
     }
 
     rayTraceBlocks(from, to) {
-        let toX = MathHelper.floor_double(to.x);
-        let toY = MathHelper.floor_double(to.y);
-        let toZ = MathHelper.floor_double(to.z);
+        let toX = MathHelper.floor(to.x);
+        let toY = MathHelper.floor(to.y);
+        let toZ = MathHelper.floor(to.z);
 
-        let x = MathHelper.floor_double(from.x);
-        let y = MathHelper.floor_double(from.y);
-        let z = MathHelper.floor_double(from.z);
+        let x = MathHelper.floor(from.x);
+        let y = MathHelper.floor(from.y);
+        let z = MathHelper.floor(from.z);
 
         let blockId = this.getBlockAt(x, y, z);
         let block = Block.getById(blockId);
@@ -429,9 +436,9 @@ window.World = class {
                 from = new Vector3(from.x + diffX * nearestZ, from.y + diffY * nearestZ, nearestZ1);
             }
 
-            x = MathHelper.floor_double(from.x) - (face === EnumBlockFace.EAST ? 1 : 0);
-            y = MathHelper.floor_double(from.y) - (face === EnumBlockFace.TOP ? 1 : 0);
-            z = MathHelper.floor_double(from.z) - (face === EnumBlockFace.SOUTH ? 1 : 0);
+            x = MathHelper.floor(from.x) - (face === EnumBlockFace.EAST ? 1 : 0);
+            y = MathHelper.floor(from.y) - (face === EnumBlockFace.TOP ? 1 : 0);
+            z = MathHelper.floor(from.z) - (face === EnumBlockFace.SOUTH ? 1 : 0);
 
             let blockId = this.getBlockAt(x, y, z);
             let block = Block.getById(blockId);
@@ -480,6 +487,11 @@ window.World = class {
         return (Math.round(red * 255) << 16) | (Math.round(green * 255) << 8) | Math.round(blue * 255);
     }
 
+    getLightBrightness(x, y, z) {
+        let level = this.getTotalLightAt(x, y, z);
+        return this.lightBrightnessTable[level];
+    }
+
     getSkyColorByTemp(temperature) {
         temperature /= 3;
         if (temperature < -1) {
@@ -506,13 +518,6 @@ window.World = class {
     addEntity(entity) {
         this.entities.push(entity);
         this.group.add(entity.group);
-
-        let tessellator = new Tessellator();
-
-        // Rebuild entity model
-        let worldRenderer = this.minecraft.worldRenderer;
-        let renderer = worldRenderer.entityRenderManager.getEntityRendererByEntity(entity);
-        renderer.rebuild(tessellator, entity);
     }
 
     removeEntityById(id) {

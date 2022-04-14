@@ -10,7 +10,7 @@ window.BoundingBox = class {
      * @param maxY Maximum y side
      * @param maxZ Maximum z side
      */
-    constructor(minX, minY, minZ, maxX, maxY, maxZ) {
+    constructor(minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0) {
         this.epsilon = 0.0;
 
         this.minX = minX;
