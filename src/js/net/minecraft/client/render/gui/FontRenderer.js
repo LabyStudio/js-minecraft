@@ -8,6 +8,7 @@ window.FontRenderer = class {
     constructor() {
         this.charWidths = [];
 
+        this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
         this.texture = Gui.loadTexture("gui/font.png")
 
         let bitMap = this.createBitMap(this.texture);
@@ -44,7 +45,9 @@ window.FontRenderer = class {
     }
 
     drawString(stack, string, x, y, color = -1) {
-        this.drawStringRaw(stack, string, x + 1, y + 1, (color & 0xFCFCFC) >> 2, true);
+        if (!this.isSafari) { // TODO Fix brightness filter on Safari
+            this.drawStringRaw(stack, string, x + 1, y + 1, (color & 0xFCFCFC) >> 2, true);
+        }
         this.drawStringRaw(stack, string, x, y, color, false);
     }
 

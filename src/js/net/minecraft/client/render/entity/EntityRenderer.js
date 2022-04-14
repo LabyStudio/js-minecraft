@@ -2,13 +2,26 @@ window.EntityRenderer = class {
 
     constructor(model) {
         this.model = model;
+        this.tessellator = new Tessellator();
     }
 
-    rebuild(tessellator, entity) {
-        this.model.rebuild(tessellator, entity.group);
+    rebuild(entity) {
+        let brightness = entity.getEntityBrightness();
+        entity.lastRenderedBrightness = brightness;
+
+        // Apply brightness
+        this.tessellator.setColor(brightness, brightness, brightness);
+
+        // Rebuild
+        this.model.rebuild(this.tessellator, entity.group);
     }
 
     render(entity, partialTicks) {
+        let brightness = entity.getEntityBrightness();
+        if (entity.lastRenderedBrightness !== brightness) {
+            this.rebuild(entity);
+        }
+
         let group = entity.group;
 
         let rotationBody = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
@@ -32,19 +45,20 @@ window.EntityRenderer = class {
 
         // Actual size of the entity
         let scale = 7.0 / 120.0;
-        group.scale.set(scale, -scale, scale);
+        group.scale.set(-scale,- scale, scale);
 
         // Rotate entity model
         group.rotation.y = MathHelper.toRadians(-rotationBody + 180);
 
         // Render entity model
         let timeAlive = entity.ticksExisted + partialTicks;
-        this.model.render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch);
+        this.model.render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch, partialTicks);
     }
 
     interpolateRotation(prevValue, value, partialTicks) {
         let factor;
-        for (factor = value - prevValue; factor < -180.0; factor += 360.0) {}
+        for (factor = value - prevValue; factor < -180.0; factor += 360.0) {
+        }
         while (factor >= 180.0) {
             factor -= 360.0;
         }

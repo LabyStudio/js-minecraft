@@ -10,13 +10,12 @@ window.PlayerRenderer = class extends EntityRenderer {
     }
 
     rebuild(tessellator, entity) {
-        tessellator.bindTexture(this.textureCharacter);
+        this.tessellator.bindTexture(this.textureCharacter);
         super.rebuild(tessellator, entity);
     }
 
     render(entity, partialTicks) {
         super.render(entity, partialTicks);
-
     }
 
 }

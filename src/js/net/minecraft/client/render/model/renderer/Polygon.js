@@ -21,9 +21,6 @@ window.Polygon = class {
     }
 
     render(tessellator) {
-        // Set color of polygon
-        tessellator.setColor(1, 1, 1);
-
         // Render all vertices
         for (let i = 3; i >= 0; i--) {
             let vertex = this.vertices[i];

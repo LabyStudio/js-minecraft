@@ -15,7 +15,6 @@ window.Entity = class {
         this.motionZ = 0;
 
         this.onGround = false;
-
         this.sneaking = false;
 
         this.rotationYaw = 0;
@@ -32,6 +31,8 @@ window.Entity = class {
         this.nextStepDistance = 1;
 
         this.ticksExisted = 0;
+
+        this.boundingBox = new BoundingBox();
     }
 
     onUpdate() {
@@ -47,6 +48,17 @@ window.Entity = class {
         this.prevRotationYaw = this.rotationYaw;
 
         this.ticksExisted++;
+    }
+
+    getEntityBrightness() {
+        let x = MathHelper.floor(this.x);
+        let y = MathHelper.floor(this.y + this.getEyeHeight());
+        let z = MathHelper.floor(this.z);
+        return this.world.getLightBrightness(x, y, z);
+    }
+
+    getEyeHeight() {
+        return this.boundingBox.height() * 0.8;
     }
 
 }

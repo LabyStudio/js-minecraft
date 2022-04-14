@@ -157,7 +157,7 @@ window.ModelRenderer = class {
 
         this.bone.rotation.order = 'ZYX';
         this.bone.rotation.x = this.rotateAngleX;
-        this.bone.rotation.y = -this.rotateAngleY;
+        this.bone.rotation.y = this.rotateAngleY;
         this.bone.rotation.z = this.rotateAngleZ;
 
         this.bone.updateMatrix();
