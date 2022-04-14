@@ -165,19 +165,21 @@ window.BlockRenderer = class {
         let distortZ = 0;
 
         // Attach torch at wall
-        switch (world.getBlockDataAt(x, y, z)) {
-            case 1:
-                distortX = -0.2;
-                break;
-            case 2:
-                distortX = 0.2;
-                break;
-            case 3:
-                distortZ = -0.2;
-                break;
-            case 4:
-                distortZ = 0.2;
-                break;
+        if (world != null) {
+            switch (world.getBlockDataAt(x, y, z)) {
+                case 1:
+                    distortX = -0.2;
+                    break;
+                case 2:
+                    distortX = 0.2;
+                    break;
+                case 3:
+                    distortZ = -0.2;
+                    break;
+                case 4:
+                    distortZ = 0.2;
+                    break;
+            }
         }
 
         // Model type
@@ -250,6 +252,33 @@ window.BlockRenderer = class {
             this.addBlockCorner(world, face, maxX + distortX, minY, minZ + distortZ, minU, maxV);
             this.addBlockCorner(world, face, maxX + distortX, minY, maxZ + distortZ, maxU, maxV);
         }
+    }
+
+    renderBlockInHand(group, block, brightness) {
+        this.tessellator.startDrawing();
+
+        // Change brightness
+        this.tessellator.transformBrightness(brightness);
+
+        // Render block
+        this.renderBlock(null, block, 0, 0, 0);
+
+        // Create mesh
+        let mesh = this.tessellator.draw(group);
+        mesh.geometry.center();
+
+        // Relative position
+        mesh.position.x = 0;
+        mesh.position.y = 9;
+        mesh.position.z = -5;
+
+        // Rotation
+        mesh.rotation.y = Math.PI / 4;
+
+        // Scale
+        mesh.scale.x = 6;
+        mesh.scale.y = -6;
+        mesh.scale.z = 6;
     }
 
     renderGuiBlock(group, block, x, y, size, brightness) {

@@ -51,7 +51,6 @@ window.Minecraft = class {
         // Create player
         this.player = new PlayerEntity(this, this.world);
         this.world.addEntity(this.player);
-        this.inventory = new Inventory();
 
         this.displayScreen(this.loadingScreen);
 
@@ -192,7 +191,7 @@ window.Minecraft = class {
     onKeyPressed(button) {
         for (let i = 1; i <= 9; i++) {
             if (button === 'Digit' + i) {
-                this.inventory.selectedSlotIndex = i - 1;
+                this.player.inventory.selectedSlotIndex = i - 1;
             }
         }
 
@@ -238,7 +237,7 @@ window.Minecraft = class {
                 if (hitResult != null) {
                     let typeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
                     if (typeId !== 0) {
-                        this.inventory.setItemInSelectedSlot(typeId);
+                        this.player.inventory.setItemInSelectedSlot(typeId);
                     }
                 }
             }
@@ -254,7 +253,7 @@ window.Minecraft = class {
 
                     // Don't place blocks if the player is standing there
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
-                        let typeId = this.inventory.getItemInSelectedSlot();
+                        let typeId = this.player.inventory.getItemInSelectedSlot();
 
                         // Get previous block
                         let prevTypeId = this.world.getBlockAt(x, y, z);
@@ -286,7 +285,7 @@ window.Minecraft = class {
     }
 
     onMouseScroll(delta) {
-        this.inventory.shiftSelectedSlot(delta);
+        this.player.inventory.shiftSelectedSlot(delta);
     }
 
     isPaused() {

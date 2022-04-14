@@ -1,6 +1,8 @@
 window.Random = class {
 
-    constructor(seed) {
+    static instances = 0;
+
+    constructor(seed = Date.now() % 1000000000 ^ Random.instances++ * 1000) {
         this.mask = 0xffffffff;
         this.m_w = (123456789 + seed) & this.mask;
         this.m_z = (987654321 - seed) & this.mask;

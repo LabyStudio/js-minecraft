@@ -136,6 +136,8 @@ window.ModelRenderer = class {
     }
 
     rebuild(tessellator, group) {
+        this.bone.clear();
+
         // Start drawing
         tessellator.startDrawing();
 

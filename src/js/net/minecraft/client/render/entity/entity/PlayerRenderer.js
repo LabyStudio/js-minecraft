@@ -1,7 +1,9 @@
 window.PlayerRenderer = class extends EntityRenderer {
 
-    constructor() {
+    constructor(worldRenderer) {
         super(new ModelPlayer());
+
+        this.worldRenderer = worldRenderer;
 
         // Load character texture
         this.textureCharacter = new THREE.TextureLoader().load('src/resources/char.png');
@@ -9,13 +11,26 @@ window.PlayerRenderer = class extends EntityRenderer {
         this.textureCharacter.minFilter = THREE.NearestFilter;
     }
 
-    rebuild(tessellator, entity) {
+    rebuild(entity) {
         this.tessellator.bindTexture(this.textureCharacter);
-        super.rebuild(tessellator, entity);
+        super.rebuild(entity);
+
+        // Render item in hand
+        let group = this.model.rightArm.bone;
+        let id = entity.inventory.getItemInSelectedSlot();
+        if (id !== 0) {
+            let block = Block.getById(id);
+            this.worldRenderer.blockRenderer.renderBlockInHand(group, block, 1);
+        }
     }
 
     render(entity, partialTicks) {
         super.render(entity, partialTicks);
+    }
+
+    fillMeta(entity, meta) {
+        super.fillMeta(entity, meta);
+        meta.itemInHand = entity.inventory.getItemInSelectedSlot();
     }
 
 }
