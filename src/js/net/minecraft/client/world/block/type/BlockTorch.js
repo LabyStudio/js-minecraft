@@ -1,7 +1,7 @@
-import BoundingBox from "../../../util/BoundingBox.js";
-import Block from "./Block.js";
-import EnumBlockFace from "../../../util/EnumBlockFace.js";
-import BlockRenderType from "../../../util/BlockRenderType.js";
+import BoundingBox from "../../../../util/BoundingBox.js";
+import Block from "../Block.js";
+import EnumBlockFace from "../../../../util/EnumBlockFace.js";
+import BlockRenderType from "../../../../util/BlockRenderType.js";
 
 export default class BlockTorch extends Block {
 
