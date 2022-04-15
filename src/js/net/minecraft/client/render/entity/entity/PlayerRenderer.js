@@ -24,7 +24,7 @@ export default class PlayerRenderer extends EntityRenderer {
         let id = entity.inventory.getItemInSelectedSlot();
         if (id !== 0) {
             let block = Block.getById(id);
-            this.worldRenderer.blockRenderer.renderBlockInHand(group, block, 1);
+            this.worldRenderer.blockRenderer.renderBlockInHand(group, block, entity.getEntityBrightness());
         }
     }
 

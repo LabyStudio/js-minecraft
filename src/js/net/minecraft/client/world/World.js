@@ -26,13 +26,6 @@ export default class World {
 
         this.time = 0;
 
-        // Generate light brightness table
-        this.lightBrightnessTable = [];
-        for (let i = 0; i <= 15; i++) {
-            let brightness = 1.0 - i / 15;
-            this.lightBrightnessTable[i] = ((1.0 - brightness) / (brightness * 3 + 1.0)) * (1.0 - 0.05) + 0.05;
-        }
-
         // Load world
         this.generator = new WorldGenerator(this, Date.now() % 100000);
 
@@ -500,7 +493,7 @@ export default class World {
 
     getLightBrightness(x, y, z) {
         let level = this.getTotalLightAt(x, y, z);
-        return this.lightBrightnessTable[level];
+        return Math.max(level / 15, 0.1);
     }
 
     getSkyColorByTemp(temperature) {
