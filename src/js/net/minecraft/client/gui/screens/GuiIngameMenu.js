@@ -1,4 +1,8 @@
-window.GuiIngameMenu = class extends GuiScreen {
+import GuiButton from "../widgets/GuiButton.js";
+import GuiControls from "./GuiControls.js";
+import GuiScreen from "../GuiScreen.js";
+
+export default class GuiIngameMenu extends GuiScreen {
 
     constructor() {
         super();

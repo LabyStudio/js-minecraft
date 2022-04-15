@@ -1,28 +1,13 @@
-window.Block = class {
+import BlockRenderType from "../../../util/BlockRenderType.js";
+import EnumBlockFace from "../../../util/EnumBlockFace.js";
+import MovingObjectPosition from "../../../util/MovingObjectPosition.js";
+import BoundingBox from "../../../util/BoundingBox.js";
+
+export default class Block {
 
     static blocks = new Map();
 
     static sounds = {};
-
-    static create() {
-        // Sounds
-        Block.sounds.stone = new Sound("stone", 1.0);
-        Block.sounds.wood = new Sound("wood", 1.0);
-        Block.sounds.gravel = new Sound("gravel", 1.0);
-        Block.sounds.grass = new Sound("grass", 1.0);
-        Block.sounds.cloth = new Sound("cloth", 1.0);
-        Block.sounds.sand = new Sound("sand", 1.0);
-
-        // Blocks
-        Block.STONE = new BlockStone(1, 0);
-        Block.GRASS = new BlockGrass(2, 1);
-        Block.DIRT = new BlockDirt(3, 2);
-        Block.LOG = new BlockLog(17, 4);
-        Block.LEAVE = new BlockLeave(18, 6);
-        Block.WATER = new BlockWater(9, 7);
-        Block.SAND = new BlockSand(12, 8)
-        Block.TORCH = new BlockTorch(50, 9)
-    }
 
     constructor(id, textureSlotId = id) {
         this.id = id;
@@ -209,5 +194,5 @@ window.Block = class {
     static getById(typeId) {
         return Block.blocks.get(typeId);
     }
-
 }
+

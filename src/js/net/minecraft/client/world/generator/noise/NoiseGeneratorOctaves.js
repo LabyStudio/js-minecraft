@@ -1,4 +1,7 @@
-window.NoiseGeneratorOctaves = class extends NoiseGenerator {
+import NoiseGenerator from "../NoiseGenerator.js";
+import NoiseGeneratorPerlin from "./NoiseGeneratorPerlin.js";
+
+export default class NoiseGeneratorOctaves extends NoiseGenerator {
 
     constructor(random, octaves) {
         super();

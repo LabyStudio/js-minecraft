@@ -1,4 +1,6 @@
-window.ItemRenderer = class {
+import Block from "../../world/block/Block.js";
+
+export default class ItemRenderer {
 
     constructor(minecraft, window) {
         this.minecraft = minecraft;

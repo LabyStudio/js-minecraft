@@ -1,4 +1,7 @@
-window.ModelRenderer = class {
+import Polygon from "./Polygon.js";
+import Vertex from "./Vertex.js";
+
+export default class ModelRenderer {
 
     /**
      * Create cube object

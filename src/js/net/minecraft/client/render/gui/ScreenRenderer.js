@@ -1,4 +1,4 @@
-window.ScreenRenderer = class {
+export default class ScreenRenderer {
 
     constructor(minecraft, window) {
         this.minecraft = minecraft;

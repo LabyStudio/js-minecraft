@@ -1,4 +1,6 @@
-window.NoiseGeneratorCombined = class extends NoiseGenerator {
+import NoiseGenerator from "../NoiseGenerator.js";
+
+export default class NoiseGeneratorCombined extends NoiseGenerator {
 
     constructor(firstGenerator, secondGenerator) {
         super();

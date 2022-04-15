@@ -1,4 +1,7 @@
-window.EntityLiving = class extends Entity {
+import Entity from "./Entity.js";
+import MathHelper from "../../util/MathHelper.js";
+
+export default class EntityLiving extends Entity {
 
     constructor(minecraft, world) {
         super(minecraft, world);

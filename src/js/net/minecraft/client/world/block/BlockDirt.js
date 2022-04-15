@@ -1,4 +1,6 @@
-window.BlockDirt = class extends Block {
+import Block from "./Block.js";
+
+export default class BlockDirt extends Block {
 
     constructor(id, textureSlotId) {
         super(id, textureSlotId);

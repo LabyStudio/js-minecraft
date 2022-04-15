@@ -1,4 +1,6 @@
-window.Vertex = class {
+import Vector3 from "../../../../util/Vector3.js";
+
+export default class Vertex {
 
     /**
      * A vertex contains a 3 float vector position and UV coordinates

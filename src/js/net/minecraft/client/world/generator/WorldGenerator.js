@@ -1,4 +1,10 @@
-window.WorldGenerator = class {
+import Random from "../../../util/Random.js";
+import NoiseGeneratorCombined from "./noise/NoiseGeneratorCombined.js";
+import NoiseGeneratorOctaves from "./noise/NoiseGeneratorOctaves.js";
+import ChunkSection from "../ChunkSection.js";
+import Block from "../block/Block.js";
+
+export default class WorldGenerator {
 
     constructor(world, seed) {
         this.world = world;

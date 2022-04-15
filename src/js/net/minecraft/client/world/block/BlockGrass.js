@@ -1,4 +1,7 @@
-window.BlockGrass = class extends Block {
+import Block from "./Block.js";
+import EnumBlockFace from "../../../util/EnumBlockFace.js";
+
+export default class BlockGrass extends Block {
 
     constructor(id, textureSlotId) {
         super(id, textureSlotId);

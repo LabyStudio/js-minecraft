@@ -1,4 +1,6 @@
-window.SoundManager = class {
+import Block from "../world/block/Block.js";
+
+export default class SoundManager {
 
     constructor() {
         this.audioLoader = new THREE.AudioLoader();

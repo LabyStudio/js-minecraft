@@ -1,4 +1,9 @@
-window.Chunk = class {
+import EnumSkyBlock from "../../util/EnumSkyBlock.js";
+import Block from "./block/Block.js";
+import World from "./World.js";
+import ChunkSection from "./ChunkSection.js";
+
+export default class Chunk {
 
     constructor(world, x, z) {
         this.world = world;
@@ -92,7 +97,7 @@ window.Chunk = class {
             }
         }
 
-        this.world.updateLight(EnumSkyBlock.Block,
+        this.world.updateLight(EnumSkyBlock.BLOCK,
             this.x * 16, targetY - 1, this.z * 16,
             this.x * 16 + 16, targetY + 1, this.z * 16 + 16
         );

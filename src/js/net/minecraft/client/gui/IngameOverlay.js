@@ -1,12 +1,15 @@
-window.IngameOverlay = class extends Gui {
+import Gui from "./Gui.js";
+import Block from "../world/block/Block.js";
+
+export default class IngameOverlay extends Gui {
 
     constructor(minecraft, window) {
         super();
         this.minecraft = minecraft;
         this.window = window;
 
-        this.textureCrosshair = Gui.loadTexture("gui/icons.png");
-        this.textureHotbar = Gui.loadTexture("gui/gui.png");
+        this.textureCrosshair = minecraft.resources["gui/icons.png"];
+        this.textureHotbar = minecraft.resources["gui/gui.png"];
     }
 
     render(stack, mouseX, mouseY, partialTicks) {

@@ -1,4 +1,7 @@
-window.Entity = class {
+import BoundingBox from "../../util/BoundingBox.js";
+import MathHelper from "../../util/MathHelper.js";
+
+export default class Entity {
 
     constructor(minecraft, world) {
         this.minecraft = minecraft;

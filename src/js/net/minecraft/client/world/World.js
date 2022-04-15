@@ -1,4 +1,15 @@
-window.World = class {
+import ChunkSection from "./ChunkSection.js";
+import WorldGenerator from "./generator/WorldGenerator.js";
+import Chunk from "./Chunk.js";
+import MathHelper from "../../util/MathHelper.js";
+import BoundingBox from "../../util/BoundingBox.js";
+import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
+import EnumSkyBlock from "../../util/EnumSkyBlock.js";
+import Block from "./block/Block.js";
+import EnumBlockFace from "../../util/EnumBlockFace.js";
+import Vector3 from "../../util/Vector3.js";
+
+export default class World {
 
     static TOTAL_HEIGHT = ChunkSection.SIZE * 8 - 1; // ChunkSection.SIZE * 16 - 1;
 

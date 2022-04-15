@@ -1,4 +1,4 @@
-window.Timer = class {
+export default class Timer {
 
     static MS_PER_SECOND = 1000;
     static MAX_MS_PER_UPDATE = 1000;

@@ -1,4 +1,6 @@
-window.NoiseGeneratorPerlin = class extends NoiseGenerator {
+import NoiseGenerator from "../NoiseGenerator.js";
+
+export default class NoiseGeneratorPerlin extends NoiseGenerator {
 
     constructor(random) {
         super();

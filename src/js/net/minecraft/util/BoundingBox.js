@@ -1,4 +1,4 @@
-window.BoundingBox = class {
+export default class BoundingBox {
 
     /**
      * Bounding box

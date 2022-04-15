@@ -1,4 +1,4 @@
-window.MathHelper = class {
+export default class MathHelper {
 
     /**
      * Returns the greatest integer less than or equal to the double argument

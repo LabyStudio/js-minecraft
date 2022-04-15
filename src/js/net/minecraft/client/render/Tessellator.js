@@ -1,4 +1,4 @@
-window.Tessellator = class {
+export default class Tessellator {
 
     constructor() {
         this.material = new THREE.MeshBasicMaterial({

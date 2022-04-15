@@ -1,4 +1,8 @@
-window.GuiControls = class extends GuiScreen {
+import GuiScreen from "../GuiScreen.js";
+import GuiKeyButton from "../widgets/GuiKeyButton.js";
+import GuiButton from "../widgets/GuiButton.js";
+
+export default class GuiControls extends GuiScreen {
 
     constructor(previousScreen) {
         super();

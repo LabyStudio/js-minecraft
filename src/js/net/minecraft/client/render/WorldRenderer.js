@@ -1,4 +1,10 @@
-window.WorldRenderer = class {
+import BlockRenderer from "./BlockRenderer.js";
+import EntityRenderManager from "./entity/EntityRenderManager.js";
+import MathHelper from "../../util/MathHelper.js";
+import ChunkSection from "../world/ChunkSection.js";
+import Block from "../world/block/Block.js";
+
+export default class WorldRenderer {
 
     static RENDER_DISTANCE = 4;
     static THIRD_PERSON_DISTANCE = 4;

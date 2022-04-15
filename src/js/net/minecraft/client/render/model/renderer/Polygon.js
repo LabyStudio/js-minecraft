@@ -1,4 +1,6 @@
-window.Polygon = class {
+import Vertex from "./Vertex.js";
+
+export default class Polygon {
 
     constructor(vertices, minU, minV, maxU, maxV, textureWidth, textureHeight) {
         this.vertices = vertices;

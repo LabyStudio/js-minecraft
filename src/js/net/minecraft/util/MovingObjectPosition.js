@@ -1,4 +1,4 @@
-window.MovingObjectPosition = class {
+export default class MovingObjectPosition {
 
     constructor(vector, face, x, y, z) {
         this.vector = vector;

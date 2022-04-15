@@ -1,4 +1,4 @@
-window.ModelBase = class {
+export default class ModelBase {
 
     /**
      * Rebuild the model

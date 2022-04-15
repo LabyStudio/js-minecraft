@@ -1,4 +1,7 @@
-window.EntityRenderManager = class {
+import PlayerRenderer from "./entity/PlayerRenderer.js";
+import PlayerEntity from "../../entity/PlayerEntity.js";
+
+export default class EntityRenderManager {
 
     constructor(worldRenderer) {
         this.worldRenderer = worldRenderer;
