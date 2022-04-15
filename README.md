@@ -21,6 +21,11 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - Smooth lightning
     - Day/Night
     - Block light source
+- Entity Rendering
+    - Item in hand
+    - Arm swing animation
+    - Walking animation
+    - Crouch animation
 - World
     - 16x16x16 Chunks
     - Block type, data, sky & block lightning
@@ -30,6 +35,7 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - Fog
     - Underwater fog
     - Dynamic FOV
+    - Third person
 - GUI
     - Screens
         - Loading Screen
