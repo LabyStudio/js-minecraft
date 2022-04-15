@@ -1,4 +1,12 @@
-window.PlayerEntity = class extends EntityLiving {
+import Inventory from "../inventory/Inventory.js";
+import EntityLiving from "./EntityLiving.js";
+import BoundingBox from "../../util/BoundingBox.js";
+import Block from "../world/block/Block.js";
+import MathHelper from "../../util/MathHelper.js";
+import Keyboard from "../../util/Keyboard.js";
+import Vector3 from "../../util/Vector3.js";
+
+export default class PlayerEntity extends EntityLiving {
 
     static name = "PlayerEntity";
 

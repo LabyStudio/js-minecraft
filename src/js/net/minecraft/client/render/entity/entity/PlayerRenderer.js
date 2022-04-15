@@ -1,4 +1,8 @@
-window.PlayerRenderer = class extends EntityRenderer {
+import ModelPlayer from "../../model/model/ModelPlayer.js";
+import EntityRenderer from "../EntityRenderer.js";
+import Block from "../../../world/block/Block.js";
+
+export default class PlayerRenderer extends EntityRenderer {
 
     constructor(worldRenderer) {
         super(new ModelPlayer());

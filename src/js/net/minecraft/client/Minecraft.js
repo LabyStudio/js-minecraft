@@ -1,9 +1,27 @@
-window.Minecraft = class {
+import Timer from "../util/Timer.js";
+import GameSettings from "./GameSettings.js";
+import GameWindow from "./GameWindow.js";
+import WorldRenderer from "./render/WorldRenderer.js";
+import ScreenRenderer from "./render/gui/ScreenRenderer.js";
+import ItemRenderer from "./render/gui/ItemRenderer.js";
+import IngameOverlay from "./gui/IngameOverlay.js";
+import GuiLoadingScreen from "./gui/screens/GuiLoadingScreen.js";
+import PlayerEntity from "./entity/PlayerEntity.js";
+import SoundManager from "./sound/SoundManager.js";
+import World from "./world/World.js";
+import Block from "./world/block/Block.js";
+import BoundingBox from "../util/BoundingBox.js";
+import {BlockRegistry} from "./world/block/BlockRegistry.js";
+import FontRenderer from "./render/gui/FontRenderer.js";
+
+export default class Minecraft {
 
     /**
      * Create Minecraft instance and render it on a canvas
      */
-    constructor(canvasWrapperId) {
+    constructor(canvasWrapperId, resources) {
+        this.resources = resources;
+
         this.currentScreen = null;
         this.loadingScreen = null;
 
@@ -34,9 +52,12 @@ window.Minecraft = class {
         this.lastTime = Date.now();
 
         // Create all blocks
-        Block.create();
+        BlockRegistry.create();
 
         this.itemRenderer.initialize();
+
+        // Create font renderer
+        this.fontRenderer = new FontRenderer(this);
 
         // Update window size
         this.window.updateWindowSize();

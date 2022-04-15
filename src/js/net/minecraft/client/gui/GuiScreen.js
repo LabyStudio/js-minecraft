@@ -1,4 +1,6 @@
-window.GuiScreen = class extends Gui {
+import Gui from "./Gui.js";
+
+export default class GuiScreen extends Gui {
 
     constructor() {
         super();
@@ -25,6 +27,7 @@ window.GuiScreen = class extends Gui {
     drawScreen(stack, mouseX, mouseY, partialTicks) {
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
+            button.minecraft = this.minecraft;
             button.render(stack, mouseX, mouseY, partialTicks);
         }
     }
@@ -53,5 +56,4 @@ window.GuiScreen = class extends Gui {
             }
         }
     }
-
 }

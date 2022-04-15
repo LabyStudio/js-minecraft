@@ -1,15 +1,17 @@
-window.FontRenderer = class {
+import Gui from "../../gui/Gui.js";
+
+export default class FontRenderer {
 
     static BITMAP_SIZE = 16;
     static FIELD_SIZE = 8;
 
     static COLOR_CODE_INDEX_LOOKUP = "0123456789abcdef";
 
-    constructor() {
+    constructor(minecraft) {
         this.charWidths = [];
 
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        this.texture = Gui.loadTexture("gui/font.png")
+        this.texture = minecraft.resources["gui/font.png"];
 
         let bitMap = this.createBitMap(this.texture);
 
@@ -137,5 +139,3 @@ window.FontRenderer = class {
         return canvas.getContext('2d').getImageData(0, 0, img.width, img.height).data;
     }
 }
-
-window.FontRenderer.INSTANCE = new FontRenderer();

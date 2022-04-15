@@ -1,4 +1,7 @@
-window.EntityRenderer = class {
+import Tessellator from "../Tessellator.js";
+import MathHelper from "../../../util/MathHelper.js";
+
+export default class EntityRenderer {
 
     constructor(model) {
         this.model = model;

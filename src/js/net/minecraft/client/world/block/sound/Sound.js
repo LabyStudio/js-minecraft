@@ -1,4 +1,4 @@
-window.Sound = class {
+export default class Sound {
 
     constructor(name, pitch) {
         this.name = name;

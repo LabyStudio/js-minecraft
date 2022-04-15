@@ -1,9 +1,14 @@
-window.GuiLoadingScreen = class extends GuiScreen {
+import GuiScreen from "../GuiScreen.js";
+
+export default class GuiLoadingScreen extends GuiScreen {
 
     constructor() {
         super();
+    }
 
-        this.textureBackground = Gui.loadTexture("gui/background.png");
+    init() {
+        super.init();
+        this.textureBackground = this.getTexture("gui/background.png");
     }
 
     drawScreen(stack, mouseX, mouseY, partialTicks) {
@@ -53,5 +58,4 @@ window.GuiLoadingScreen = class extends GuiScreen {
     keyTyped(key) {
         // Cancel key inputs
     }
-
 }

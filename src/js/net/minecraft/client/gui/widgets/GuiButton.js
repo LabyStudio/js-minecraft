@@ -1,6 +1,6 @@
-window.GuiButton = class extends Gui {
+import Gui from "../Gui.js";
 
-    static textureGui = Gui.loadTexture("gui/gui.png");
+export default class GuiButton extends Gui {
 
     constructor(string, x, y, width, height, callback) {
         super();
@@ -14,8 +14,10 @@ window.GuiButton = class extends Gui {
     }
 
     render(stack, mouseX, mouseY, partialTicks) {
+        let textureGui = this.getTexture("gui/gui.png");
+
         let mouseOver = this.isMouseOver(mouseX, mouseY);
-        this.drawSprite(stack, GuiButton.textureGui, 0, 66 + (mouseOver ? 20 : 0), 200, 20, this.x, this.y, this.width, this.height);
+        this.drawSprite(stack, textureGui, 0, 66 + (mouseOver ? 20 : 0), 200, 20, this.x, this.y, this.width, this.height);
         this.drawCenteredString(stack, this.string, this.x + this.width / 2, this.y + this.height / 2 - 4);
     }
 

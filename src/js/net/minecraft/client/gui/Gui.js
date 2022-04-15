@@ -1,4 +1,28 @@
-window.Gui = class {
+import Point from "../render/isometric/Point.js";
+import IsometricRenderer from "../render/isometric/IsometricRenderer.js";
+import EnumBlockFace from "../../util/EnumBlockFace.js";
+
+export default class Gui {
+
+    constructor(minecraft = null) {
+        this.minecraft = minecraft;
+    }
+
+    getTexture(id) {
+        return this.minecraft.resources[id];
+    }
+
+    drawCenteredString(stack, string, x, y, color = -1) {
+        this.minecraft.fontRenderer.drawString(stack, string, x - this.getStringWidth(stack, string) / 2, y, color);
+    }
+
+    drawString(stack, string, x, y, color = -1) {
+        this.minecraft.fontRenderer.drawString(stack, string, x, y, color);
+    }
+
+    getStringWidth(stack, string) {
+        return this.minecraft.fontRenderer.getStringWidth(string);
+    }
 
     drawRect(stack, left, top, right, bottom, color, alpha = 1) {
         stack.save();
@@ -6,18 +30,6 @@ window.Gui = class {
         stack.globalAlpha = alpha;
         stack.fillRect(Math.floor(left), Math.floor(top), Math.floor(right - left), Math.floor(bottom - top));
         stack.restore();
-    }
-
-    drawCenteredString(stack, string, x, y, color = -1) {
-        FontRenderer.INSTANCE.drawString(stack, string, x - this.getStringWidth(stack, string) / 2, y, color);
-    }
-
-    drawString(stack, string, x, y, color = -1) {
-        FontRenderer.INSTANCE.drawString(stack, string, x, y, color);
-    }
-
-    getStringWidth(stack, string) {
-        return FontRenderer.INSTANCE.getStringWidth(string);
     }
 
     drawTexture(stack, texture, x, y, width, height, alpha = 1.0) {
@@ -108,9 +120,5 @@ window.Gui = class {
         stack.globalAlpha = alpha;
         stack.drawImage(texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height);
         stack.restore();
-    }
-
-    static loadTexture(path) {
-        return document.textures[path];
     }
 }

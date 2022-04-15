@@ -1,4 +1,4 @@
-window.Inventory = class {
+export default class Inventory {
 
     constructor() {
         this.selectedSlotIndex = 0;

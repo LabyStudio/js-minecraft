@@ -1,4 +1,6 @@
-window.GuiKeyButton = class extends GuiButton {
+import GuiButton from "./GuiButton.js";
+
+export default class GuiKeyButton extends GuiButton {
 
     constructor(name, key, x, y, width, height, callback) {
         super(name + ": " + key, x, y, width, height, _ => callback(this.key));

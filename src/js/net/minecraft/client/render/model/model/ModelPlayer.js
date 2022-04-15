@@ -1,4 +1,8 @@
-window.ModelPlayer = class extends ModelBase {
+import ModelRenderer from "../renderer/ModelRenderer.js";
+import MathHelper from "../../../../util/MathHelper.js";
+import ModelBase from "../ModelBase.js";
+
+export default class ModelPlayer extends ModelBase {
 
     /**
      * Create cubes for the zombie model

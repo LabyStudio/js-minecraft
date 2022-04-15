@@ -1,4 +1,7 @@
-window.ChunkSection = class {
+import EnumSkyBlock from "../../util/EnumSkyBlock.js";
+import Block from "./block/Block.js";
+
+export default class ChunkSection {
 
     static SIZE = 16;
 

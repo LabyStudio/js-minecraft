@@ -1,4 +1,9 @@
-window.BlockTorch = class extends Block {
+import BoundingBox from "../../../util/BoundingBox.js";
+import Block from "./Block.js";
+import EnumBlockFace from "../../../util/EnumBlockFace.js";
+import BlockRenderType from "../../../util/BlockRenderType.js";
+
+export default class BlockTorch extends Block {
 
     constructor(id, textureSlotId) {
         super(id, textureSlotId);

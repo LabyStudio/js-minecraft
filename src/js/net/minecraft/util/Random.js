@@ -1,4 +1,4 @@
-window.Random = class {
+export default class Random {
 
     static instances = 0;
 

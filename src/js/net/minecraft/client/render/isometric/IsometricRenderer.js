@@ -1,4 +1,8 @@
-window.IsometricRenderer = class {
+import TextCoord from "./TextCoord.js";
+import Point from "./Point.js";
+import Triangle from "./Triangle.js";
+
+export default class IsometricRenderer {
 
     // http://jsfiddle.net/xzL58dha/3/
 

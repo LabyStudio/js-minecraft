@@ -1,4 +1,4 @@
-window.Triangle = class {
+export default class Triangle {
     constructor(p0, p1, p2, t0, t1, t2) {
         this.p0 = p0;
         this.p1 = p1;

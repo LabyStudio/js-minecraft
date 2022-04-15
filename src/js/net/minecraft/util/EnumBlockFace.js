@@ -1,4 +1,11 @@
-window.EnumBlockFace = class {
+export default class EnumBlockFace {
+
+    static TOP = new EnumBlockFace(0, 1, 0);
+    static BOTTOM = new EnumBlockFace(0, -1, 0);
+    static NORTH = new EnumBlockFace(0, 0, -1);
+    static EAST = new EnumBlockFace(1, 0, 0);
+    static SOUTH = new EnumBlockFace(0, 0, 1);
+    static WEST = new EnumBlockFace(-1, 0, 0);
 
     constructor(x, y, z) {
         this.x = x;
@@ -47,24 +54,11 @@ window.EnumBlockFace = class {
         return null;
     }
 
-    static values() {
-        return [
-            EnumBlockFace.TOP,
-            EnumBlockFace.BOTTOM,
-            EnumBlockFace.NORTH,
-            EnumBlockFace.EAST,
-            EnumBlockFace.SOUTH,
-            EnumBlockFace.WEST
-        ];
+    equals(other) {
+        return this.x === other.x && this.y === other.y && this.z === other.z;
     }
-}
 
-{
-    let c = window.EnumBlockFace;
-    c.TOP = new EnumBlockFace(0, 1, 0);
-    c.BOTTOM = new EnumBlockFace(0, -1, 0);
-    c.NORTH = new EnumBlockFace(0, 0, -1);
-    c.EAST = new EnumBlockFace(1, 0, 0);
-    c.SOUTH = new EnumBlockFace(0, 0, 1);
-    c.WEST = new EnumBlockFace(-1, 0, 0);
+    static values() {
+        return [EnumBlockFace.TOP, EnumBlockFace.BOTTOM, EnumBlockFace.NORTH, EnumBlockFace.EAST, EnumBlockFace.SOUTH, EnumBlockFace.WEST];
+    }
 }

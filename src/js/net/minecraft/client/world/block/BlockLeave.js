@@ -1,4 +1,6 @@
-window.BlockLeave = class extends Block {
+import Block from "./Block.js";
+
+export default class BlockLeave extends Block {
 
     constructor(id, textureSlotId) {
         super(id, textureSlotId);

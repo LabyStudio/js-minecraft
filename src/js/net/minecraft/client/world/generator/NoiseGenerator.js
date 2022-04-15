@@ -1,4 +1,4 @@
-window.NoiseGenerator = class {
+export default class NoiseGenerator {
     perlin(x, z) {
 
     }

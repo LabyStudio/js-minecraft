@@ -1,4 +1,8 @@
-window.MetadataChunkBlock = class {
+import Block from "../client/world/block/Block.js";
+import EnumSkyBlock from "./EnumSkyBlock.js";
+import World from "../client/world/World.js";
+
+export default class MetadataChunkBlock {
 
     constructor(type, x1, y1, z1, x2, y2, z2) {
         this.type = type;

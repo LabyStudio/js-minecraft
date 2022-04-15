@@ -1,4 +1,7 @@
-window.GameWindow = class {
+import GuiIngameMenu from "./gui/screens/GuiIngameMenu.js";
+import Keyboard from "../util/Keyboard.js";
+
+export default class GameWindow {
 
     constructor(minecraft, canvasWrapperId) {
         this.minecraft = minecraft;

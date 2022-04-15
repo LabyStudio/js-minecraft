@@ -1,4 +1,4 @@
-window.GameSettings = class {
+export default class GameSettings {
 
     constructor() {
         this.crouching = 'ShiftLeft';

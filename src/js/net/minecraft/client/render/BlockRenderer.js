@@ -1,4 +1,10 @@
-window.BlockRenderer = class {
+import EnumBlockFace from "../../util/EnumBlockFace.js";
+import BlockRenderType from "../../util/BlockRenderType.js";
+import Tessellator from "./Tessellator.js";
+import MathHelper from "../../util/MathHelper.js";
+import Block from "../world/block/Block.js";
+
+export default class BlockRenderer {
 
     static CLASSIC_LIGHTNING = false;
 
