@@ -10,38 +10,38 @@ window.ModelPlayer = class extends ModelBase {
         let height = 32;
 
         // Create head ModelRenderer
-        this.head = new ModelRenderer(width, height)
+        this.head = new ModelRenderer("head", width, height)
             .setTextureOffset(0, 0)
-            .setBox(-4.0, -8.0, -4.0, 8, 8, 8);
+            .addBox(-4.0, -8.0, -4.0, 8, 8, 8);
 
         // Create body ModelRenderer
-        this.body = new ModelRenderer(width, height)
+        this.body = new ModelRenderer("body", width, height)
             .setTextureOffset(16, 16)
-            .setBox(-4.0, 0.0, -2.0, 8, 12, 4);
+            .addBox(-4.0, 0.0, -2.0, 8, 12, 4);
 
         // Left arm ModelRenderer
-        this.leftArm = new ModelRenderer(width, height)
+        this.leftArm = new ModelRenderer("left_arm", width, height)
             .setTextureOffset(40, 16)
             .setRotationPoint(-5.0, 2.0, 0.0)
-            .setBox(-1.0, -2.0, -2.0, 4, 12, 4);
+            .addBox(-1.0, -2.0, -2.0, 4, 12, 4);
 
         // Right arm ModelRenderer
-        this.rightArm = new ModelRenderer(width, height)
+        this.rightArm = new ModelRenderer("right_arm", width, height)
             .setTextureOffset(40, 16)
             .setRotationPoint(-3.0, 2.0, -2.0)
-            .setBox(-3.0, -2.0, -2.0, 4, 12, 4);
+            .addBox(-3.0, -2.0, -2.0, 4, 12, 4);
 
         // Right Legs ModelRenderer
-        this.rightLeg = new ModelRenderer(width, height)
+        this.rightLeg = new ModelRenderer("right_leg", width, height)
             .setTextureOffset(0, 16)
             .setRotationPoint(-2.0, 12.0, 0.0)
-            .setBox(-2.0, 0.0, -2.0, 4, 12, 4);
+            .addBox(-2.0, 0.0, -2.0, 4, 12, 4);
 
         // Left leg ModelRenderer
-        this.leftLeg = new ModelRenderer(width, height)
+        this.leftLeg = new ModelRenderer("left_leg", width, height)
             .setTextureOffset(0, 16)
             .setRotationPoint(2.0, 12.0, 0.0)
-            .setBox(-2.0, 0.0, -2.0, 4, 12, 4);
+            .addBox(-2.0, 0.0, -2.0, 4, 12, 4);
     }
 
     rebuild(tessellator, group) {
@@ -143,12 +143,12 @@ window.ModelPlayer = class extends ModelBase {
         this.leftArm.rotateAngleX -= Math.sin(timeAlive * 0.067) * 0.05;
 
         // Render cubes
-        this.head.render(group);
-        this.body.render(group);
-        this.rightArm.render(group);
-        this.leftArm.render(group);
-        this.rightLeg.render(group);
-        this.leftLeg.render(group);
+        this.head.render();
+        this.body.render();
+        this.rightArm.render();
+        this.leftArm.render();
+        this.rightLeg.render();
+        this.leftLeg.render();
 
         super.render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch);
     }

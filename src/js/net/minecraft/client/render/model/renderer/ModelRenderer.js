@@ -3,7 +3,9 @@ window.ModelRenderer = class {
     /**
      * Create cube object
      */
-    constructor(textureWidth, textureHeight) {
+    constructor(name, textureWidth, textureHeight) {
+        this.name = name;
+
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
 
@@ -18,6 +20,13 @@ window.ModelRenderer = class {
         this.rotationPointY = 0;
         this.rotationPointZ = 0;
 
+        this.scaleX = 1;
+        this.scaleY = 1;
+        this.scaleZ = 1;
+
+        this.cubes = [];
+        this.children = [];
+
         this.bone = new THREE.Object3D();
     }
 
@@ -30,7 +39,57 @@ window.ModelRenderer = class {
     setTextureOffset(textureOffsetX, textureOffsetY) {
         this.textureOffsetX = textureOffsetX;
         this.textureOffsetY = textureOffsetY;
+        return this;
+    }
 
+    /**
+     * Set texture size
+     * @param width Texture width
+     * @param height Texture height
+     */
+    setTextureSize(width, height) {
+        this.textureWidth = width;
+        this.textureHeight = height;
+        return this;
+    }
+
+    /**
+     * Set the absolute position of the cube
+     *
+     * @param x Absolute x position of cube
+     * @param y Absolute y position of cube
+     * @param z Absolute z position of cube
+     */
+    setRotationPoint(x, y, z) {
+        this.rotationPointX = x;
+        this.rotationPointY = y;
+        this.rotationPointZ = z;
+        return this;
+    }
+
+    /**
+     * Set the rotation of the cube
+     * @param x Rotation x
+     * @param y Rotation y
+     * @param z Rotation z
+     */
+    setRotationAngle(x, y, z) {
+        this.rotateAngleX = x;
+        this.rotateAngleY = y;
+        this.rotateAngleZ = z;
+        return this;
+    }
+
+    /**
+     * Set the rotation of the cube
+     * @param x Rotation x
+     * @param y Rotation y
+     * @param z Rotation z
+     */
+    setScale(x, y, z) {
+        this.scaleX = x;
+        this.scaleY = y;
+        this.scaleZ = z;
         return this;
     }
 
@@ -43,9 +102,11 @@ window.ModelRenderer = class {
      * @param width   Cube width
      * @param height  Cube height
      * @param depth   Cube depth
+     * @param inflate Inflate the cube
+     * @param mirror  Mirror the cube
      */
-    setBox(offsetX, offsetY, offsetZ, width, height, depth) {
-        this.polygons = [];
+    addBox(offsetX, offsetY, offsetZ, width, height, depth, inflate = 0, mirror = false) {
+        let polygons = [];
 
         let x = offsetX + width;
         let y = offsetY + height;
@@ -64,7 +125,7 @@ window.ModelRenderer = class {
         let vertexTop4 = new Vertex(offsetX, y, offsetZ);
 
         // Create polygons for each cube side
-        this.polygons[0] = new Polygon(
+        polygons[0] = new Polygon(
             [vertexBottom4, vertexBottom2, vertexTop3, vertexTop1],
             this.textureOffsetX + depth + width,
             this.textureOffsetY + depth,
@@ -73,7 +134,7 @@ window.ModelRenderer = class {
             this.textureWidth, this.textureHeight
         );
 
-        this.polygons[1] = new Polygon(
+        polygons[1] = new Polygon(
             [vertexBottom1, vertexBottom3, vertexTop2, vertexTop4],
             this.textureOffsetX,
             this.textureOffsetY + depth,
@@ -82,7 +143,7 @@ window.ModelRenderer = class {
             this.textureWidth, this.textureHeight
         );
 
-        this.polygons[2] = new Polygon(
+        polygons[2] = new Polygon(
             [vertexBottom4, vertexBottom3, vertexBottom1, vertexBottom2],
             this.textureOffsetX + depth,
             this.textureOffsetY,
@@ -91,7 +152,7 @@ window.ModelRenderer = class {
             this.textureWidth, this.textureHeight
         );
 
-        this.polygons[3] = new Polygon(
+        polygons[3] = new Polygon(
             [vertexTop3, vertexTop4, vertexTop2, vertexTop1],
             this.textureOffsetX + depth + width,
             this.textureOffsetY,
@@ -100,7 +161,7 @@ window.ModelRenderer = class {
             this.textureWidth, this.textureHeight
         );
 
-        this.polygons[4] = new Polygon(
+        polygons[4] = new Polygon(
             [vertexBottom2, vertexBottom1, vertexTop4, vertexTop3],
             this.textureOffsetX + depth,
             this.textureOffsetY + depth,
@@ -109,7 +170,7 @@ window.ModelRenderer = class {
             this.textureWidth, this.textureHeight
         );
 
-        this.polygons[5] = new Polygon(
+        polygons[5] = new Polygon(
             [vertexBottom3, vertexBottom4, vertexTop1, vertexTop2],
             this.textureOffsetX + depth + width + depth,
             this.textureOffsetY + depth,
@@ -118,41 +179,65 @@ window.ModelRenderer = class {
             this.textureWidth, this.textureHeight
         );
 
+        this.cubes.push(polygons);
+
         return this;
     }
 
-    /**
-     * Set the absolute position of the cube
-     *
-     * @param x Absolute x position of cube
-     * @param y Absolute y position of cube
-     * @param z Absolute z position of cube
-     */
-    setRotationPoint(x, y, z) {
-        this.rotationPointX = x;
-        this.rotationPointY = y;
-        this.rotationPointZ = z;
-        return this;
+    addChild(model) {
+        this.children.push(model);
+    }
+
+    removeChild(model) {
+        let index = this.children.indexOf(model);
+        if (index !== -1) {
+            this.children.splice(index, 1);
+        }
+    }
+
+    getModelByName(name) {
+        if (this.name === name) {
+            return this;
+        }
+
+        for (const child of this.children) {
+            let innerResult = child.getModelByName(name);
+            if (innerResult != null) {
+                return innerResult;
+            }
+        }
+
+        return null;
     }
 
     rebuild(tessellator, group) {
+        // Clear meshes
         this.bone.clear();
 
-        // Start drawing
+        // Draw cubes
         tessellator.startDrawing();
+        for (let i = 0; i < this.cubes.length; i++) {
+            let polygons = this.cubes[i];
 
-        // Render polygons
-        for (let i = 0; i < 6; i++) {
-            let polygon = this.polygons[i];
-            polygon.render(tessellator);
+            // Render polygons
+            for (let face = 0; face < 6; face++) {
+                let polygon = polygons[face];
+                polygon.render(tessellator);
+            }
+        }
+        tessellator.draw(this.bone);
+
+        // Draw children
+        for (let i = 0; i < this.children.length; i++) {
+            let child = this.children[i];
+            child.rebuild(tessellator, this.bone);
         }
 
-        // Finish drawing
-        tessellator.draw(this.bone);
+        // Add to group
         group.add(this.bone);
     }
 
-    render(group) {
+    render() {
         this.bone.position.setX(this.rotationPointX);
         this.bone.position.setY(this.rotationPointY);
         this.bone.position.setZ(this.rotationPointZ);
@@ -161,6 +246,15 @@ window.ModelRenderer = class {
         this.bone.rotation.x = this.rotateAngleX;
         this.bone.rotation.y = this.rotateAngleY;
         this.bone.rotation.z = this.rotateAngleZ;
+
+        this.bone.scale.setX(this.scaleX);
+        this.bone.scale.setY(this.scaleY);
+        this.bone.scale.setZ(this.scaleZ);
+
+        for (let i = 0; i < this.children.length; i++) {
+            let child = this.children[i];
+            child.render();
+        }
 
         this.bone.updateMatrix();
     }
