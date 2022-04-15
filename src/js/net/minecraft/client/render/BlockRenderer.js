@@ -263,11 +263,11 @@ export default class BlockRenderer {
     renderBlockInHand(group, block, brightness) {
         this.tessellator.startDrawing();
 
-        // Change brightness
-        this.tessellator.transformBrightness(brightness);
-
         // Render block
         this.renderBlock(null, block, 0, 0, 0);
+
+        // Change brightness
+        this.tessellator.transformBrightness(brightness);
 
         // Create mesh
         let mesh = this.tessellator.draw(group);
