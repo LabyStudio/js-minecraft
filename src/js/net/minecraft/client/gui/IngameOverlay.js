@@ -10,10 +10,17 @@ window.IngameOverlay = class extends Gui {
     }
 
     render(stack, mouseX, mouseY, partialTicks) {
+        // Render crosshair
         if (this.minecraft.hasInGameFocus()) {
             this.renderCrosshair(stack, this.window.width / 2, this.window.height / 2)
         }
 
+        // Render holding item
+        if (this.minecraft.settings.thirdPersonView === 0) {
+            this.minecraft.itemRenderer.renderItemInHand();
+        }
+
+        // Render hotbar
         this.renderHotbar(stack, this.window.width / 2 - 91, this.window.height - 22);
 
         // Debug

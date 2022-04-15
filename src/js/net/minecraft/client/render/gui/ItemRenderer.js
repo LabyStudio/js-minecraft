@@ -5,6 +5,8 @@ window.ItemRenderer = class {
         this.window = window;
 
         this.items = [];
+        this.itemInHand = null;
+        this.itemInHandGroup = new THREE.Object3D();
     }
 
     initialize() {
@@ -33,6 +35,8 @@ window.ItemRenderer = class {
         this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
+
+        this.scene.add(this.itemInHandGroup);
     }
 
     render(partialTicks) {
@@ -46,6 +50,28 @@ window.ItemRenderer = class {
 
         // Render scene
         this.webRenderer.render(this.scene, this.camera);
+    }
+
+    renderItemInHand() {
+        let typeId = this.minecraft.player.inventory.getItemInSelectedSlot();
+        if (typeId === this.itemInHand) {
+            return; // Skip rebuilding if the item hasn't changed
+        }
+
+        // Clear previous mesh
+        this.itemInHandGroup.clear();
+
+        // Should render hand or item
+        if (typeId === 0) {
+
+        } else {
+            let block = Block.getById(typeId);
+
+           // this.minecraft.worldRenderer.blockRenderer.renderBlockInHand(block, this.itemInHandGroup, 1);
+        }
+
+        // Store item in hand meta
+        this.itemInHand = typeId;
     }
 
     renderItemInGui(renderId, block, x, y) {
@@ -83,5 +109,6 @@ window.ItemRenderer = class {
         for (let i in this.items) {
             this.items[i].dirty = true;
         }
+        this.itemInHand = null;
     }
 }
