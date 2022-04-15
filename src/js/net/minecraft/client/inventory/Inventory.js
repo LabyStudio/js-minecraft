@@ -8,10 +8,11 @@ export default class Inventory {
         this.items[0] = 1;
         this.items[1] = 2;
         this.items[2] = 3;
-        this.items[3] = 17;
-        this.items[4] = 18;
-        this.items[5] = 12;
-        this.items[6] = 50;
+        this.items[3] = 5;
+        this.items[4] = 17;
+        this.items[5] = 18;
+        this.items[6] = 12;
+        this.items[7] = 50;
     }
 
     setItemInSelectedSlot(typeId) {

@@ -1,5 +1,5 @@
-import Block from "./Block.js";
-import EnumBlockFace from "../../../util/EnumBlockFace.js";
+import Block from "../Block.js";
+import EnumBlockFace from "../../../../util/EnumBlockFace.js";
 
 export default class BlockGrass extends Block {
 
