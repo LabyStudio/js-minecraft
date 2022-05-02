@@ -534,9 +534,14 @@ export default class World {
 
     getStarBrightness(partialTicks) {
         let angle = this.getCelestialAngle(partialTicks);
-        let rotation = 1.0 - (Math.cos(angle * 3.141593 * 2.0) * 2.0 + 0.75);
+        let rotation = 1.0 - (Math.cos(angle * Math.PI * 2.0) * 2.0 + 0.75);
         rotation = MathHelper.clamp(rotation, 0.0, 1.0);
         return rotation * rotation * 0.5;
+    }
+
+    getLightBrightnessForEntity(entity) {
+        let level = this.getTotalLightAt(Math.floor(entity.x), Math.floor(entity.y), Math.floor(entity.z));
+        return Math.max(level / 15, 0.1);
     }
 
     getLightBrightness(x, y, z) {

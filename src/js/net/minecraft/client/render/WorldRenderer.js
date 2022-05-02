@@ -171,7 +171,7 @@ export default class WorldRenderer {
         }
 
         // Update fog brightness
-        let brightnessAtPosition = this.minecraft.world.getLightBrightness(player.x, player.y, player.z);
+        let brightnessAtPosition = this.minecraft.world.getLightBrightnessForEntity(player);
         let renderDistance = WorldRenderer.RENDER_DISTANCE / 32.0;
         let fogBrightness = brightnessAtPosition * (1.0 - renderDistance) + renderDistance;
         this.fogBrightness += (fogBrightness - this.fogBrightness) * 0.1;
@@ -227,40 +227,9 @@ export default class WorldRenderer {
     }
 
     generateSky() {
-        // Create cycle group
-        this.cycleGroup = new THREE.Object3D();
-        this.scene.add(this.cycleGroup);
-
         // Create background center group
         this.backgroundCenter = new THREE.Object3D();
         this.background.add(this.backgroundCenter);
-
-        // Create sun
-        let geometry = new THREE.PlaneGeometry(1, 1);
-        let materialSun = new THREE.MeshBasicMaterial({
-            side: THREE.FrontSide,
-            map: this.textureSun,
-            alphaMap: this.textureSun,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
-        this.sun = new THREE.Mesh(geometry, materialSun);
-        this.sun.translateZ(-2);
-        this.sun.material.depthTest = false;
-        this.cycleGroup.add(this.sun);
-
-        // Create moon
-        let materialMoon = new THREE.MeshBasicMaterial({
-            side: THREE.BackSide,
-            map: this.textureMoon,
-            alphaMap: this.textureMoon,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
-        this.moon = new THREE.Mesh(geometry, materialMoon);
-        this.moon.translateZ(2);
-        this.moon.material.depthTest = false;
-        this.cycleGroup.add(this.moon);
 
         let size = 64;
         let scale = 256 / size + 2;
@@ -283,6 +252,43 @@ export default class WorldRenderer {
             mesh.material.depthTest = false;
             this.backgroundCenter.add(this.listSky);
         }
+
+        // Generate sunrise/sunset color
+        {
+            this.listSunset = new THREE.Object3D();
+            this.tessellator.startDrawing();
+
+            let amount = 16;
+            let width = (Math.PI * 2.0) / amount;
+
+            for (let index = 0; index < amount; index++) {
+                let rotation = (index * Math.PI * 2.0) / amount;
+
+                let x1 = Math.sin(rotation);
+                let y1 = Math.cos(rotation);
+
+                let x2 = Math.sin(rotation + width);
+                let y2 = Math.cos(rotation + width);
+
+                this.tessellator.setColor(1, 1, 1, 1);
+                this.tessellator.addVertex(0.0, 100, 0.0);
+                this.tessellator.addVertex(0.0, 100, 0.0);
+
+                this.tessellator.setColor(1, 1, 1, 0);
+                this.tessellator.addVertex(x1 * 120, y1 * 120, -y1 * 40);
+                this.tessellator.addVertex(x2 * 120, y2 * 120, -y2 * 40);
+            }
+
+            let mesh = this.tessellator.draw(this.listSunset);
+            mesh.material = mesh.material.clone();
+            mesh.material.depthTest = false;
+            mesh.material.opacity = 0.6;
+            mesh.material.side = THREE.DoubleSide;
+            this.backgroundCenter.add(this.listSunset);
+        }
+
+        // Create cycle group
+        this.cycleGroup = new THREE.Object3D();
 
         // Generate stars
         {
@@ -361,39 +367,35 @@ export default class WorldRenderer {
             this.cycleGroup.add(this.listStars);
         }
 
-        // Generate sunrise/sunset color
-        {
-            this.listSunset = new THREE.Object3D();
-            this.tessellator.startDrawing();
+        // Create sun
+        let geometry = new THREE.PlaneGeometry(1, 1);
+        let materialSun = new THREE.MeshBasicMaterial({
+            side: THREE.FrontSide,
+            map: this.textureSun,
+            alphaMap: this.textureSun,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        this.sun = new THREE.Mesh(geometry, materialSun);
+        this.sun.translateZ(-2);
+        this.sun.material.depthTest = false;
+        this.cycleGroup.add(this.sun);
 
-            let amount = 16;
-            let width = (Math.PI * 2.0) / amount;
+        // Create moon
+        let materialMoon = new THREE.MeshBasicMaterial({
+            side: THREE.BackSide,
+            map: this.textureMoon,
+            alphaMap: this.textureMoon,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        this.moon = new THREE.Mesh(geometry, materialMoon);
+        this.moon.translateZ(2);
+        this.moon.material.depthTest = false;
+        this.cycleGroup.add(this.moon);
 
-            for (let index = 0; index < amount; index++) {
-                let rotation = (index * Math.PI * 2.0) / amount;
-
-                let x1 = Math.sin(rotation);
-                let y1 = Math.cos(rotation);
-
-                let x2 = Math.sin(rotation + width);
-                let y2 = Math.cos(rotation + width);
-
-                this.tessellator.setColor(1, 1, 1, 1);
-                this.tessellator.addVertex(0.0, 100, 0.0);
-                this.tessellator.addVertex(0.0, 100, 0.0);
-
-                this.tessellator.setColor(1, 1, 1, 0);
-                this.tessellator.addVertex(x1 * 120, y1 * 120, -y1 * 40);
-                this.tessellator.addVertex(x2 * 120, y2 * 120, -y2 * 40);
-            }
-
-            let mesh = this.tessellator.draw(this.listSunset);
-            mesh.material = mesh.material.clone();
-            mesh.material.depthTest = false;
-            mesh.material.opacity = 0.6;
-            mesh.material.side = THREE.DoubleSide;
-            this.backgroundCenter.add(this.listSunset);
-        }
+        // Add cycle group before the void to hide the cycling elements behind the void
+        this.backgroundCenter.add(this.cycleGroup);
 
         // Generate void color
         {
@@ -412,14 +414,13 @@ export default class WorldRenderer {
             let mesh = this.tessellator.draw(this.listVoid);
             mesh.material = mesh.material.clone();
             mesh.material.depthTest = false;
-            mesh.material.opacity = 0.75;
+            mesh.material.opacity = 1;
             this.backgroundCenter.add(this.listVoid);
         }
     }
 
     renderSky(partialTicks) {
         // Center sky
-        this.cycleGroup.position.copy(this.camera.position);
         this.backgroundCenter.position.copy(this.camera.position);
 
         // Rotate sky cycle
