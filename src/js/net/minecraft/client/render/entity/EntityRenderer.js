@@ -26,7 +26,6 @@ export default class EntityRenderer {
 
     fillMeta(entity, meta) {
         meta.brightness = entity.getEntityBrightness();
-        meta.itemInHand = entity.inventory.getItemInSelectedSlot();
     }
 
     isRebuildRequired(entity) {

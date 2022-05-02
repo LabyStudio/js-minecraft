@@ -36,6 +36,8 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - Underwater fog
     - Dynamic FOV
     - Third person
+    - First person hand
+    - First person item in hand
 - GUI
     - Screens
         - Loading Screen

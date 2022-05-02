@@ -287,6 +287,25 @@ export default class BlockRenderer {
         mesh.scale.z = 6;
     }
 
+    renderBlockInFirstPerson(group, block, brightness) {
+        this.tessellator.startDrawing();
+
+        // Render block
+        this.renderBlock(null, block, 0, 0, 0);
+
+        // Change brightness
+        this.tessellator.transformBrightness(brightness);
+
+        // Create mesh
+        let mesh = this.tessellator.draw(group);
+        mesh.geometry.center();
+
+        // Scale
+        mesh.scale.x = 16;
+        mesh.scale.y = 16;
+        mesh.scale.z = 16;
+    }
+
     renderGuiBlock(group, block, x, y, size, brightness) {
         this.tessellator.startDrawing();
 

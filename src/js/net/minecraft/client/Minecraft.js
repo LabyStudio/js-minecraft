@@ -287,6 +287,9 @@ export default class Minecraft {
                             // Place block
                             this.world.setBlockAt(x, y, z, typeId);
 
+                            // Swing player arm
+                            this.player.swingArm();
+
                             // Handle block abilities
                             let block = Block.getById(typeId);
                             block.onBlockPlaced(this.world, x, y, z, hitResult.face);

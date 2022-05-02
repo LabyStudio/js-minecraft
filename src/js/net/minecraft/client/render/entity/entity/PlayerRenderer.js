@@ -16,33 +16,52 @@ export default class PlayerRenderer extends EntityRenderer {
 
         // First person right-hand holder
         this.handModel = null;
-        this.handGroup = new THREE.Object3D();
-        this.worldRenderer.overlay.add(this.handGroup);
+        this.firstPersonGroup = new THREE.Object3D();
+        this.worldRenderer.overlay.add(this.firstPersonGroup);
     }
 
     rebuild(entity) {
-        this.tessellator.bindTexture(this.textureCharacter);
-        super.rebuild(entity);
+        let firstPerson = this.worldRenderer.minecraft.settings.thirdPersonView === 0;
+        let itemId = firstPerson ? this.worldRenderer.itemToRender : entity.inventory.getItemInSelectedSlot();
+        let hasItem = itemId !== 0;
 
-        // Render item in hand
-        let group = this.model.rightArm.bone;
-        let id = entity.inventory.getItemInSelectedSlot();
-        if (id !== 0 && this.worldRenderer.minecraft.settings.thirdPersonView !== 0) {
-            let block = Block.getById(id);
-            this.worldRenderer.blockRenderer.renderBlockInHandThirdPerson(group, block, entity.getEntityBrightness());
+        if (firstPerson && hasItem) {
+            super.rebuild(entity);
+
+            // Create new item group and add it to the hand
+            this.firstPersonGroup.clear();
+            let itemGroup = new THREE.Object3D();
+            this.firstPersonGroup.add(itemGroup);
+
+            // Render item in hand in first person
+            let block = Block.getById(itemId);
+            this.worldRenderer.blockRenderer.renderBlockInFirstPerson(itemGroup, block, entity.getEntityBrightness());
+
+            // Copy material and update depth test of the item to render it always in front
+            let mesh = itemGroup.children[0];
+            mesh.material = mesh.material.clone();
+            mesh.material.depthTest = false;
+        } else {
+            this.tessellator.bindTexture(this.textureCharacter);
+            super.rebuild(entity);
+
+            // Render item in hand in third person
+            if (hasItem) {
+                let block = Block.getById(itemId);
+                let group = this.model.rightArm.bone;
+                this.worldRenderer.blockRenderer.renderBlockInHandThirdPerson(group, block, entity.getEntityBrightness());
+            }
+
+            // Create first person right hand and attach it to the holder
+            this.firstPersonGroup.clear();
+            this.handModel = this.model.rightArm.clone();
+            this.firstPersonGroup.add(this.handModel.bone);
+
+            // Copy material and update depth test of the hand to render it always in front
+            let mesh = this.handModel.bone.children[0];
+            mesh.material = mesh.material.clone();
+            mesh.material.depthTest = false;
         }
-
-        // Create first person right hand and attach it to the holder
-        this.handGroup.clear();
-        this.handModel = this.model.rightArm.clone();
-        this.handGroup.add(this.handModel.bone);
-
-        // Copy material and update depth test of the hand
-        let mesh = this.handModel.bone.children[0];
-        mesh.renerOrder = 999;
-        mesh.material = mesh.material.clone();
-        mesh.material.depthTest = false;
-        mesh.material.depthWrite = false;
     }
 
     render(entity, partialTicks) {
@@ -57,9 +76,16 @@ export default class PlayerRenderer extends EntityRenderer {
         super.render(entity, partialTicks);
     }
 
-    renderRightArm(player, partialTicks) {
+    updateFirstPerson(player) {
         // Make sure the model is created
         this.prepareModel(player);
+
+        // Make the group visible
+        this.firstPersonGroup.visible = true;
+    }
+
+    renderRightHand(player, partialTicks) {
+        this.updateFirstPerson(player);
 
         // Set transform of renderer
         this.model.swingProgress = 0;
@@ -68,14 +94,17 @@ export default class PlayerRenderer extends EntityRenderer {
         this.model.setRotationAngles(player, 0, 0, 0, 0, 0, 0);
         this.handModel.copyTransformOf(this.model.rightArm);
 
-        // Render the model
-        this.handGroup.visible = true;
+        // Render hand model
         this.handModel.render();
     }
 
     fillMeta(entity, meta) {
         super.fillMeta(entity, meta);
-        meta.itemInHand = entity.inventory.getItemInSelectedSlot();
+
+        let firstPerson = this.worldRenderer.minecraft.settings.thirdPersonView === 0;
+
+        meta.firstPerson = firstPerson;
+        meta.itemInHand = firstPerson ? this.worldRenderer.itemToRender : entity.inventory.getItemInSelectedSlot();
     }
 
 }

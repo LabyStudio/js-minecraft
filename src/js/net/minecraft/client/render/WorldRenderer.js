@@ -347,11 +347,15 @@ export default class WorldRenderer {
     renderHand(partialTicks) {
         // Hide hand before rendering
         let player = this.minecraft.player;
-        let stack = player.renderer.handGroup;
+        let stack = player.renderer.firstPersonGroup;
         stack.visible = false;
 
+        let firstPerson = this.minecraft.settings.thirdPersonView === 0;
+        let itemId = firstPerson ? this.itemToRender : player.inventory.getItemInSelectedSlot();
+        let hasItem = itemId !== 0;
+
         // Hide in third person
-        if (this.minecraft.settings.thirdPersonView !== 0) {
+        if (!firstPerson) {
             return;
         }
 
@@ -369,14 +373,6 @@ export default class WorldRenderer {
         let pitchArm = player.prevRenderArmPitch + (player.renderArmPitch - player.prevRenderArmPitch) * partialTicks;
         let yawArm = player.prevRenderArmYaw + (player.renderArmYaw - player.prevRenderArmYaw) * partialTicks;
 
-        let factor = 0.8;
-        let zOffset = Math.sin(swingProgress * Math.PI);
-        let yOffset = Math.sin(Math.sqrt(swingProgress) * Math.PI * 2.0);
-        let xOffset = Math.sin(Math.sqrt(swingProgress) * Math.PI);
-
-        let yRotation = Math.sin(Math.sqrt(swingProgress) * Math.PI);
-        let zRotation = Math.sin(swingProgress * swingProgress * Math.PI);
-
         // Bobbing animation
         if (this.minecraft.settings.viewBobbing) {
             let walked = -(player.prevDistanceWalked + (player.distanceWalked - player.prevDistanceWalked) * partialTicks);
@@ -393,31 +389,55 @@ export default class WorldRenderer {
             stack.rotateX(MathHelper.toRadians(pitch));
         }
 
+        let factor = 0.8;
+        let zOffset = Math.sin(swingProgress * Math.PI);
+        let yOffset = Math.sin(Math.sqrt(swingProgress) * Math.PI * 2.0);
+        let xOffset = Math.sin(Math.sqrt(swingProgress) * Math.PI);
+
+        let sqrtRotation = Math.sin(Math.sqrt(swingProgress) * Math.PI);
+        let powRotation = Math.sin(swingProgress * swingProgress * Math.PI);
+
         // Camera rotation movement
         stack.rotateX(MathHelper.toRadians((player.rotationPitch - pitchArm) * 0.1));
         stack.rotateY(MathHelper.toRadians((player.rotationYaw - yawArm) * 0.1));
 
-        // Initial offset on screen
-        this.translate(stack, -xOffset * 0.3, yOffset * 0.4, -zOffset * 0.4);
-        this.translate(stack, 0.8 * factor, -0.75 * factor - (1.0 - equipProgress) * 0.6, -0.9 * factor);
+        if(hasItem) {
+            // Initial offset on screen
+            this.translate(stack, -xOffset * 0.4, yOffset * 0.2, -zOffset * 0.2);
+            this.translate(stack, 0.7 * factor, -0.65 * factor - (1.0 - equipProgress) * 0.6, -0.9 * factor);
 
-        // Rotation of hand
-        stack.rotateY(MathHelper.toRadians(45));
-        stack.rotateY(MathHelper.toRadians(yRotation * 70));
-        stack.rotateZ(MathHelper.toRadians(-zRotation * 20));
+            // Rotation of hand
+            stack.rotateY(MathHelper.toRadians(45));
+            stack.rotateY(MathHelper.toRadians(-powRotation * 20));
+            stack.rotateZ(MathHelper.toRadians(-sqrtRotation * 20));
+            stack.rotateX(MathHelper.toRadians(-sqrtRotation * 80));
 
-        // Post transform
-        this.translate(stack, -1, 3.6, 3.5);
-        stack.rotateZ(MathHelper.toRadians(120));
-        stack.rotateX(MathHelper.toRadians(200));
-        stack.rotateY(MathHelper.toRadians(-135));
-        this.translate(stack, 5.6, 0.0, 0.0);
+            // Scale down
+            stack.scale.x *= 0.4;
+            stack.scale.y *= 0.4;
+            stack.scale.z *= 0.4;
 
-        if (this.itemToRender === 0) {
-            // Render hand
-            player.renderer.renderRightArm(player, partialTicks);
-        } else {
             // Render item
+            player.renderer.updateFirstPerson(player);
+        } else {
+            // Initial offset on screen
+            this.translate(stack, -xOffset * 0.3, yOffset * 0.4, -zOffset * 0.4);
+            this.translate(stack, 0.8 * factor, -0.75 * factor - (1.0 - equipProgress) * 0.6, -0.9 * factor);
+
+            // Rotation of hand
+            stack.rotateY(MathHelper.toRadians(45));
+            stack.rotateY(MathHelper.toRadians(sqrtRotation * 70));
+            stack.rotateZ(MathHelper.toRadians(-powRotation * 20));
+
+            // Post transform
+            this.translate(stack, -1, 3.6, 3.5);
+            stack.rotateZ(MathHelper.toRadians(120));
+            stack.rotateX(MathHelper.toRadians(200));
+            stack.rotateY(MathHelper.toRadians(-135));
+            this.translate(stack, 5.6, 0.0, 0.0);
+
+            // Render hand
+            player.renderer.renderRightHand(player, partialTicks);
         }
     }
 

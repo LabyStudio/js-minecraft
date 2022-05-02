@@ -11,7 +11,7 @@ export default class ItemRenderer {
         // Create item camera
         this.camera = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 300);
         this.camera.near = 0;
-        this.camera.far = 100;
+        this.camera.far = 15;
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 1, 0);
 
