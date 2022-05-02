@@ -154,6 +154,11 @@ export default class BlockRenderer {
                         // Sum up the light levels
                         totalLightLevel += world.getTotalLightAt(x + offsetX, y + offsetY, z + offsetZ);
                         totalBlocks++;
+                    } else {
+                        // Count the block if it's on the same level
+                        if (offsetY === 0) {
+                            totalBlocks++;
+                        }
                     }
                 }
             }
