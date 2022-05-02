@@ -8,6 +8,7 @@ import EnumSkyBlock from "../../util/EnumSkyBlock.js";
 import Block from "./block/Block.js";
 import EnumBlockFace from "../../util/EnumBlockFace.js";
 import Vector3 from "../../util/Vector3.js";
+import Vector4 from "../../util/Vector4.js";
 
 export default class World {
 
@@ -488,7 +489,54 @@ export default class World {
         green *= brightness;
         blue *= brightness;
 
-        return (Math.round(red * 255) << 16) | (Math.round(green * 255) << 8) | Math.round(blue * 255);
+        return new Vector3(red, green, blue);
+    }
+
+    getFogColor(partialTicks) {
+        let angle = this.getCelestialAngle(partialTicks);
+        let rotation = Math.cos(angle * Math.PI * 2.0) * 2.0 + 0.5;
+        rotation = MathHelper.clamp(rotation, 0.0, 1.0);
+
+        let x = 0.7529412;
+        let y = 0.84705883;
+        let z = 1.0;
+
+        x = x * (rotation * 0.94 + 0.06);
+        y = y * (rotation * 0.94 + 0.06);
+        z = z * (rotation * 0.91 + 0.09);
+
+        return new Vector3(x, y, z);
+    }
+
+    getSunriseSunsetColor(partialTicks) {
+        let angle = this.getCelestialAngle(partialTicks);
+        let rotation = Math.cos(angle * Math.PI * 2.0);
+
+        let min = 0;
+        let max = 0.4;
+
+        // Check if rotation is inside of sunrise or sunset
+        if (rotation >= -max && rotation <= max) {
+            let factor = ((rotation - min) / max) * 0.5 + 0.5;
+            let strength = Math.pow(1.0 - (1.0 - Math.sin(factor * Math.PI)) * 0.99, 2);
+
+            // Calculate colors for sunrise and sunset
+            return new Vector4(
+                factor * 0.3 + 0.7,
+                factor * factor * 0.7 + 0.2,
+                0.2,
+                strength
+            );
+        } else {
+            return null;
+        }
+    }
+
+    getStarBrightness(partialTicks) {
+        let angle = this.getCelestialAngle(partialTicks);
+        let rotation = 1.0 - (Math.cos(angle * 3.141593 * 2.0) * 2.0 + 0.75);
+        rotation = MathHelper.clamp(rotation, 0.0, 1.0);
+        return rotation * rotation * 0.5;
     }
 
     getLightBrightness(x, y, z) {

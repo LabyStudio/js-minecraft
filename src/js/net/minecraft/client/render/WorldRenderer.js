@@ -1,8 +1,10 @@
 import BlockRenderer from "./BlockRenderer.js";
 import EntityRenderManager from "./entity/EntityRenderManager.js";
 import MathHelper from "../../util/MathHelper.js";
-import ChunkSection from "../world/ChunkSection.js";
 import Block from "../world/block/Block.js";
+import Tessellator from "./Tessellator.js";
+import ChunkSection from "../world/ChunkSection.js";
+import Random from "../../util/Random.js";
 
 export default class WorldRenderer {
 
@@ -13,6 +15,8 @@ export default class WorldRenderer {
         this.minecraft = minecraft;
         this.window = window;
         this.chunkSectionUpdateQueue = [];
+
+        this.tessellator = new Tessellator();
 
         // Load terrain texture
         this.textureTerrain = new THREE.TextureLoader().load('src/resources/terrain/terrain.png');
@@ -39,6 +43,9 @@ export default class WorldRenderer {
         this.prevEquippedProgress = 0;
         this.itemToRender = 0;
 
+        this.prevFogBrightness = 0;
+        this.fogBrightness = 0;
+
         this.initialize();
     }
 
@@ -51,7 +58,11 @@ export default class WorldRenderer {
         // Frustum
         this.frustum = new THREE.Frustum();
 
-        // Create scene
+        // Create background scene
+        this.background = new THREE.Scene();
+        this.background.matrixAutoUpdate = false;
+
+        // Create world scene
         this.scene = new THREE.Scene();
         this.scene.matrixAutoUpdate = false;
 
@@ -82,12 +93,9 @@ export default class WorldRenderer {
         let geometry = new THREE.BoxGeometry(1, 1, 1);
         let edges = new THREE.EdgesGeometry(geometry);
         this.blockHitBox = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({
-            color: 0x000000,
+            color: 0x000000
         }));
         this.scene.add(this.blockHitBox);
-
-        // Hand group
-        this.handGroup = new THREE.Object3D();
     }
 
     render(partialTicks) {
@@ -125,6 +133,9 @@ export default class WorldRenderer {
         // Render hand
         this.renderHand(partialTicks);
 
+        // Render background scene
+        this.webRenderer.render(this.background, this.camera);
+
         // Render actual scene
         this.webRenderer.render(this.scene, this.camera);
 
@@ -135,6 +146,7 @@ export default class WorldRenderer {
     }
 
     onTick() {
+        this.prevFogBrightness = this.fogBrightness;
         this.prevEquippedProgress = this.equippedProgress;
 
         let player = this.minecraft.player;
@@ -157,6 +169,12 @@ export default class WorldRenderer {
         if (this.equippedProgress < 0.1) {
             this.itemToRender = itemStack;
         }
+
+        // Update fog brightness
+        let brightnessAtPosition = this.minecraft.world.getLightBrightness(player.x, player.y, player.z);
+        let renderDistance = WorldRenderer.RENDER_DISTANCE / 32.0;
+        let fogBrightness = brightnessAtPosition * (1.0 - renderDistance) + renderDistance;
+        this.fogBrightness += (fogBrightness - this.fogBrightness) * 0.1;
     }
 
     orientCamera(partialTicks) {
@@ -208,22 +226,267 @@ export default class WorldRenderer {
         this.setupFog(x, z, player.isHeadInWater(), partialTicks);
     }
 
+    generateSky() {
+        // Create cycle group
+        this.cycleGroup = new THREE.Object3D();
+        this.scene.add(this.cycleGroup);
+
+        // Create background center group
+        this.backgroundCenter = new THREE.Object3D();
+        this.background.add(this.backgroundCenter);
+
+        // Create sun
+        let geometry = new THREE.PlaneGeometry(1, 1);
+        let materialSun = new THREE.MeshBasicMaterial({
+            side: THREE.FrontSide,
+            map: this.textureSun,
+            alphaMap: this.textureSun,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        this.sun = new THREE.Mesh(geometry, materialSun);
+        this.sun.translateZ(-2);
+        this.sun.material.depthTest = false;
+        this.cycleGroup.add(this.sun);
+
+        // Create moon
+        let materialMoon = new THREE.MeshBasicMaterial({
+            side: THREE.BackSide,
+            map: this.textureMoon,
+            alphaMap: this.textureMoon,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+        this.moon = new THREE.Mesh(geometry, materialMoon);
+        this.moon.translateZ(2);
+        this.moon.material.depthTest = false;
+        this.cycleGroup.add(this.moon);
+
+        let size = 64;
+        let scale = 256 / size + 2;
+
+        // Generate sky color
+        {
+            let y = 16;
+            this.listSky = new THREE.Object3D();
+            this.tessellator.startDrawing();
+            this.tessellator.setColor(1, 1, 1);
+            for (let x = -size * scale; x <= size * scale; x += size) {
+                for (let z = -size * scale; z <= size * scale; z += size) {
+                    this.tessellator.addVertex(x + size, y, z);
+                    this.tessellator.addVertex(x, y, z);
+                    this.tessellator.addVertex(x, y, z + size);
+                    this.tessellator.addVertex(x + size, y, z + size);
+                }
+            }
+            let mesh = this.tessellator.draw(this.listSky);
+            mesh.material.depthTest = false;
+            this.backgroundCenter.add(this.listSky);
+        }
+
+        // Generate stars
+        {
+            this.listStars = new THREE.Object3D();
+            this.tessellator.startDrawing();
+            this.tessellator.setColor(1, 1, 1);
+
+            // Generate 1500 stars
+            let random = new Random(10842);
+            for (let i = 0; i < 1500; i++) {
+                // Random vector
+                let vectorX = random.nextFloat() * 2.0 - 1.0;
+                let vectorY = random.nextFloat() * 2.0 - 1.0;
+                let vectorZ = random.nextFloat() * 2.0 - 1.0;
+
+                // Skip invalid vectors
+                let distance = vectorX * vectorX + vectorY * vectorY + vectorZ * vectorZ;
+                if (distance >= 1.0 || distance <= 0.01) {
+                    continue;
+                }
+
+                // Create sphere
+                distance = 1.0 / Math.sqrt(distance);
+                vectorX *= distance;
+                vectorY *= distance;
+                vectorZ *= distance;
+
+                // Increase sphere size
+                let x = vectorX * 100;
+                let y = vectorY * 100;
+                let z = vectorZ * 100;
+
+                // Rotate the stars on the sphere
+                let rotationX = Math.atan2(vectorX, vectorZ);
+                let sinX = Math.sin(rotationX);
+                let cosX = Math.cos(rotationX);
+
+                // Face the stars to the middle of the sphere
+                let rotationY = Math.atan2(Math.sqrt(vectorX * vectorX + vectorZ * vectorZ), vectorY);
+                let sinY = Math.sin(rotationY);
+                let cosY = Math.cos(rotationY);
+
+                // Tilt the stars randomly
+                let rotationZ = random.nextFloat() * Math.PI * 2;
+                let sinZ = Math.sin(rotationZ);
+                let cosZ = Math.cos(rotationZ);
+
+                // Random size of the star
+                let size = 0.25 + random.nextFloat() * 0.25;
+
+                // Add vertices for each edge of the star
+                for (let edge = 0; edge < 4; edge++) {
+                    // Calculate the position of the edge on a 2D plane
+                    let tileX = ((edge & 2) - 1) * size;
+                    let tileZ = ((edge + 1 & 2) - 1) * size;
+
+                    // Project tile position onto the sphere
+                    let sphereX = tileX * cosZ - tileZ * sinZ;
+                    let sphereY = tileZ * cosZ + tileX * sinZ;
+                    let sphereZ = -sphereX * cosY;
+
+                    // Calculate offset of the edge on the sphere
+                    let offsetX = sphereZ * sinX - sphereY * cosX;
+                    let offsetY = sphereX * sinY;
+                    let offsetZ = sphereY * sinX + sphereZ * cosX;
+
+                    // Add vertex for the edge of the star
+                    this.tessellator.addVertex(x + offsetX, y + offsetY, z + offsetZ);
+                }
+            }
+
+            let mesh = this.tessellator.draw(this.listStars);
+            mesh.material = mesh.material.clone();
+            mesh.material.depthTest = true;
+            mesh.material.side = THREE.BackSide;
+            this.cycleGroup.add(this.listStars);
+        }
+
+        // Generate sunrise/sunset color
+        {
+            this.listSunset = new THREE.Object3D();
+            this.tessellator.startDrawing();
+
+            let amount = 16;
+            let width = (Math.PI * 2.0) / amount;
+
+            for (let index = 0; index < amount; index++) {
+                let rotation = (index * Math.PI * 2.0) / amount;
+
+                let x1 = Math.sin(rotation);
+                let y1 = Math.cos(rotation);
+
+                let x2 = Math.sin(rotation + width);
+                let y2 = Math.cos(rotation + width);
+
+                this.tessellator.setColor(1, 1, 1, 1);
+                this.tessellator.addVertex(0.0, 100, 0.0);
+                this.tessellator.addVertex(0.0, 100, 0.0);
+
+                this.tessellator.setColor(1, 1, 1, 0);
+                this.tessellator.addVertex(x1 * 120, y1 * 120, -y1 * 40);
+                this.tessellator.addVertex(x2 * 120, y2 * 120, -y2 * 40);
+            }
+
+            let mesh = this.tessellator.draw(this.listSunset);
+            mesh.material = mesh.material.clone();
+            mesh.material.depthTest = false;
+            mesh.material.opacity = 0.6;
+            mesh.material.side = THREE.DoubleSide;
+            this.backgroundCenter.add(this.listSunset);
+        }
+
+        // Generate void color
+        {
+            let y = -16;
+            this.listVoid = new THREE.Object3D();
+            this.tessellator.startDrawing();
+            this.tessellator.setColor(1, 1, 1);
+            for (let x = -size * scale; x <= size * scale; x += size) {
+                for (let z = -size * scale; z <= size * scale; z += size) {
+                    this.tessellator.addVertex(x, y, z);
+                    this.tessellator.addVertex(x + size, y, z);
+                    this.tessellator.addVertex(x + size, y, z + size);
+                    this.tessellator.addVertex(x, y, z + size);
+                }
+            }
+            let mesh = this.tessellator.draw(this.listVoid);
+            mesh.material = mesh.material.clone();
+            mesh.material.depthTest = false;
+            mesh.material.opacity = 0.75;
+            this.backgroundCenter.add(this.listVoid);
+        }
+    }
+
+    renderSky(partialTicks) {
+        // Center sky
+        this.cycleGroup.position.copy(this.camera.position);
+        this.backgroundCenter.position.copy(this.camera.position);
+
+        // Rotate sky cycle
+        let angle = this.minecraft.world.getCelestialAngle(partialTicks);
+        this.cycleGroup.rotation.set(angle * Math.PI * 2 + Math.PI / 2, 0, 0);
+    }
+
     setupFog(x, z, inWater, partialTicks) {
         if (inWater) {
             let color = new THREE.Color(0.2, 0.2, 0.4);
-            this.scene.background = color;
+            this.background.background = color;
             this.scene.fog = new THREE.Fog(color, 0.0025, 5);
         } else {
-            let viewDistance = WorldRenderer.RENDER_DISTANCE * ChunkSection.SIZE;
+            let world = this.minecraft.world;
 
-            let color = this.minecraft.world.getSkyColor(x, z, partialTicks);
-            this.scene.background = new THREE.Color(
-                ((color >> 16) & 0xFF) / 255,
-                ((color >> 8) & 0xFF) / 255,
-                (color & 0xFF) / 255
-            );
-            this.scene.fog = new THREE.Fog(color, 0.0025, viewDistance);
+            let viewDistance = WorldRenderer.RENDER_DISTANCE * ChunkSection.SIZE;
+            let viewFactor = 1.0 - Math.pow(0.25 + 0.75 * WorldRenderer.RENDER_DISTANCE / 32.0, 0.25);
+
+            let angle = world.getCelestialAngle(partialTicks);
+
+            let skyColor = world.getSkyColor(x, z, partialTicks);
+            let fogColor = world.getFogColor(partialTicks);
+            let sunsetColor = world.getSunriseSunsetColor(partialTicks);
+
+            let starBrightness = world.getStarBrightness(partialTicks);
+            let brightness = this.prevFogBrightness + (this.fogBrightness - this.prevFogBrightness) * partialTicks;
+
+            let red = (fogColor.x + (skyColor.x - fogColor.x) * viewFactor) * brightness;
+            let green = (fogColor.y + (skyColor.y - fogColor.y) * viewFactor) * brightness;
+            let blue = (fogColor.z + (skyColor.z - fogColor.z) * viewFactor) * brightness;
+
+            // Update background color
+            this.background.background = new THREE.Color(red, green, blue);
+
+            // Update fog color
+            this.scene.fog = new THREE.Fog(new THREE.Color(red, green, blue), 0.0025, viewDistance * 2);
+
+            let skyMesh = this.listSky.children[0];
+            let voidMesh = this.listVoid.children[0];
+            let starsMesh = this.listStars.children[0];
+            let sunsetMesh = this.listSunset.children[0];
+
+            // Update sky and void color
+            skyMesh.material.color.set(new THREE.Color(skyColor.x, skyColor.y, skyColor.z));
+            voidMesh.material.color.set(new THREE.Color(
+                skyColor.x * 0.2 + 0.04,
+                skyColor.y * 0.2 + 0.04,
+                skyColor.z * 0.6 + 0.1
+            ));
+
+            // Update star brightness
+            if (starBrightness > 0) {
+                starsMesh.material.opacity = starBrightness;
+                starsMesh.material.color.set(new THREE.Color(starBrightness, starBrightness, starBrightness));
+            }
+            this.listStars.visible = starBrightness > 0;
+
+            // Update sunset
+            if (sunsetColor !== null) {
+                sunsetMesh.material.opacity = sunsetColor.w;
+                sunsetMesh.material.color.set(new THREE.Color(sunsetColor.x, sunsetColor.y, sunsetColor.z));
+                sunsetMesh.rotation.x = MathHelper.toRadians(angle <= 0.5 ? 90 : 135);
+            }
+            sunsetMesh.visible = sunsetColor !== null;
         }
+
+        this.background.fog = this.scene.fog;
     }
 
     renderChunks(cameraChunkX, cameraChunkZ) {
@@ -300,50 +563,6 @@ export default class WorldRenderer {
         }
     }
 
-    generateSky() {
-        // Create sky group
-        this.skyGroup = new THREE.Scene();
-        this.scene.add(this.skyGroup);
-
-        // Create sun
-        let geometry = new THREE.PlaneGeometry(1, 1);
-        let materialSun = new THREE.MeshBasicMaterial({
-            side: THREE.FrontSide,
-            map: this.textureSun,
-            alphaMap: this.textureSun,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
-        this.sun = new THREE.Mesh(geometry, materialSun);
-        this.sun.translateZ(-2);
-        this.sun.renderOrder = 999;
-        this.sun.material.depthTest = false;
-        this.skyGroup.add(this.sun);
-
-        // Create moon
-        let materialMoon = new THREE.MeshBasicMaterial({
-            side: THREE.BackSide,
-            map: this.textureMoon,
-            alphaMap: this.textureMoon,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
-        this.moon = new THREE.Mesh(geometry, materialMoon);
-        this.moon.translateZ(2);
-        this.moon.renderOrder = 999;
-        this.moon.material.depthTest = false;
-        this.skyGroup.add(this.moon);
-    }
-
-    renderSky(partialTicks) {
-        // Center sky
-        this.skyGroup.position.copy(this.camera.position);
-
-        // Rotate sky
-        let angle = this.minecraft.world.getCelestialAngle(partialTicks);
-        this.skyGroup.rotation.set(angle * Math.PI * 2 + Math.PI / 2, 0, 0);
-    }
-
     renderHand(partialTicks) {
         // Hide hand before rendering
         let player = this.minecraft.player;
@@ -401,7 +620,7 @@ export default class WorldRenderer {
         stack.rotateX(MathHelper.toRadians((player.rotationPitch - pitchArm) * 0.1));
         stack.rotateY(MathHelper.toRadians((player.rotationYaw - yawArm) * 0.1));
 
-        if(hasItem) {
+        if (hasItem) {
             // Initial offset on screen
             this.translate(stack, -xOffset * 0.4, yOffset * 0.2, -zOffset * 0.2);
             this.translate(stack, 0.7 * factor, -0.65 * factor - (1.0 - equipProgress) * 0.6, -0.9 * factor);
