@@ -10,6 +10,10 @@ export default class ModelPlayer extends ModelBase {
     constructor() {
         super();
 
+        this.swingProgress = 0;
+        this.hasItemInHand = false;
+        this.isSneaking = false;
+
         let width = 64;
         let height = 32;
 
@@ -59,20 +63,32 @@ export default class ModelPlayer extends ModelBase {
         this.rightLeg.rebuild(tessellator, group);
     }
 
-    render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch, partialTicks) {
-        let group = entity.group;
+    render(stack, limbSwing, limbSwingStrength, timeAlive, yaw, pitch, partialTicks) {
+        this.setRotationAngles(stack, limbSwing, limbSwingStrength, timeAlive, yaw, pitch, partialTicks);
 
+        // Render cubes
+        this.head.render();
+        this.body.render();
+        this.rightArm.render();
+        this.leftArm.render();
+        this.rightLeg.render();
+        this.leftLeg.render();
+
+        super.render(stack, limbSwing, limbSwingStrength, timeAlive, yaw, pitch, partialTicks);
+    }
+
+    setRotationAngles(stack, limbSwing, limbSwingStrength, timeAlive, yaw, pitch, partialTicks) {
         // Head rotation
         this.head.rotateAngleY = MathHelper.toRadians(yaw);
         this.head.rotateAngleX = MathHelper.toRadians(pitch);
 
         // Limb swing leg animation
-        this.rightArm.rotateAngleX = Math.cos(limbSwingAmount * 0.6662 + Math.PI) * 2.0 * limbSwing * 0.5;
-        this.leftArm.rotateAngleX = Math.cos(limbSwingAmount * 0.6662) * 2.0 * limbSwing * 0.5;
+        this.rightArm.rotateAngleX = Math.cos(limbSwing * 0.6662 + Math.PI) * 2.0 * limbSwingStrength * 0.5;
+        this.leftArm.rotateAngleX = Math.cos(limbSwing * 0.6662) * 2.0 * limbSwingStrength * 0.5;
         this.rightArm.rotateAngleZ = 0.0;
         this.leftArm.rotateAngleZ = 0.0;
-        this.rightLeg.rotateAngleX = Math.cos(limbSwingAmount * 0.6662) * 1.4 * limbSwing;
-        this.leftLeg.rotateAngleX = Math.cos(limbSwingAmount * 0.6662 + Math.PI) * 1.4 * limbSwing;
+        this.rightLeg.rotateAngleX = Math.cos(limbSwing * 0.6662) * 1.4 * limbSwingStrength;
+        this.leftLeg.rotateAngleX = Math.cos(limbSwing * 0.6662 + Math.PI) * 1.4 * limbSwingStrength;
         this.rightLeg.rotateAngleY = 0.0;
         this.leftLeg.rotateAngleY = 0.0;
 
@@ -82,18 +98,12 @@ export default class ModelPlayer extends ModelBase {
         this.leftArm.rotateAngleY = 0.0;
 
         // Held item animation
-        if (entity.inventory.getItemInSelectedSlot() !== 0) {
+        if (this.hasItemInHand) {
             this.rightArm.rotateAngleX = this.rightArm.rotateAngleX * 0.5 - (Math.PI / 10);
         }
 
-        // Swing progress
-        let swingProgress = entity.swingProgress - entity.prevSwingProgress;
-        if (swingProgress < 0.0) {
-            swingProgress++;
-        }
-        let interpolatedSwingProgress = entity.prevSwingProgress + swingProgress * partialTicks;
-        if (interpolatedSwingProgress > -9990.0) {
-            let swingProgress = interpolatedSwingProgress;
+        if (this.swingProgress > -9990.0) {
+            let swingProgress = this.swingProgress;
 
             this.body.rotateAngleY = Math.sin(Math.sqrt(swingProgress) * Math.PI * 2.0) * 0.2;
 
@@ -106,21 +116,21 @@ export default class ModelPlayer extends ModelBase {
             this.leftArm.rotateAngleY += this.body.rotateAngleY;
             this.leftArm.rotateAngleX += this.body.rotateAngleY;
 
-            swingProgress = 1.0 - interpolatedSwingProgress;
+            swingProgress = 1.0 - swingProgress;
             swingProgress = swingProgress * swingProgress;
             swingProgress = swingProgress * swingProgress;
             swingProgress = 1.0 - swingProgress;
 
             let value1 = Math.sin(swingProgress * Math.PI);
-            let value2 = Math.sin(interpolatedSwingProgress * Math.PI) * -(this.head.rotateAngleX - 0.7) * 0.75;
+            let value2 = Math.sin(swingProgress * Math.PI) * -(this.head.rotateAngleX - 0.7) * 0.75;
 
             this.rightArm.rotateAngleX = (this.rightArm.rotateAngleX - (value1 * 1.2 + value2));
             this.rightArm.rotateAngleY += this.body.rotateAngleY * 2.0;
-            this.rightArm.rotateAngleZ += Math.sin(interpolatedSwingProgress * Math.PI) * -0.4;
+            this.rightArm.rotateAngleZ += Math.sin(swingProgress * Math.PI) * -0.4;
         }
 
         // Sneaking animation
-        if (entity.sneaking) {
+        if (this.isSneaking) {
             this.body.rotateAngleX = 0.5;
             this.rightArm.rotateAngleX += 0.4;
             this.leftArm.rotateAngleX += 0.4;
@@ -130,7 +140,7 @@ export default class ModelPlayer extends ModelBase {
             this.leftLeg.rotationPointY = 9.0;
             this.head.rotationPointY = 1.0;
 
-            group.translateY(-0.2);
+            stack.translateY(-0.2);
         } else {
             this.body.rotateAngleX = 0.0;
             this.rightLeg.rotationPointZ = 0.1;
@@ -145,16 +155,6 @@ export default class ModelPlayer extends ModelBase {
         this.leftArm.rotateAngleZ -= Math.cos(timeAlive * 0.09) * 0.05 + 0.05;
         this.rightArm.rotateAngleX += Math.sin(timeAlive * 0.067) * 0.05;
         this.leftArm.rotateAngleX -= Math.sin(timeAlive * 0.067) * 0.05;
-
-        // Render cubes
-        this.head.render();
-        this.body.render();
-        this.rightArm.render();
-        this.leftArm.render();
-        this.rightLeg.render();
-        this.leftLeg.render();
-
-        super.render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch);
     }
 
 }

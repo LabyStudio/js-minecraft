@@ -10,8 +10,12 @@ export default class ModelBase {
 
     }
 
-    render(entity, limbSwingAmount, limbSwing, timeAlive, yaw, pitch) {
-        entity.group.updateMatrix();
+    render(stack, limbSwing, limbSwingStrength, timeAlive, yaw, pitch, partialTicks) {
+        stack.updateMatrix();
+    }
+
+    setRotationAngles(stack, limbSwing, limbSwingStrength, timeAlive, yaw, pitch, partialTicks) {
+
     }
 
 }

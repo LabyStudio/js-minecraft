@@ -7,14 +7,14 @@ export default class EntityRenderManager {
         this.worldRenderer = worldRenderer;
 
         this.renderers = [];
-        this.push(PlayerEntity, new PlayerRenderer(worldRenderer));
+        this.push(PlayerEntity, PlayerRenderer);
     }
 
     push(entityType, entityRenderer) {
         this.renderers[entityType.name] = entityRenderer;
     }
 
-    getEntityRendererByEntity(entity) {
-        return this.renderers[entity.constructor.name];
+    createEntityRendererByEntity(entity) {
+        return new this.renderers[entity.constructor.name].prototype.constructor(this.worldRenderer);
     }
 }

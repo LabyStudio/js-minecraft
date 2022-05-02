@@ -521,13 +521,13 @@ export default class World {
 
     addEntity(entity) {
         this.entities.push(entity);
-        this.group.add(entity.group);
+        this.group.add(entity.renderer.group);
     }
 
     removeEntityById(id) {
         let entity = this.getEntityById(id);
         this.entities.remove(entity);
-        this.group.remove(entity.group);
+        this.group.remove(entity.renderer.group);
     }
 
     getEntityById(id) {

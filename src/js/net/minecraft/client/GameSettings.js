@@ -3,8 +3,10 @@ export default class GameSettings {
     constructor() {
         this.crouching = 'ShiftLeft';
         this.sprinting = 'ControlLeft';
-        this.togglePerspective =  'F5';
+        this.togglePerspective = 'F5';
         this.thirdPersonView = 0;
+        this.fov = 70;
+        this.viewBobbing = true;
     }
 
     load() {
@@ -15,7 +17,11 @@ export default class GameSettings {
                 let c = ca[i];
                 while (c.charAt(0) === ' ') c = c.substring(1, c.length);
                 if (c.indexOf(nameEQ) === 0) {
-                    this[prop] = c.substring(nameEQ.length, c.length);
+                    let value = c.substring(nameEQ.length, c.length);
+                    if (value.match(/^[0-9]+$/)) {
+                        value = parseInt(value);
+                    }
+                    this[prop] = value;
                 }
             }
         }
@@ -23,7 +29,7 @@ export default class GameSettings {
 
     save() {
         for (let prop in this) {
-            document.cookie = prop + "=" + (this[prop] || "") + "; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            document.cookie = prop + "=" + this[prop] + "; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT";
         }
     }
 

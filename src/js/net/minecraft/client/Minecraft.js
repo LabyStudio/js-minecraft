@@ -192,6 +192,9 @@ export default class Minecraft {
             // Tick world
             this.world.onTick();
 
+            // Tick renderer
+            this.worldRenderer.onTick();
+
             // Tick the player
             this.player.onUpdate();
         }
@@ -218,6 +221,7 @@ export default class Minecraft {
 
         if (button === this.settings.togglePerspective) {
             this.settings.thirdPersonView = (this.settings.thirdPersonView + 1) % 3;
+            this.settings.save();
         }
     }
 

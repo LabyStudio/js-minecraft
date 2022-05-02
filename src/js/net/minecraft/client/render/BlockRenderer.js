@@ -260,7 +260,7 @@ export default class BlockRenderer {
         }
     }
 
-    renderBlockInHand(group, block, brightness) {
+    renderBlockInHandThirdPerson(group, block, brightness) {
         this.tessellator.startDrawing();
 
         // Render block

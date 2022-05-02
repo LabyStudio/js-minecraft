@@ -18,11 +18,6 @@ export default class IngameOverlay extends Gui {
             this.renderCrosshair(stack, this.window.width / 2, this.window.height / 2)
         }
 
-        // Render holding item
-        if (this.minecraft.settings.thirdPersonView === 0) {
-            this.minecraft.itemRenderer.renderItemInHand();
-        }
-
         // Render hotbar
         this.renderHotbar(stack, this.window.width / 2 - 91, this.window.height - 22);
 

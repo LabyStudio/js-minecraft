@@ -31,6 +31,18 @@ export default class PlayerEntity extends EntityLiving {
         this.prevFovModifier = 0;
         this.fovModifier = 0;
         this.timeFovChanged = 0;
+
+        this.renderArmPitch = 0;
+        this.renderArmYaw = 0;
+
+        this.prevRenderArmPitch = 0;
+        this.prevRenderArmYaw = 0;
+
+        // For first person bobbing
+        this.cameraYaw = 0;
+        this.cameraPitch = 0;
+        this.prevCameraYaw = 0;
+        this.prevCameraPitch = 0;
     }
 
     respawn() {
@@ -78,6 +90,9 @@ export default class PlayerEntity extends EntityLiving {
     }
 
     onLivingUpdate() {
+        this.prevCameraYaw = this.cameraYaw;
+        this.prevCameraPitch = this.cameraPitch;
+
         if (this.sprintToggleTimer > 0) {
             --this.sprintToggleTimer;
         }
@@ -127,6 +142,21 @@ export default class PlayerEntity extends EntityLiving {
         if (this.sprinting) {
             this.jumpMovementFactor = this.jumpMovementFactor + this.speedInAir * 0.3;
         }
+
+        let speedXZ = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        let speedY = (Math.atan(-this.motionY * 0.2) * 15.0);
+
+        if (speedXZ > 0.1) {
+            speedXZ = 0.1;
+        }
+        if (!this.onGround || this.health <= 0.0) {
+            speedXZ = 0.0;
+        }
+        if (this.onGround || this.health <= 0.0) {
+            speedY = 0.0;
+        }
+        this.cameraYaw += (speedXZ - this.cameraYaw) * 0.4;
+        this.cameraPitch += (speedY - this.cameraPitch) * 0.8;
     }
 
     isInWater() {

@@ -35,6 +35,10 @@ export default class WorldRenderer {
         // Entity render manager
         this.entityRenderManager = new EntityRenderManager(this);
 
+        this.equippedProgress = 0;
+        this.prevEquippedProgress = 0;
+        this.itemToRender = 0;
+
         this.initialize();
     }
 
@@ -50,6 +54,10 @@ export default class WorldRenderer {
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.matrixAutoUpdate = false;
+
+        // Create overlay for first person model rendering
+        this.overlay = new THREE.Scene();
+        this.overlay.matrixAutoUpdate = false;
 
         // Create web renderer
         this.webRenderer = new THREE.WebGLRenderer({
@@ -77,6 +85,9 @@ export default class WorldRenderer {
             color: 0x000000,
         }));
         this.scene.add(this.blockHitBox);
+
+        // Hand group
+        this.handGroup = new THREE.Object3D();
     }
 
     render(partialTicks) {
@@ -95,18 +106,57 @@ export default class WorldRenderer {
         // Render target block
         this.renderBlockHitBox(player, partialTicks);
 
+        // Hide all entities and make them visible during rendering
+        for (let entity of this.minecraft.world.entities) {
+            entity.renderer.group.visible = false;
+        }
+
         // Render entities
         for (let entity of this.minecraft.world.entities) {
             if (entity === player && this.minecraft.settings.thirdPersonView === 0) {
-                entity.group.clear(); // Remove entity from scene
-                delete entity.group.buildMeta; // To trigger a rebuild on the next render
                 continue;
             }
-            this.renderEntity(entity, partialTicks);
+
+            // Render entity
+            entity.renderer.render(entity, partialTicks);
+            entity.renderer.group.visible = true;
         }
+
+        // Render hand
+        this.renderHand(partialTicks);
 
         // Render actual scene
         this.webRenderer.render(this.scene, this.camera);
+
+        // Render overlay with a static FOV
+        this.camera.fov = this.minecraft.settings.fov;
+        this.camera.updateProjectionMatrix();
+        this.webRenderer.render(this.overlay, this.camera);
+    }
+
+    onTick() {
+        this.prevEquippedProgress = this.equippedProgress;
+
+        let player = this.minecraft.player;
+        let itemStack = player.inventory.getItemInSelectedSlot();
+
+        let showHand = false;
+        if (this.itemToRender != null && itemStack != null) {
+            if (this.itemToRender !== itemStack) {
+                showHand = true;
+            }
+        } else if (this.itemToRender == null && itemStack == null) {
+            showHand = false;
+        } else {
+            showHand = true;
+        }
+
+        // Update equip progress
+        this.equippedProgress += MathHelper.clamp((showHand ? 0.0 : 1.0) - this.equippedProgress, -0.4, 0.4);
+
+        if (this.equippedProgress < 0.1) {
+            this.itemToRender = itemStack;
+        }
     }
 
     orientCamera(partialTicks) {
@@ -151,7 +201,7 @@ export default class WorldRenderer {
         this.frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
 
         // Update FOV
-        this.camera.fov = 85 + player.getFOVModifier();
+        this.camera.fov = this.minecraft.settings.fov + player.getFOVModifier();
         this.camera.updateProjectionMatrix();
 
         // Setup fog
@@ -294,6 +344,83 @@ export default class WorldRenderer {
         this.skyGroup.rotation.set(angle * Math.PI * 2 + Math.PI / 2, 0, 0);
     }
 
+    renderHand(partialTicks) {
+        // Hide hand before rendering
+        let player = this.minecraft.player;
+        let stack = player.renderer.handGroup;
+        stack.visible = false;
+
+        // Hide in third person
+        if (this.minecraft.settings.thirdPersonView !== 0) {
+            return;
+        }
+
+        // Apply matrix mode (Put object in front of camera)
+        stack.position.copy(this.camera.position);
+        stack.rotation.copy(this.camera.rotation);
+        stack.rotation.order = 'ZYX';
+
+        // Scale down
+        stack.scale.set(0.0625, 0.0625, 0.0625);
+
+        let equipProgress = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks;
+        let swingProgress = player.getSwingProgress(partialTicks);
+
+        let pitchArm = player.prevRenderArmPitch + (player.renderArmPitch - player.prevRenderArmPitch) * partialTicks;
+        let yawArm = player.prevRenderArmYaw + (player.renderArmYaw - player.prevRenderArmYaw) * partialTicks;
+
+        let factor = 0.8;
+        let zOffset = Math.sin(swingProgress * Math.PI);
+        let yOffset = Math.sin(Math.sqrt(swingProgress) * Math.PI * 2.0);
+        let xOffset = Math.sin(Math.sqrt(swingProgress) * Math.PI);
+
+        let yRotation = Math.sin(Math.sqrt(swingProgress) * Math.PI);
+        let zRotation = Math.sin(swingProgress * swingProgress * Math.PI);
+
+        // Bobbing animation
+        if (this.minecraft.settings.viewBobbing) {
+            let walked = -(player.prevDistanceWalked + (player.distanceWalked - player.prevDistanceWalked) * partialTicks);
+            let yaw = player.prevCameraYaw + (player.cameraYaw - player.prevCameraYaw) * partialTicks;
+            let pitch = player.prevCameraPitch + (player.cameraPitch - player.prevCameraPitch) * partialTicks;
+            this.translate(
+                stack,
+                Math.sin(walked * 3.141593) * yaw * 0.5,
+                -Math.abs(Math.cos(walked * Math.PI) * yaw),
+                0.0
+            );
+            stack.rotateZ(MathHelper.toRadians(Math.sin(walked * Math.PI) * yaw * 3.0));
+            stack.rotateX(MathHelper.toRadians(Math.abs(Math.cos(walked * Math.PI - 0.2) * yaw) * 5.0));
+            stack.rotateX(MathHelper.toRadians(pitch));
+        }
+
+        // Camera rotation movement
+        stack.rotateX(MathHelper.toRadians((player.rotationPitch - pitchArm) * 0.1));
+        stack.rotateY(MathHelper.toRadians((player.rotationYaw - yawArm) * 0.1));
+
+        // Initial offset on screen
+        this.translate(stack, -xOffset * 0.3, yOffset * 0.4, -zOffset * 0.4);
+        this.translate(stack, 0.8 * factor, -0.75 * factor - (1.0 - equipProgress) * 0.6, -0.9 * factor);
+
+        // Rotation of hand
+        stack.rotateY(MathHelper.toRadians(45));
+        stack.rotateY(MathHelper.toRadians(yRotation * 70));
+        stack.rotateZ(MathHelper.toRadians(-zRotation * 20));
+
+        // Post transform
+        this.translate(stack, -1, 3.6, 3.5);
+        stack.rotateZ(MathHelper.toRadians(120));
+        stack.rotateX(MathHelper.toRadians(200));
+        stack.rotateY(MathHelper.toRadians(-135));
+        this.translate(stack, 5.6, 0.0, 0.0);
+
+        if (this.itemToRender === 0) {
+            // Render hand
+            player.renderer.renderRightArm(player, partialTicks);
+        } else {
+            // Render item
+        }
+    }
+
     renderBlockHitBox(player, partialTicks) {
         let hitResult = player.rayTrace(5, partialTicks);
         let hitBoxVisible = !(hitResult === null);
@@ -333,8 +460,9 @@ export default class WorldRenderer {
         }
     }
 
-    renderEntity(entity, partialTicks) {
-        let entityRenderer = this.entityRenderManager.getEntityRendererByEntity(entity);
-        entityRenderer.render(entity, partialTicks);
+    translate(stack, x, y, z) {
+        stack.translateX(x);
+        stack.translateY(y);
+        stack.translateZ(z);
     }
 }

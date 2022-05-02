@@ -66,7 +66,7 @@ export default class GameWindow {
         });
 
         // Mouse buttons
-        document.addEventListener('click', function (event) {
+        document.addEventListener('mousedown', function (event) {
             // Create sound engine (It has to be created after user interaction)
             if (!minecraft.soundManager.isCreated()) {
                 minecraft.soundManager.create(minecraft.worldRenderer);

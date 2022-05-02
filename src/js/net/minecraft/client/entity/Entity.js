@@ -7,7 +7,7 @@ export default class Entity {
         this.minecraft = minecraft;
         this.world = world;
 
-        this.group = new THREE.Object3D();
+        this.renderer = this.minecraft.worldRenderer.entityRenderManager.createEntityRendererByEntity(this);
 
         this.x = 0;
         this.y = 0;
@@ -30,6 +30,7 @@ export default class Entity {
         this.prevRotationYaw = 0;
         this.prevRotationPitch = 0;
 
+        this.prevDistanceWalked = 0;
         this.distanceWalked = 0;
         this.nextStepDistance = 1;
 
@@ -46,6 +47,8 @@ export default class Entity {
         this.prevX = this.x;
         this.prevY = this.y;
         this.prevZ = this.z;
+
+        this.prevDistanceWalked = this.distanceWalked;
 
         this.prevRotationPitch = this.rotationPitch;
         this.prevRotationYaw = this.rotationYaw;

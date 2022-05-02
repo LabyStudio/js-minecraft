@@ -24,9 +24,11 @@ export default class EntityLiving extends Entity {
         this.prevRotationYawHead = 0;
         this.prevRenderYawOffset = 0;
 
-        this.limbSwing = 0;
-        this.limbSwingAmount = 0;
-        this.prevLimbSwingAmount = 0;
+        this.limbSwingProgress = 0;
+        this.limbSwingStrength = 0;
+        this.prevLimbSwingStrength = 0;
+
+        this.health = 20.0;
     }
 
     onUpdate() {
@@ -112,7 +114,7 @@ export default class EntityLiving extends Entity {
             }
         }
 
-        this.prevLimbSwingAmount = this.limbSwingAmount;
+        this.prevLimbSwingStrength = this.limbSwingStrength;
 
         let motionX = this.x - this.prevX;
         let motionZ = this.z - this.prevZ;
@@ -121,14 +123,19 @@ export default class EntityLiving extends Entity {
         if (distance > 1.0) {
             distance = 1.0;
         }
-        this.limbSwingAmount += (distance - this.limbSwingAmount) * 0.4;
-        this.limbSwing += this.limbSwingAmount;
+        this.limbSwingStrength += (distance - this.limbSwingStrength) * 0.4;
+        this.limbSwingProgress += this.limbSwingStrength;
     }
 
     onEntityUpdate() {
         this.prevRenderYawOffset = this.renderYawOffset;
         this.prevRotationYawHead = this.rotationYawHead;
         this.prevSwingProgress = this.swingProgress;
+
+        this.prevRenderArmYaw = this.renderArmYaw;
+        this.prevRenderArmPitch = this.renderArmPitch;
+        this.renderArmPitch = (this.renderArmPitch + (this.rotationPitch - this.renderArmPitch) * 0.5);
+        this.renderArmYaw = (this.renderArmYaw + (this.rotationYaw - this.renderArmYaw) * 0.5);
 
         this.updateArmSwingProgress();
 
@@ -189,6 +196,14 @@ export default class EntityLiving extends Entity {
         }
 
         this.swingProgress = this.swingProgressInt / swingAnimationEnd;
+    }
+
+    getSwingProgress(partialTicks) {
+        let swingProgressDiff = this.swingProgress - this.prevSwingProgress;
+        if (swingProgressDiff < 0.0) {
+            swingProgressDiff++;
+        }
+        return this.prevSwingProgress + swingProgressDiff * partialTicks;
     }
 
     computeAngleWithBound(value, subtract, limit) {

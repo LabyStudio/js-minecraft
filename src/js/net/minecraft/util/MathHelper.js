@@ -1,5 +1,9 @@
 export default class MathHelper {
 
+    static clamp(number, min, max) {
+        return Math.min(Math.max(number, min), max);
+    }
+
     /**
      * Returns the greatest integer less than or equal to the double argument
      */
@@ -14,7 +18,7 @@ export default class MathHelper {
 
     static toRadians(degree) {
         return degree * (Math.PI / 180);
-    };
+    }
 
     static calculateCelestialAngle(time, partialTicks) {
         let modTime = (time % 24000);

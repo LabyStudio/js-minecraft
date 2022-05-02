@@ -1,5 +1,3 @@
-import Block from "../../world/block/Block.js";
-
 export default class ItemRenderer {
 
     constructor(minecraft, window) {
@@ -7,15 +5,13 @@ export default class ItemRenderer {
         this.window = window;
 
         this.items = [];
-        this.itemInHand = null;
-        this.itemInHandGroup = new THREE.Object3D();
     }
 
     initialize() {
         // Create item camera
         this.camera = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 300);
         this.camera.near = 0;
-        this.camera.far = 15;
+        this.camera.far = 100;
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 1, 0);
 
@@ -37,8 +33,6 @@ export default class ItemRenderer {
         this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
         this.webRenderer.clear();
-
-        this.scene.add(this.itemInHandGroup);
     }
 
     render(partialTicks) {
@@ -52,28 +46,6 @@ export default class ItemRenderer {
 
         // Render scene
         this.webRenderer.render(this.scene, this.camera);
-    }
-
-    renderItemInHand() {
-        let typeId = this.minecraft.player.inventory.getItemInSelectedSlot();
-        if (typeId === this.itemInHand) {
-            return; // Skip rebuilding if the item hasn't changed
-        }
-
-        // Clear previous mesh
-        this.itemInHandGroup.clear();
-
-        // Should render hand or item
-        if (typeId === 0) {
-
-        } else {
-            let block = Block.getById(typeId);
-
-           // this.minecraft.worldRenderer.blockRenderer.renderBlockInHand(block, this.itemInHandGroup, 1);
-        }
-
-        // Store item in hand meta
-        this.itemInHand = typeId;
     }
 
     renderItemInGui(renderId, block, x, y) {

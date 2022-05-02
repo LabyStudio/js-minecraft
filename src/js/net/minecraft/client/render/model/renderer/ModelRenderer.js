@@ -262,4 +262,31 @@ export default class ModelRenderer {
         this.bone.updateMatrix();
     }
 
+    clone() {
+        let modelRenderer = new ModelRenderer(this.name, this.textureWidth, this.textureHeight);
+        modelRenderer.bone = this.bone.clone();
+        modelRenderer.textureOffsetX = this.textureOffsetX;
+        modelRenderer.textureOffsetY = this.textureOffsetY;
+        modelRenderer.cubes = this.cubes;
+        modelRenderer.copyTransformOf(this);
+
+        for (let i = 0; i < this.children.length; i++) {
+            let child = this.children[i];
+            modelRenderer.addChild(child.clone());
+        }
+
+        return modelRenderer;
+    }
+
+    copyTransformOf(modelRenderer) {
+        this.rotationPointX = modelRenderer.rotationPointX;
+        this.rotationPointY = modelRenderer.rotationPointY;
+        this.rotationPointZ = modelRenderer.rotationPointZ;
+        this.scaleX = modelRenderer.scaleX;
+        this.scaleY = modelRenderer.scaleY;
+        this.scaleZ = modelRenderer.scaleZ;
+        this.rotateAngleX = modelRenderer.rotateAngleX;
+        this.rotateAngleY = modelRenderer.rotateAngleY;
+        this.rotateAngleZ = modelRenderer.rotateAngleZ;
+    }
 }
