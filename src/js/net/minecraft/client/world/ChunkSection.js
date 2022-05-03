@@ -52,6 +52,8 @@ export default class ChunkSection {
         this.isModified = false;
         this.group.clear();
 
+        let ambientOcclusion = this.world.minecraft.settings.ambientOcclusion;
+
         // Start drawing chunk section
         let tessellator = renderer.blockRenderer.tessellator;
         tessellator.startDrawing();
@@ -67,7 +69,7 @@ export default class ChunkSection {
                         let absoluteZ = this.z * ChunkSection.SIZE + z;
 
                         let block = Block.getById(typeId);
-                        renderer.blockRenderer.renderBlock(this.world, block, absoluteX, absoluteY, absoluteZ);
+                        renderer.blockRenderer.renderBlock(this.world, block, ambientOcclusion, absoluteX, absoluteY, absoluteZ);
                     }
                 }
             }

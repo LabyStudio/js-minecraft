@@ -21,12 +21,22 @@ export default class IngameOverlay extends Gui {
         // Render hotbar
         this.renderHotbar(stack, this.window.width / 2 - 91, this.window.height - 22);
 
+        let world = this.minecraft.world;
+        let player = this.minecraft.player;
+
+        let x = Math.floor(player.x);
+        let y = Math.floor(player.y);
+        let z = Math.floor(player.z);
+
+        let fps = Math.floor(this.minecraft.fps);
+        let lightUpdates = world.lightUpdateQueue.length;
+        let chunkUpdates = this.minecraft.worldRenderer.chunkSectionUpdateQueue.length;
+        let lightLevel = world.getTotalLightAt(x, y, z);
+
         // Debug
-        this.drawString(stack, Math.floor(this.minecraft.fps) + " fps," +
-            " " + this.minecraft.world.lightUpdateQueue.length + " light updates," +
-            " " + this.minecraft.worldRenderer.chunkSectionUpdateQueue.length + " chunk updates", 1, 1);
-        this.drawString(stack, Math.floor(this.minecraft.player.x) + ", " + Math.floor(this.minecraft.player.y) + ", " + Math.floor(this.minecraft.player.z)
-            + " (" + Math.floor(Math.floor(this.minecraft.player.x) >> 4) + ", " + Math.floor(Math.floor(this.minecraft.player.y) >> 4) + ", " + Math.floor(Math.floor(this.minecraft.player.z) >> 4) + ")", 1, 1 + 9);
+        this.drawString(stack, fps + " fps," + " " + lightUpdates + " light updates," + " " + chunkUpdates + " chunk updates", 1, 1);
+        this.drawString(stack, x + ", " + y + ", " + z + " (" + (x >> 4) + ", " + (y >> 4) + ", " + (z >> 4) + ")", 1, 1 + 9);
+        this.drawString(stack, "Light: " + lightLevel, 1, 1 + 9 + 10);
     }
 
     renderCrosshair(stack, x, y) {

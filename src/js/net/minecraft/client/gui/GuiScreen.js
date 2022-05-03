@@ -56,4 +56,20 @@ export default class GuiScreen extends Gui {
             }
         }
     }
+
+    mouseReleased(mouseX, mouseY, mouseButton) {
+        for (let i in this.buttonList) {
+            let button = this.buttonList[i];
+
+            button.mouseReleased(mouseX, mouseY, mouseButton);
+        }
+    }
+
+    mouseDragged(mouseX, mouseY, mouseButton) {
+        for (let i in this.buttonList) {
+            let button = this.buttonList[i];
+
+            button.mouseDragged(mouseX, mouseY, mouseButton);
+        }
+    }
 }

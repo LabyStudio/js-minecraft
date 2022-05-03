@@ -56,7 +56,22 @@ export default class GameWindow {
         document.addEventListener('pointerlockchange', _ => this.onFocusChanged(), false);
 
         // Mouse motion
-        document.addEventListener('mousemove', event => this.onMouseMove(event), false);
+        document.addEventListener('mousemove', event => {
+            this.onMouseMove(event);
+
+            // Handle mouse move on screen
+            if (!(minecraft.currentScreen === null)) {
+                minecraft.currentScreen.mouseDragged(event.x / scope.scaleFactor, event.y / scope.scaleFactor, event.code);
+            }
+        }, false);
+
+        // Mouse release
+        document.addEventListener('mouseup', event => {
+            // Handle mouse release on screen
+            if (!(minecraft.currentScreen === null)) {
+                minecraft.currentScreen.mouseReleased(event.x / scope.scaleFactor, event.y / scope.scaleFactor, event.code);
+            }
+        }, false);
 
         // Losing focus event
         this.canvas.addEventListener("mouseout", function () {

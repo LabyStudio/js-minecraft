@@ -140,7 +140,7 @@ export default class WorldRenderer {
         this.webRenderer.render(this.scene, this.camera);
 
         // Render overlay with a static FOV
-        this.camera.fov = this.minecraft.settings.fov;
+        this.camera.fov = 70;
         this.camera.updateProjectionMatrix();
         this.webRenderer.render(this.overlay, this.camera);
     }
@@ -180,8 +180,9 @@ export default class WorldRenderer {
     orientCamera(partialTicks) {
         let player = this.minecraft.player;
 
-        let rotationY = -MathHelper.toRadians(player.rotationYaw + 180);
         let rotationX = -MathHelper.toRadians(player.rotationPitch);
+        let rotationY = -MathHelper.toRadians(player.rotationYaw + 180);
+        let rotationZ = 0;
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
@@ -209,18 +210,24 @@ export default class WorldRenderer {
         }
 
         // Update rotation
-        this.camera.rotation.y = rotationY;
         this.camera.rotation.x = rotationX;
+        this.camera.rotation.y = rotationY;
+        this.camera.rotation.z = rotationZ;
 
-        // Update camera positionWC
+        // Update camera position
         this.camera.position.set(x, y + player.getEyeHeight(), z);
 
-        // Update frustum
-        this.frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
+        // Apply bobbing animation
+        if (mode === 0 && this.minecraft.settings.viewBobbing) {
+            this.bobbingAnimation(player, this.camera, partialTicks);
+        }
 
         // Update FOV
         this.camera.fov = this.minecraft.settings.fov + player.getFOVModifier();
         this.camera.updateProjectionMatrix();
+
+        // Update frustum
+        this.frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
 
         // Setup fog
         this.setupFog(x, z, player.isHeadInWater(), partialTicks);
@@ -595,18 +602,7 @@ export default class WorldRenderer {
 
         // Bobbing animation
         if (this.minecraft.settings.viewBobbing) {
-            let walked = -(player.prevDistanceWalked + (player.distanceWalked - player.prevDistanceWalked) * partialTicks);
-            let yaw = player.prevCameraYaw + (player.cameraYaw - player.prevCameraYaw) * partialTicks;
-            let pitch = player.prevCameraPitch + (player.cameraPitch - player.prevCameraPitch) * partialTicks;
-            this.translate(
-                stack,
-                Math.sin(walked * 3.141593) * yaw * 0.5,
-                -Math.abs(Math.cos(walked * Math.PI) * yaw),
-                0.0
-            );
-            stack.rotateZ(MathHelper.toRadians(Math.sin(walked * Math.PI) * yaw * 3.0));
-            stack.rotateX(MathHelper.toRadians(Math.abs(Math.cos(walked * Math.PI - 0.2) * yaw) * 5.0));
-            stack.rotateX(MathHelper.toRadians(pitch));
+            this.bobbingAnimation(player, stack, partialTicks);
         }
 
         let factor = 0.8;
@@ -704,5 +700,22 @@ export default class WorldRenderer {
         stack.translateX(x);
         stack.translateY(y);
         stack.translateZ(z);
+    }
+
+    bobbingAnimation(player, stack, partialTicks) {
+        let walked = -(player.prevDistanceWalked + (player.distanceWalked - player.prevDistanceWalked) * partialTicks);
+        let yaw = player.prevCameraYaw + (player.cameraYaw - player.prevCameraYaw) * partialTicks;
+        let pitch = player.prevCameraPitch + (player.cameraPitch - player.prevCameraPitch) * partialTicks;
+
+        this.translate(
+            stack,
+            Math.sin(walked * 3.141593) * yaw * 0.5,
+            -Math.abs(Math.cos(walked * Math.PI) * yaw),
+            0.0
+        );
+
+        stack.rotateZ(MathHelper.toRadians(Math.sin(walked * Math.PI) * yaw * 3.0));
+        stack.rotateX(MathHelper.toRadians(Math.abs(Math.cos(walked * Math.PI - 0.2) * yaw) * 5.0));
+        stack.rotateX(MathHelper.toRadians(pitch));
     }
 }

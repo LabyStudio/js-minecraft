@@ -7,6 +7,8 @@ export default class GameSettings {
         this.thirdPersonView = 0;
         this.fov = 70;
         this.viewBobbing = true;
+        this.ambientOcclusion = true;
+        this.sensitivity = 100;
     }
 
     load() {

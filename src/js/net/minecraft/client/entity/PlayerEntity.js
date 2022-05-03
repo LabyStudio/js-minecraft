@@ -73,8 +73,9 @@ export default class PlayerEntity extends EntityLiving {
     }
 
     turn(motionX, motionY) {
-        this.rotationYaw = this.rotationYaw + motionX * 0.15;
-        this.rotationPitch = this.rotationPitch - motionY * 0.15;
+        let sensitivity = this.minecraft.settings.sensitivity / 500;
+        this.rotationYaw = this.rotationYaw + motionX * sensitivity;
+        this.rotationPitch = this.rotationPitch - motionY * sensitivity;
 
         if (this.rotationPitch < -90.0) {
             this.rotationPitch = -90.0;
