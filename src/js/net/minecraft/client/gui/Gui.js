@@ -118,7 +118,17 @@ export default class Gui {
     static drawSprite(stack, texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height, alpha = 1.0) {
         stack.save();
         stack.globalAlpha = alpha;
-        stack.drawImage(texture, spriteX, spriteY, spriteWidth, spriteHeight, x, y, width, height);
+        stack.drawImage(
+            texture,
+            Math.floor(spriteX),
+            Math.floor(spriteY),
+            Math.floor(spriteWidth),
+            Math.floor(spriteHeight),
+            Math.floor(x),
+            Math.floor(y),
+            Math.floor(width),
+            Math.floor(height)
+        );
         stack.restore();
     }
 }
