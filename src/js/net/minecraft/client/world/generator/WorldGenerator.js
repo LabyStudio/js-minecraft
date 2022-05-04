@@ -1,176 +1,389 @@
-import Random from "../../../util/Random.js";
-import NoiseGeneratorCombined from "./noise/NoiseGeneratorCombined.js";
 import NoiseGeneratorOctaves from "./noise/NoiseGeneratorOctaves.js";
+import Chunk from "../Chunk.js";
+import Primer from "./Primer.js";
+import CaveGenerator from "./structure/CaveGenerator.js";
+import {BlockRegistry} from "../block/BlockRegistry.js";
+import TreeGenerator from "./structure/TreeGenerator.js";
+import BigTreeGenerator from "./structure/BigTreeGenerator.js";
+import Generator from "./Generator.js";
 import ChunkSection from "../ChunkSection.js";
-import Block from "../block/Block.js";
 
-export default class WorldGenerator {
+export default class WorldGenerator extends Generator {
 
     constructor(world, seed) {
-        this.world = world;
-        this.random = new Random(seed);
+        super(world, seed);
 
-        this.waterLevel = 64;
+        this.seaLevel = 64;
 
-        // Create noise for the ground height
-        this.groundHeightNoise = new NoiseGeneratorOctaves(this.random, 8);
-        this.hillNoise = new NoiseGeneratorCombined(new NoiseGeneratorOctaves(this.random, 4),
-            new NoiseGeneratorCombined(new NoiseGeneratorOctaves(this.random, 4),
-                new NoiseGeneratorOctaves(this.random, 4)));
+        this.caveGenerator = new CaveGenerator(world, seed);
 
-        // Water noise
-        this.sandInWaterNoise = new NoiseGeneratorOctaves(this.random, 8);
+        this.terrainGenerator4 = new NoiseGeneratorOctaves(this.random, 16);
+        this.terrainGenerator5 = new NoiseGeneratorOctaves(this.random, 16);
+        this.terrainGenerator3 = new NoiseGeneratorOctaves(this.random, 8);
+        this.terrainGenerator1 = new NoiseGeneratorOctaves(this.random, 10);
+        this.terrainGenerator2 = new NoiseGeneratorOctaves(this.random, 16);
 
-        // Hole in hills and islands
-        this.holeNoise = new NoiseGeneratorOctaves(this.random, 3);
-        this.islandNoise = new NoiseGeneratorOctaves(this.random, 3);
+        this.natureGenerator1 = new NoiseGeneratorOctaves(this.random, 4);
+        this.natureGenerator2 = new NoiseGeneratorOctaves(this.random, 4);
 
-        // Caves
-        this.caveNoise = new NoiseGeneratorOctaves(this.random, 8);
-
-        // Population
-        this.forestNoise = new NoiseGeneratorOctaves(this.random, 8);
+        this.populationNoiseGenerator = new NoiseGeneratorOctaves(this.random, 8);
     }
 
-    generateChunk(chunk) {
-        // For each block in the chunk
-        for (let relX = 0; relX < ChunkSection.SIZE; relX++) {
-            for (let relZ = 0; relZ < ChunkSection.SIZE; relZ++) {
+    newChunk(world, chunkX, chunkZ) {
+        this.random.setSeed(chunkX * 0x4f9939f508 + chunkZ * 0x1ef1565bd5);
 
-                // Absolute position of the block
-                let x = chunk.x * ChunkSection.SIZE + relX + 10000; // TODO fix this 10000 offset
-                let z = chunk.z * ChunkSection.SIZE + relZ + 10000;
+        let chunk = new Chunk(world, chunkX, chunkZ);
+        let primer = new Primer(chunk);
 
-                // Extract height value of the noise
-                let heightValue = this.groundHeightNoise.perlin(x, z);
-                let hillValue = Math.max(0, this.hillNoise.perlin(x / 18, z / 18) * 6);
+        this.generateInChunk(chunkX, chunkZ, primer);
 
-                // Calculate final height for this position
-                let groundHeightY = Math.floor(heightValue / 10 + this.waterLevel + hillValue);
+        // Init skylight
+        chunk.generateSkylightMap();
+        chunk.generateBlockLightMap();
 
-                if (groundHeightY < this.waterLevel) {
-                    // Generate water
-                    for (let y = 0; y <= this.waterLevel; y++) {
-                        // Use noise to place sand in water
-                        let sandInWater = this.sandInWaterNoise.perlin(x, z) < 0;
-                        let block = y > groundHeightY ? Block.WATER : groundHeightY - y < 3 && sandInWater ? Block.SAND : Block.STONE;
+        return chunk;
+    }
 
-                        // Send water, sand and stone
-                        chunk.setBlockAt(x & 15, y, z & 15, block.getId());
-                    }
-                } else {
-                    // Generate height, the highest block is grass
-                    for (let y = 0; y <= groundHeightY; y++) {
-                        // Use the height map to determine the start of the water by shifting it
-                        let isBeach = heightValue < 5 && y < this.waterLevel + 2;
-                        let block = y === groundHeightY ? isBeach ? Block.SAND : Block.GRASS : groundHeightY - y < 3 ? Block.DIRT : Block.STONE;
+    generateInChunk(chunkX, chunkZ, primer) {
+        this.generateTerrain(chunkX, chunkZ, primer);
+        this.naturalize(chunkX, chunkZ, primer);
 
-                        // Set sand, grass, dirt and stone
-                        chunk.setBlockAt(x & 15, y, z & 15, block.getId());
-                    }
-                }
-
-                /*
-                int holeY = (int) (this.holeNouse.perlin(-x / 20F, -z / 20F) * 3F + this.waterLevel + 10);
-                int holeHeight = (int) this.holeNouse.perlin(x / 4F, -z / 4F);
-                if (holeHeight > 0) {
-                    for (int y = holeY - holeHeight; y <= holeY + holeHeight; y++) {
-                        chunk.setBlockAt(x & 15, y, z & 15, 1);
-                    }
-                }
-                */
-
-                // Random holes in hills
-                let holePositionY = Math.floor(this.holeNoise.perlin(-x / 20, -z / 20) * 3 + this.waterLevel + 10);
-                let holeHeight = Math.floor(this.holeNoise.perlin(x / 4, -z / 4));
-
-                if (holeHeight > 0) {
-                    for (let y = holePositionY - holeHeight; y <= holePositionY + holeHeight; y++) {
-                        if (y > this.waterLevel) {
-                            chunk.setBlockAt(x & 15, y, z & 15, 0);
-                        }
-                    }
-                }
-
-                // Floating islands
-                let islandPositionY = Math.floor(this.islandNoise.perlin(-x / 10, -z / 10) * 3 + this.waterLevel + 10);
-                let islandHeight = Math.floor(this.islandNoise.perlin(x / 4, -z / 4) * 4);
-                let islandRarity = Math.floor(this.islandNoise.perlin(x / 40, z / 40) * 4) - 10;
-
-                if (islandHeight > 0 && islandRarity > 0) {
-                    for (let y = islandPositionY - islandHeight; y <= islandPositionY + islandHeight; y++) {
-                        let block = y === islandPositionY + islandHeight ? Block.GRASS : (islandPositionY + islandHeight) - y < 2 ? Block.DIRT : Block.STONE;
-                        chunk.setBlockAt(x & 15, y, z & 15, block.getId());
-                    }
-                }
-
-                // Caves
-            }
-        }
+        this.caveGenerator.generateInChunk(chunkX, chunkZ, primer);
     }
 
     populateChunk(chunkX, chunkZ) {
-        for (let index = 0; index < 10; index++) {
-            let x = this.random.nextInt(ChunkSection.SIZE);
-            let z = this.random.nextInt(ChunkSection.SIZE);
+        // Reset seed
+        this.random.setSeed(this.seed);
 
-            // Absolute position of the block
-            let absoluteX = chunkX * ChunkSection.SIZE + x;
-            let absoluteZ = chunkZ * ChunkSection.SIZE + z;
+        // Set seed for chunk
+        let seedX = (this.random.nextInt() / 2) * 2 + 1;
+        let seedZ = (this.random.nextInt() / 2) * 2 + 1;
+        this.random.setSeed(chunkX * seedX + chunkZ * seedZ ^ this.seed);
 
-            // Use noise for a forest pattern
-            let perlin = this.forestNoise.perlin(absoluteX * 10, absoluteZ * 10);
-            if (perlin > 0 && this.random.nextInt(2) === 0) {
+        // Access noise data for population
+        let absoluteX = chunkX * 16;
+        let absoluteY = chunkZ * 16;
+        let amount = Math.floor((this.populationNoiseGenerator.perlin(absoluteX * 0.5, absoluteY * 0.5) / 8 + this.random.nextFloat() * 4 + 4) / 3);
+        if (amount < 0) {
+            amount = 0;
+        }
+        if (this.random.nextInt(10) === 0) {
+            amount++;
+        }
 
-                // Get the highest block at this position
-                let highestY = this.world.getHighestBlockAt(absoluteX, absoluteZ);
+        // Tree generator
+        let bigTree = this.random.nextInt(10) === 0;
+        let treeSeed = this.random.seed;
+        let treeGenerator = bigTree ? new BigTreeGenerator(this.world, treeSeed) : new TreeGenerator(this.world, treeSeed);
 
-                // Don't place a tree if there is no grass
-                if (this.world.getBlockAt(absoluteX, highestY, absoluteZ) === Block.GRASS.getId()
-                    && this.world.getBlockAt(absoluteX, highestY + 1, absoluteZ) === 0) {
-                    let treeHeight = this.random.nextInt(2) + 5;
+        // Plant the trees in the chunk
+        for (let i = 0; i < amount; i++) {
+            let totalX = absoluteX + this.random.nextInt(16) + 8;
+            let totalZ = absoluteY + this.random.nextInt(16) + 8;
+            let totalY = this.world.getHeightAt(totalX, totalZ);
 
-                    // Create tree log
-                    for (let i = 0; i < treeHeight; i++) {
-                        this.world.setBlockAt(absoluteX, highestY + i + 1, absoluteZ, Block.LOG.getId());
-                    }
+            // Generate tree at position
+            treeGenerator.generateAtBlock(totalX, totalY, totalZ);
+        }
+    }
 
-                    // Create big leave ring
-                    for (let tx = -2; tx <= 2; tx++) {
-                        for (let ty = 0; ty < 2; ty++) {
-                            for (let tz = -2; tz <= 2; tz++) {
-                                let isCorner = Math.abs(tx) === 2 && Math.abs(tz) === 2;
-                                if (isCorner && this.random.nextBoolean()) {
-                                    continue;
+
+    generateTerrain(chunkX, chunkZ, primer) {
+        let range = 4;
+        let sizeX = range + 1;
+        let sizeZ = 17;
+        let factor = 1 / 4;
+
+        // Generate terrain noise
+        let noise = this.generateTerrainNoise(chunkX * range, 0, chunkZ * range, sizeX, sizeZ, sizeX);
+
+        let isSnowBiome = false;
+
+        for (let indexX = 0; indexX < range; indexX++) {
+            for (let indexZ = 0; indexZ < range; indexZ++) {
+                for (let indexY = 0; indexY < 16; indexY++) {
+                    let sec = 1 / 8;
+
+                    // Terrain base noise values
+                    let noise1 = noise[(indexX * sizeX + indexZ) * sizeZ + indexY];
+                    let noise2 = noise[(indexX * sizeX + (indexZ + 1)) * sizeZ + indexY];
+
+                    let noise3 = noise[((indexX + 1) * sizeX + indexZ) * sizeZ + indexY];
+                    let noise4 = noise[((indexX + 1) * sizeX + (indexZ + 1)) * sizeZ + indexY];
+
+                    // Mutation noise values
+                    let mut1 = (noise[(indexX * sizeX + indexZ) * sizeZ + (indexY + 1)] - noise1) * sec;
+                    let mut2 = (noise[(indexX * sizeX + (indexZ + 1)) * sizeZ + (indexY + 1)] - noise2) * sec;
+                    let mut3 = (noise[((indexX + 1) * sizeX + indexZ) * sizeZ + (indexY + 1)] - noise3) * sec;
+                    let mut4 = (noise[((indexX + 1) * sizeX + (indexZ + 1)) * sizeZ + (indexY + 1)] - noise4) * sec;
+
+                    // For each y level of the section
+                    for (let y = 0; y < 8; y++) {
+                        // Take two noise values for the stone to rise
+                        let stoneNoiseAtY1 = noise1;
+                        let stoneNoiseAtY2 = noise2;
+
+                        // Calculate difference of the selected noise values and two other noise values
+                        let diffNoiseY1 = (noise3 - noise1) * factor;
+                        let diffNoiseY2 = (noise4 - noise2) * factor;
+
+                        // For each x and z coordinate of the section
+                        for (let x = 0; x < 4; x++) {
+                            let stoneNoise = stoneNoiseAtY1;
+                            let diffNoiseX = (stoneNoiseAtY2 - stoneNoiseAtY1) * factor;
+
+                            for (let z = 0; z < 4; z++) {
+                                let typeId = 0;
+
+                                // Set water if y level is below sea level
+                                if (indexY * 8 + y < this.seaLevel) {
+                                    if (isSnowBiome && indexY * 8 + y >= this.seaLevel - 1) {
+                                        typeId = BlockRegistry.WATER.getId(); // TODO add ice block
+                                    } else {
+                                        typeId = BlockRegistry.WATER.getId();
+                                    }
                                 }
 
-                                // Place leave if there is no block yet
-                                if (!this.world.isSolidBlockAt(absoluteX + tx, highestY + treeHeight + ty - 2, absoluteZ + tz)) {
-                                    this.world.setBlockAt(absoluteX + tx, highestY + treeHeight + ty - 2, absoluteZ + tz, Block.LEAVE.getId());
+                                // Let the terrain rise out of the water
+                                if (stoneNoise > 0.0) {
+                                    typeId = BlockRegistry.STONE.getId();
                                 }
+
+                                //Set target type id
+                                primer.set(indexX * 4 + x, indexY * 8 + y, indexZ * 4 + z, typeId);
+
+                                // Increase noise by noise x difference
+                                stoneNoise += diffNoiseX;
                             }
-                        }
-                    }
 
-                    // Create small leave ring on top
-                    for (let tx = -1; tx <= 1; tx++) {
-                        for (let ty = 0; ty < 2; ty++) {
-                            for (let tz = -1; tz <= 1; tz++) {
-                                let isCorner = Math.abs(tx) === 1 && Math.abs(tz) === 1;
-                                if (isCorner && (ty === 1 || this.random.nextBoolean())) {
-                                    continue;
-                                }
-
-                                // Place leave if there is no block yet
-                                if (!this.world.isSolidBlockAt(absoluteX + tx, highestY + treeHeight + ty, absoluteZ + tz)) {
-                                    this.world.setBlockAt(absoluteX + tx, highestY + treeHeight + ty, absoluteZ + tz, Block.LEAVE.getId());
-                                }
-                            }
+                            // Increase noise by noise y differences
+                            stoneNoiseAtY1 += diffNoiseY1;
+                            stoneNoiseAtY2 += diffNoiseY2;
                         }
+
+                        // Mutate noise values
+                        noise1 += mut1;
+                        noise2 += mut2;
+                        noise3 += mut3;
+                        noise4 += mut4;
                     }
                 }
             }
         }
-
     }
+
+    naturalize(chunkX, chunkZ, primer) {
+        let strength = 1 / 32;
+        let chunkSize = ChunkSection.SIZE;
+
+        // Generate noise for nature painting
+        let natureNoise1 = this.natureGenerator1.generateNoiseOctaves(
+            chunkX * chunkSize, chunkZ * chunkSize,
+            0.0, chunkSize, chunkSize, 1,
+            strength, strength, 1.0
+        );
+        let natureNoise2 = this.natureGenerator1.generateNoiseOctaves(
+            chunkZ * chunkSize, 109.0134, chunkX * chunkSize,
+            chunkSize, 1, chunkSize,
+            strength, 1.0, strength);
+        let natureNoise3 = this.natureGenerator2.generateNoiseOctaves(
+            chunkX * chunkSize, chunkZ * chunkSize, 0.0,
+            chunkSize, chunkSize, 1,
+            strength * 2, strength * 2, strength * 2
+        );
+
+        // Paint entire chunk with nature blocks
+        for (let x = 0; x < 16; x++) {
+            for (let z = 0; z < 16; z++) {
+                // Pull noise values for patches
+                let sandPatchNoise = natureNoise1[x + z * 16] + this.random.nextFloat() * 0.2 > 0;
+                let gravelPatchNoise = natureNoise2[x + z * 16] + this.random.nextFloat() * 0.2 > 3;
+                let stonePatchNoise = (natureNoise3[x + z * 16] / 3 + 3 + this.random.nextFloat() * 0.25);
+
+                let prevStonePatchNoise = -1;
+
+                // Default layer type ids
+                let topLayerTypeId = BlockRegistry.GRASS.getId();
+                let innerLayerTypeId = BlockRegistry.DIRT.getId();
+
+                // For the entire height of the chunk
+                for (let y = 127; y >= 0; y--) {
+                    // Set bedrock on floor level
+                    if (y <= (this.random.nextInt(6)) - 1) {
+                        primer.set(x, y, z, BlockRegistry.STONE.getId()); // TODO add bedrock block
+                        continue;
+                    }
+
+                    // Get block type at current position
+                    let typeIdAt = primer.get(x, y, z);
+
+                    // Ignore air block
+                    if (typeIdAt === 0) {
+                        prevStonePatchNoise = -1;
+                        continue;
+                    }
+
+                    // Check if it's a stone block
+                    if (typeIdAt !== BlockRegistry.STONE.getId()) {
+                        continue;
+                    }
+
+                    // Check if previous iteration was an air block
+                    if (prevStonePatchNoise === -1) {
+                        if (stonePatchNoise <= 0) {
+                            // Keep the stone
+                            topLayerTypeId = 0;
+                            innerLayerTypeId = BlockRegistry.STONE.getId();
+                        } else if (y >= this.seaLevel - 4 && y <= this.seaLevel + 1) {
+                            // Fallback is grass and dirt
+                            topLayerTypeId = BlockRegistry.GRASS.getId();
+                            innerLayerTypeId = BlockRegistry.DIRT.getId();
+
+                            // Add gravel patches
+                            if (gravelPatchNoise) {
+                                topLayerTypeId = 0;
+                                innerLayerTypeId = BlockRegistry.STONE.getId(); // TODO add gravel block
+                            }
+
+                            // Add sand patches
+                            if (sandPatchNoise) {
+                                topLayerTypeId = BlockRegistry.SAND.getId();
+                                innerLayerTypeId = BlockRegistry.SAND.getId();
+                            }
+                        }
+
+                        // Set water if it's below the sea level
+                        if (y < this.seaLevel && topLayerTypeId === 0) {
+                            topLayerTypeId = BlockRegistry.WATER.getId(); // TODO add water moving block
+                        }
+
+                        // Set flag that we hit a block
+                        prevStonePatchNoise = stonePatchNoise;
+
+                        // Set grass or dirt type depending on sea level height
+                        if (y >= this.seaLevel - 1) {
+                            primer.set(x, y, z, topLayerTypeId);
+                        } else {
+                            primer.set(x, y, z, innerLayerTypeId);
+                        }
+                        continue;
+                    }
+
+                    // Set further inner layer blocks
+                    if (prevStonePatchNoise > 0) {
+                        prevStonePatchNoise--;
+                        primer.set(x, y, z, innerLayerTypeId);
+                    }
+                }
+            }
+        }
+    }
+
+    generateTerrainNoise(noiseX, noiseY, noiseZ, width, height, depth) {
+        let strength = 684.412;
+
+        // Generate terrain noise
+        let terrainNoise1 = this.terrainGenerator1.generateNoiseOctaves(noiseX, noiseY, noiseZ, width, 1, depth, 1.0, 0.0, 1.0);
+        let terrainNoise2 = this.terrainGenerator2.generateNoiseOctaves(noiseX, noiseY, noiseZ, width, 1, depth, 100, 0.0, 100);
+        let terrainNoise3 = this.terrainGenerator3.generateNoiseOctaves(noiseX, noiseY, noiseZ, width, height, depth, strength / 80, strength / 160, strength / 80);
+        let terrainNoise4 = this.terrainGenerator4.generateNoiseOctaves(noiseX, noiseY, noiseZ, width, height, depth, strength, strength, strength);
+        let terrainNoise5 = this.terrainGenerator5.generateNoiseOctaves(noiseX, noiseY, noiseZ, width, height, depth, strength, strength, strength);
+
+        // Output noise
+        let output = [];
+
+        let index = 0;
+        let id = 0;
+
+        // For each x, z coordinate
+        for (let x = 0; x < width; x++) {
+            for (let z = 0; z < depth; z++) {
+                let out1 = (terrainNoise1[id] + 256) / 512;
+                if (out1 > 1.0) {
+                    out1 = 1.0;
+                }
+
+                let maxY = 0.0;
+                let out2 = terrainNoise2[id] / 8000;
+
+                if (out2 < 0.0) {
+                    out2 = -out2;
+                }
+
+                out2 = out2 * 3 - 3;
+
+                if (out2 < 0.0) {
+                    out2 /= 2;
+
+                    if (out2 < -1) {
+                        out2 = -1;
+                    }
+
+                    out2 /= 1.4;
+                    out2 /= 2;
+                    out1 = 0.0;
+                } else {
+                    if (out2 > 1.0) {
+                        out2 = 1.0;
+                    }
+                    out2 /= 6;
+                }
+
+                out1 += 0.5;
+                out2 = (out2 * height) / 16;
+                id++;
+
+                let h = height / 2 + out2 * 4;
+
+                // Y loop
+                for (let y = 0; y < height; y++) {
+                    let noise = 0;
+                    let value = ((y - h) * 12) / out1;
+
+                    if (value < 0.0) {
+                        value *= 4;
+                    }
+
+                    let out4 = terrainNoise4[index] / 512;
+                    let out5 = terrainNoise5[index] / 512;
+                    let out3 = (terrainNoise3[index] / 10 + 1.0) / 2;
+
+                    if (out3 < 0.0) {
+                        noise = out4;
+                    } else if (out3 > 1.0) {
+                        noise = out5;
+                    } else {
+                        noise = out4 + (out5 - out4) * out3;
+                    }
+
+                    noise -= value;
+
+                    if (y > height - 4) {
+                        let diff = (y - (height - 4)) / 3;
+                        noise = noise * (1.0 - diff) + -10 * diff;
+                    }
+
+                    if (y < maxY) {
+                        let diff = (maxY - y) / 4;
+
+                        if (diff < 0.0) {
+                            diff = 0.0;
+                        }
+
+                        if (diff > 1.0) {
+                            diff = 1.0;
+                        }
+                        noise = noise * (1.0 - diff) + -10 * diff;
+                    }
+
+                    // Add noise to array and increase index
+                    output[index] = noise;
+                    index++;
+                }
+            }
+        }
+
+        return output;
+    }
+
 }

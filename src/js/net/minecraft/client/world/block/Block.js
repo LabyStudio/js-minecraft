@@ -35,8 +35,12 @@ export default class Block {
         return this.textureSlotId;
     }
 
+    getTransparency() {
+        return 0.0;
+    }
+
     isTransparent() {
-        return this.getOpacity() < 1.0;
+        return this.getTransparency() > 0.0;
     }
 
     shouldRenderFace(world, x, y, z, face) {

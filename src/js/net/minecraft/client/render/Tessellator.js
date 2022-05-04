@@ -25,10 +25,18 @@ export default class Tessellator {
         this.colors = [];
     }
 
-    setColor(red, green, blue, alpha = 1) {
+    setColorRGB(red, green, blue) {
         this.red = red;
         this.green = green;
         this.blue = blue;
+    }
+
+    setColor(red, green, blue, alpha = 1) {
+        this.setColorRGB(red, green, blue);
+        this.setAlpha(alpha);
+    }
+
+    setAlpha(alpha) {
         this.alpha = alpha;
     }
 

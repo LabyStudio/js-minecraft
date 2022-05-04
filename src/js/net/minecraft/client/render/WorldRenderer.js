@@ -540,8 +540,8 @@ export default class WorldRenderer {
         let renderDistance = WorldRenderer.RENDER_DISTANCE;
 
         // Load chunks
-        for (let x = -renderDistance; x <= renderDistance; x++) {
-            for (let z = -renderDistance; z <= renderDistance; z++) {
+        for (let x = -renderDistance + 1; x < renderDistance; x++) {
+            for (let z = -renderDistance + 1; z < renderDistance; z++) {
                 world.getChunkAt(cameraChunkX + x, cameraChunkZ + z);
             }
         }
@@ -580,6 +580,16 @@ export default class WorldRenderer {
             } else {
                 // Hide chunk
                 chunk.group.visible = false;
+
+                // Unload chunk
+                if (chunk.loaded) {
+                    chunk.unload();
+
+                    // TODO Implement chunk unloading
+                    //let index = chunk.x + (chunk.z << 16);
+                    //world.chunks.delete(index);
+                    //world.group.add(chunk.group);
+                }
             }
         }
 

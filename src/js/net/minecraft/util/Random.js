@@ -4,15 +4,14 @@ export default class Random {
 
     constructor(seed = Date.now() % 1000000000 ^ Random.instances++ * 1000) {
         this.mask = 0xffffffff;
-        this.m_w = (123456789 + seed) & this.mask;
-        this.m_z = (987654321 - seed) & this.mask;
+        this.setSeed(seed);
     }
 
     nextBoolean() {
         return this.nextFloat() > 0.5;
     }
 
-    nextInt(max) {
+    nextInt(max = 0x7fffffff) {
         return Math.floor(this.nextFloat() * (max + 1));
     }
 
@@ -23,5 +22,11 @@ export default class Random {
         let result = ((this.m_z << 16) + (this.m_w & 65535)) >>> 0;
         result /= 4294967296;
         return result;
+    }
+
+    setSeed(seed) {
+        this.seed = seed;
+        this.m_w = (123456789 + seed) & this.mask;
+        this.m_z = (987654321 - seed) & this.mask;
     }
 }

@@ -5,6 +5,10 @@ export default class NoiseGeneratorPerlin extends NoiseGenerator {
     constructor(random) {
         super();
 
+        this.offsetX = random.nextFloat() * 256;
+        this.offsetY = random.nextFloat() * 256;
+        this.offsetZ = random.nextFloat() * 256;
+
         this.permutations = [];
         for (let i = 0; i < 256; i++) {
             this.permutations[i] = i;
@@ -46,42 +50,150 @@ export default class NoiseGeneratorPerlin extends NoiseGenerator {
     }
 
     perlin(x, z) {
-        let y;
+        return this.perlinXYZ(x, z, 0);
+    }
 
-        let xi = Math.floor(x) & 0xFF;
-        let zi = Math.floor(z) & 0xFF;
-        let yi = Math.floor(0.0) & 0xFF;
+    perlinXYZ(x, y, z) {
+        let shiftX = x + this.offsetX;
+        let shiftY = y + this.offsetY;
+        let shiftZ = z + this.offsetZ;
 
-        x -= Math.floor(x);
-        z -= Math.floor(z);
-        y = 0.0 - Math.floor(0.0);
+        let floorX = Math.floor(shiftX);
+        let floorY = Math.floor(shiftY);
+        let floorZ = Math.floor(shiftZ);
 
-        let u = this.fade(x);
-        let w = this.fade(z);
-        let v = this.fade(y);
+        if (shiftX < floorX) {
+            floorX--;
+        }
+        if (shiftY < floorY) {
+            floorY--;
+        }
+        if (shiftZ < floorZ) {
+            floorZ--;
+        }
 
-        let xzi = this.permutations[xi] + zi;
-        let xzyi = this.permutations[xzi] + yi;
+        let x1 = floorX & 0xff;
+        let y1 = floorY & 0xff;
+        let z1 = floorZ & 0xff;
 
-        xzi = this.permutations[xzi + 1] + yi;
-        xi = this.permutations[xi + 1] + zi;
-        zi = this.permutations[xi] + yi;
-        xi = this.permutations[xi + 1] + yi;
+        shiftX -= floorX;
+        shiftY -= floorY;
+        shiftZ -= floorZ;
+
+        let u = this.fade(shiftX);
+        let w = this.fade(shiftY);
+        let v = this.fade(shiftZ);
+
+        let xy = this.permutations[x1] + y1;
+        let xyz = this.permutations[xy] + z1;
+
+        let xy1z = this.permutations[xy + 1] + z1;
+        let xi = this.permutations[x1 + 1] + y1;
+        let yi = this.permutations[xi] + z1;
+        let zi = this.permutations[xi + 1] + z1;
 
         return this.lerp(v,
             this.lerp(w,
                 this.lerp(u,
-                    this.grad(this.permutations[xzyi], x, z, y),
-                    this.grad(this.permutations[zi], x - 1.0, z, y)),
+                    this.grad(this.permutations[xyz], shiftX, shiftY, shiftZ),
+                    this.grad(this.permutations[yi], shiftX - 1.0, shiftY, shiftZ)),
                 this.lerp(u,
-                    this.grad(this.permutations[xzi], x, z - 1.0, y),
-                    this.grad(this.permutations[xi], x - 1.0, z - 1.0, y))),
+                    this.grad(this.permutations[xy1z], shiftX, shiftY - 1.0, shiftZ),
+                    this.grad(this.permutations[zi], shiftX - 1.0, shiftY - 1.0, shiftZ))),
             this.lerp(w,
                 this.lerp(u,
-                    this.grad(this.permutations[xzyi + 1], x, z, y - 1.0),
-                    this.grad(this.permutations[zi + 1], x - 1.0, z, y - 1.0)),
+                    this.grad(this.permutations[xyz + 1], shiftX, shiftY, shiftZ - 1.0),
+                    this.grad(this.permutations[yi + 1], shiftX - 1.0, shiftY, shiftZ - 1.0)),
                 this.lerp(u,
-                    this.grad(this.permutations[xzi + 1], x, z - 1.0, y - 1.0),
-                    this.grad(this.permutations[xi + 1], x - 1.0, z - 1.0, y - 1.0))));
+                    this.grad(this.permutations[xy1z + 1], shiftX, shiftY - 1.0, shiftZ - 1.0),
+                    this.grad(this.permutations[zi + 1], shiftX - 1.0, shiftY - 1.0, shiftZ - 1.0))));
+    }
+
+    combined(noise, x1, y1, z1, x2, y2, z2, strengthX, strengthY, strengthZ, frequency) {
+        let index = 0;
+        let invertFrequency = 1.0 / frequency;
+        let prevY3 = -1;
+
+        // Output values
+        let output1 = 0;
+        let output2 = 0;
+        let output3 = 0;
+        let output4 = 0;
+
+        // X loop
+        for (let x = 0; x < x2; x++) {
+            let shiftX = (x1 + x) * strengthX + this.offsetX;
+            let floorX = Math.floor(shiftX);
+
+            if (shiftX < floorX) {
+                floorX--;
+            }
+
+            let x3 = floorX & 0xff;
+            shiftX -= floorX;
+
+            // Z loop
+            let u = this.fade(shiftX);
+            for (let z = 0; z < z2; z++) {
+                let shiftZ = (z1 + z) * strengthZ + this.offsetZ;
+                let floorZ = Math.floor(shiftZ);
+
+                if (shiftZ < floorZ) {
+                    floorZ--;
+                }
+
+                let z3 = floorZ & 0xff;
+                shiftZ -= floorZ;
+
+                // Y loop
+                let w = this.fade(shiftZ);
+                for (let y = 0; y < y2; y++) {
+                    let shiftY = (y1 + y) * strengthY + this.offsetY;
+                    let floorY = Math.floor(shiftY);
+
+                    if (shiftY < floorY) {
+                        floorY--;
+                    }
+
+                    let y3 = floorY & 0xff;
+                    shiftY -= floorY;
+
+                    let v = this.fade(shiftY);
+
+                    // Check if y changed
+                    if (y === 0 || y3 !== prevY3) {
+                        prevY3 = y3;
+
+                        let xy = this.permutations[x3] + y3;
+                        let xyz = this.permutations[xy] + z3;
+
+                        let xy1z = this.permutations[xy + 1] + z3;
+                        let xi = this.permutations[x3 + 1] + y3;
+                        let yi = this.permutations[xi] + z3;
+                        let zi = this.permutations[xi + 1] + z3;
+
+                        output1 = this.lerp(u,
+                            this.grad(this.permutations[xyz], shiftX, shiftY, shiftZ),
+                            this.grad(this.permutations[yi], shiftX - 1.0, shiftY, shiftZ));
+                        output2 = this.lerp(u,
+                            this.grad(this.permutations[xy1z], shiftX, shiftY - 1.0, shiftZ),
+                            this.grad(this.permutations[zi], shiftX - 1.0, shiftY - 1.0, shiftZ));
+                        output3 = this.lerp(u,
+                            this.grad(this.permutations[xyz + 1], shiftX, shiftY, shiftZ - 1.0),
+                            this.grad(this.permutations[yi + 1], shiftX - 1.0, shiftY, shiftZ - 1.0));
+                        output4 = this.lerp(u,
+                            this.grad(this.permutations[xy1z + 1], shiftX, shiftY - 1.0, shiftZ - 1.0),
+                            this.grad(this.permutations[zi + 1], shiftX - 1.0, shiftY - 1.0, shiftZ - 1.0));
+                    }
+
+                    let output5 = this.lerp(v, output1, output2);
+                    let output6 = this.lerp(v, output3, output4);
+
+                    // Add final output to noise array
+                    let output = this.lerp(w, output5, output6);
+                    noise[index++] += output * invertFrequency;
+                }
+            }
+        }
     }
 }

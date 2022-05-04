@@ -5,6 +5,7 @@ import Block from "../world/block/Block.js";
 import MathHelper from "../../util/MathHelper.js";
 import Keyboard from "../../util/Keyboard.js";
 import Vector3 from "../../util/Vector3.js";
+import {BlockRegistry} from "../world/block/BlockRegistry.js";
 
 export default class PlayerEntity extends EntityLiving {
 
@@ -161,7 +162,7 @@ export default class PlayerEntity extends EntityLiving {
     }
 
     isInWater() {
-        return this.world.getBlockAt(this.getBlockPosX(), this.getBlockPosY(), this.getBlockPosZ()) === Block.WATER.getId();
+        return this.world.getBlockAt(this.getBlockPosX(), this.getBlockPosY(), this.getBlockPosZ()) === BlockRegistry.WATER.getId();
     }
 
     isHeadInWater() {
@@ -170,7 +171,7 @@ export default class PlayerEntity extends EntityLiving {
             Math.floor(cameraPosition.x),
             Math.floor(cameraPosition.y + 0.12),
             Math.floor(cameraPosition.z)
-        ) === Block.WATER.getId()
+        ) === BlockRegistry.WATER.getId()
     }
 
     jump() {

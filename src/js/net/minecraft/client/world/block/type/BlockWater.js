@@ -10,6 +10,10 @@ export default class BlockWater extends Block {
         return 0.01;
     }
 
+    getTransparency() {
+        return 0.2;
+    }
+
     isSolid() {
         return false;
     }

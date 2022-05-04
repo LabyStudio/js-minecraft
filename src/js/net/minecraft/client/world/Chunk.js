@@ -16,6 +16,7 @@ export default class Chunk {
         this.group.chunkZ = z;
 
         this.loaded = false;
+        this.isTerrainPopulated = false;
 
         // Initialize sections
         this.sections = [];
@@ -75,7 +76,7 @@ export default class Chunk {
                     let typeId = section.getBlockAt(x, y & 15, z);
                     let block = Block.getById(typeId);
 
-                    let opacity = block.getOpacity();
+                    let opacity = typeId === 0 ? 0 : block.getOpacity();
                     let blockLight = typeId === 0 ? 0 : block.getLightValue();
 
                     if (opacity === 0) {
@@ -320,6 +321,10 @@ export default class Chunk {
 
     isLoaded() {
         return this.loaded;
+    }
+
+    unload() {
+        this.loaded = false;
     }
 
     setModifiedAllSections() {

@@ -22,10 +22,16 @@ export default class MetadataChunkBlock {
         if (index > 32768) {
             return;
         }
+
         for (let x = this.x1; x <= this.x2; x++) {
             for (let z = this.z1; z <= this.z2; z++) {
                 if (!world.blockExists(x, 0, z)) {
                     continue;
+                }
+
+                let centerChunk = world.getChunkAt(x >> 4, z >> 4);
+                if (!centerChunk.loaded) {
+                    return;
                 }
 
                 for (let y = this.y1; y <= this.y2; y++) {

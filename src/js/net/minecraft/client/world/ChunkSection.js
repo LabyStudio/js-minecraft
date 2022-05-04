@@ -38,7 +38,7 @@ export default class ChunkSection {
                     this.blocks[index] = 0;
                     this.blocksData[index] = 0;
                     this.blockLight[index] = 0;
-                    this.skyLight[index] = 0;
+                    this.skyLight[index] = 14;
                 }
             }
         }

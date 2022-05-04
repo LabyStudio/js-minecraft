@@ -1,14 +1,13 @@
 import ChunkSection from "./ChunkSection.js";
 import WorldGenerator from "./generator/WorldGenerator.js";
-import Chunk from "./Chunk.js";
 import MathHelper from "../../util/MathHelper.js";
 import BoundingBox from "../../util/BoundingBox.js";
-import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
 import EnumSkyBlock from "../../util/EnumSkyBlock.js";
 import Block from "./block/Block.js";
 import EnumBlockFace from "../../util/EnumBlockFace.js";
 import Vector3 from "../../util/Vector3.js";
 import Vector4 from "../../util/Vector4.js";
+import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
 
 export default class World {
 
@@ -28,7 +27,8 @@ export default class World {
         this.time = 0;
 
         // Load world
-        this.generator = new WorldGenerator(this, Date.now() % 100000);
+        this.seed = Date.now() % 100000;
+        this.generator = new WorldGenerator(this, this.seed);
 
         // Update lights async
         let scope = this;
@@ -70,24 +70,41 @@ export default class World {
         let index = x + (z << 16);
         let chunk = this.chunks.get(index);
         if (typeof chunk === 'undefined') {
-            chunk = new Chunk(this, x, z);
-
             // Generate new chunk
-            this.generator.generateChunk(chunk);
+            chunk = this.generator.newChunk(this, x, z);
 
-            // Init
-            chunk.generateSkylightMap();
-            chunk.generateBlockLightMap();
-
-            // Register
+            // Register and mark as loaded
             chunk.loaded = true;
             this.chunks.set(index, chunk);
+
+            // Populate the chunk
+            if (!chunk.isTerrainPopulated && this.chunkExists(x + 1, z + 1) && this.chunkExists(x, z + 1) && this.chunkExists(x + 1, z)) {
+                this.populate(x, z);
+            }
+            if (this.chunkExists(x - 1, z) && !this.getChunkAt(x - 1, z).isTerrainPopulated && this.chunkExists(x - 1, z + 1) && this.chunkExists(x, z + 1) && this.chunkExists(x - 1, z)) {
+                this.populate(x - 1, z);
+            }
+            if (this.chunkExists(x, z - 1) && !this.getChunkAt(x, z - 1).isTerrainPopulated && this.chunkExists(x + 1, z - 1) && this.chunkExists(x, z - 1) && this.chunkExists(x + 1, z)) {
+                this.populate(x, z - 1);
+            }
+            if (this.chunkExists(x - 1, z - 1) && !this.getChunkAt(x - 1, z - 1).isTerrainPopulated && this.chunkExists(x - 1, z - 1) && this.chunkExists(x, z - 1) && this.chunkExists(x - 1, z)) {
+                this.populate(x - 1, z - 1);
+            }
+
+            // Register in three.js
             this.group.add(chunk.group);
+        }
+        return chunk;
+    }
+
+    populate(x, z) {
+        let chunk = this.getChunkAt(x, z);
+        if (!chunk.isTerrainPopulated) {
+            chunk.isTerrainPopulated = true;
 
             // Populate chunk
             this.generator.populateChunk(chunk.x, chunk.z);
         }
-        return chunk;
     }
 
     getChunkAtBlock(x, y, z) {
@@ -161,13 +178,18 @@ export default class World {
             }
         }
 
+        let centerChunk = this.getChunkAt(centerX >> 4, centerZ >> 4);
+        if (!centerChunk.loaded) {
+            return;
+        }
+
         // Add light update region to queue
-        if (this.lightUpdateQueue.length < 10000) {
+        if (this.lightUpdateQueue.length < 9999) {
             this.lightUpdateQueue.push(new MetadataChunkBlock(sourceType, x1, y1, z1, x2, y2, z2));
         }
 
         // Max light updates in queue
-        if (this.lightUpdateQueue.length > 100000) {
+        if (this.lightUpdateQueue.length > 10000) {
             this.lightUpdateQueue = [];
         }
     }

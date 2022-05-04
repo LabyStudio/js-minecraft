@@ -68,6 +68,9 @@ export default class BlockRenderer {
             this.tessellator.setColor(color, color, color);
         }
 
+        // Set opacity of block
+        this.tessellator.setAlpha(1 - block.getTransparency());
+
         // Add face to tessellator
         this.addFace(world, face, ambientOcclusion, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
     }
@@ -129,7 +132,7 @@ export default class BlockRenderer {
         let color = brightness * face.getShading();
 
         // Set color with shading
-        this.tessellator.setColor(color, color, color);
+        this.tessellator.setColorRGB(color, color, color);
     }
 
     getAverageLightLevelAt(world, x, y, z) {
