@@ -10,6 +10,10 @@ export default class Vector3 {
         return new Vector3(this.x + x, this.y + y, this.z + z);
     }
 
+    distanceTo(vec) {
+        return Math.sqrt(this.squareDistanceTo(vec));
+    }
+
     squareDistanceTo(vec) {
         let d0 = vec.x - this.x;
         let d1 = vec.y - this.y;

@@ -62,7 +62,7 @@ export default class IngameOverlay extends Gui {
             if (typeId !== 0) {
                 let renderId = "hotbar" + i;
                 let block = Block.getById(typeId);
-                this.minecraft.itemRenderer.renderItemInGui(renderId, block, Math.floor(x + i * 20 + 11), Math.floor(y + 11));
+                this.minecraft.itemRenderer.renderItemInGui(renderId, block, Math.floor(x + i * 20 + 11), y + 11);
             }
         }
     }

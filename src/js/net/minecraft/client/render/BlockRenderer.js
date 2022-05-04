@@ -366,6 +366,8 @@ export default class BlockRenderer {
         let maxY = 1;
         let maxZ = 1;
 
+        let offset = (1 / 256);
+
         // UV Mapping
         let textureIndex = block.getTextureForFace(EnumBlockFace.NORTH);
         let minU = (textureIndex % 16) / 16.0;
@@ -376,6 +378,11 @@ export default class BlockRenderer {
         // Flip V
         minV = 1 - minV;
         maxV = 1 - maxV;
+
+        minU += offset;
+        maxU -= offset;
+        minV -= offset;
+        maxV += offset;
 
         // Render item
         this.addFace(null, EnumBlockFace.NORTH, false, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);

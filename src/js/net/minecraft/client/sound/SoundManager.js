@@ -69,6 +69,9 @@ export default class SoundManager {
         } else if (pool.length > 0) {
             // Play random sound in pool
             let sound = pool[Math.floor(Math.random() * pool.length)];
+            if (typeof volume === "undefined") {
+                return;
+            }
 
             // Stop previous sound
             if (sound.isPlaying) {

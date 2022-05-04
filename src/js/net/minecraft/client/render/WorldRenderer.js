@@ -5,6 +5,7 @@ import Block from "../world/block/Block.js";
 import Tessellator from "./Tessellator.js";
 import ChunkSection from "../world/ChunkSection.js";
 import Random from "../../util/Random.js";
+import Vector3 from "../../util/Vector3.js";
 
 export default class WorldRenderer {
 
@@ -180,46 +181,94 @@ export default class WorldRenderer {
     orientCamera(partialTicks) {
         let player = this.minecraft.player;
 
-        let rotationX = -MathHelper.toRadians(player.rotationPitch);
-        let rotationY = -MathHelper.toRadians(player.rotationYaw + 180);
-        let rotationZ = 0;
+        // Reset rotation stack
+        let stack = this.camera;
+        stack.rotation.order = "ZYX";
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
-        let y = player.prevY + (player.y - player.prevY) * partialTicks;
+        let y = player.prevY + (player.y - player.prevY) * partialTicks + player.getEyeHeight();
         let z = player.prevZ + (player.z - player.prevZ) * partialTicks;
+
+        // Rotation
+        let yaw = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * partialTicks;
+        let pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
 
         // Add camera offset
         let mode = this.minecraft.settings.thirdPersonView;
         if (mode !== 0) {
-            // Flip for front view
+            let distance = WorldRenderer.THIRD_PERSON_DISTANCE;
             let frontView = mode === 2;
+
+            // Handle front view
             if (frontView) {
-                rotationY += Math.PI;
-                rotationX *= -1;
+                // Flip to calculate opposite side of the player
+                pitch += 180;
             }
 
-            // Shift camera
-            let cameraOffsetX = Math.sin(rotationY) * Math.cos(rotationX);
-            let cameraOffsetY = Math.sin(-rotationX);
-            let cameraOffsetZ = Math.cos(rotationY) * Math.cos(rotationX);
+            // Calculate vector for back view and front view
+            let vector = player.getVectorForRotation(pitch, yaw);
+            let vectorFlipped = player.getVectorForRotation(pitch + 180, yaw);
 
-            x += cameraOffsetX * WorldRenderer.THIRD_PERSON_DISTANCE;
-            y += cameraOffsetY * WorldRenderer.THIRD_PERSON_DISTANCE;
-            z += cameraOffsetZ * WorldRenderer.THIRD_PERSON_DISTANCE;
+            let rotationX = vector.x * distance;
+            let rotationY = vector.y * distance;
+            let rotationZ = vector.z * distance;
+
+            // Collision detection
+            for (let i = 0; i < 8; i++) {
+                // Binary counting
+                let bit1 = (i & 1) * 2 - 1;
+                let bit2 = (i >> 1 & 1) * 2 - 1;
+                let bit3 = (i >> 2 & 1) * 2 - 1;
+
+                bit1 *= 0.1;
+                bit2 *= 0.1;
+                bit3 *= 0.1;
+
+                // Calculate ray trace from and to position
+                let from = new Vector3(x + bit1, y + bit2, z + bit3);
+                let to = new Vector3((x - rotationX) + bit1 + bit3, (y - rotationY) + bit2, (z - rotationZ) + bit3);
+
+                // Calculate ray trace
+                let target = this.minecraft.world.rayTraceBlocks(from, to);
+                if (target === null) {
+                    continue;
+                }
+
+                // Calculate distance to collision
+                let distanceToCollision = target.vector.distanceTo(new Vector3(x, y, z));
+                if (distanceToCollision < distance) {
+                    distance = distanceToCollision;
+                }
+            }
+
+            // Move camera to third person sphere
+            x += vectorFlipped.x * distance;
+            y += vectorFlipped.y * distance;
+            z += vectorFlipped.z * distance;
+
+            // Handle front view
+            if (frontView) {
+                // Flip back
+                pitch += 180;
+
+                // Flip camera around
+                pitch *= -1;
+                yaw += 180;
+            }
         }
 
-        // Update rotation
-        this.camera.rotation.x = rotationX;
-        this.camera.rotation.y = rotationY;
-        this.camera.rotation.z = rotationZ;
+        // Update camera rotation
+        stack.rotation.x = -MathHelper.toRadians(pitch);
+        stack.rotation.y = -MathHelper.toRadians(yaw + 180);
+        stack.rotation.z = 0;
 
         // Update camera position
-        this.camera.position.set(x, y + player.getEyeHeight(), z);
+        stack.position.set(x, y, z);
 
         // Apply bobbing animation
         if (mode === 0 && this.minecraft.settings.viewBobbing) {
-            this.bobbingAnimation(player, this.camera, partialTicks);
+            this.bobbingAnimation(player, stack, partialTicks);
         }
 
         // Update FOV
