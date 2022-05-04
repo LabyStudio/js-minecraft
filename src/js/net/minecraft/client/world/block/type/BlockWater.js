@@ -1,4 +1,5 @@
 import Block from "../Block.js";
+import EnumBlockFace from "../../../../util/EnumBlockFace.js";
 
 export default class BlockWater extends Block {
 
@@ -28,7 +29,7 @@ export default class BlockWater extends Block {
 
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || typeId !== this.id && Block.getById(typeId).isTransparent();
+        return typeId === 0 || typeId !== this.id || typeId !== this.id && face === EnumBlockFace.TOP;
     }
 
     getBoundingBox(world, x, y, z) {

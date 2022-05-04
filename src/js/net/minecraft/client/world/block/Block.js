@@ -39,7 +39,7 @@ export default class Block {
         return 0.0;
     }
 
-    isTransparent() {
+    isTranslucent() {
         return this.getTransparency() > 0.0;
     }
 

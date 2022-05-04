@@ -53,30 +53,39 @@ export default class ChunkSection {
         this.group.clear();
 
         let ambientOcclusion = this.world.minecraft.settings.ambientOcclusion;
-
-        // Start drawing chunk section
         let tessellator = renderer.blockRenderer.tessellator;
-        tessellator.startDrawing();
 
-        for (let x = 0; x < ChunkSection.SIZE; x++) {
-            for (let y = 0; y < ChunkSection.SIZE; y++) {
-                for (let z = 0; z < ChunkSection.SIZE; z++) {
-                    let typeId = this.getBlockAt(x, y, z);
+        // Two render phases for solid and translucent
+        for (let i = 0; i < 2; i++) {
+            let isTranslucentRenderPhase = i === 1;
 
-                    if (typeId !== 0) {
-                        let absoluteX = this.x * ChunkSection.SIZE + x;
-                        let absoluteY = this.y * ChunkSection.SIZE + y;
-                        let absoluteZ = this.z * ChunkSection.SIZE + z;
+            // Start drawing chunk section
+            tessellator.startDrawing();
 
-                        let block = Block.getById(typeId);
-                        renderer.blockRenderer.renderBlock(this.world, block, ambientOcclusion, absoluteX, absoluteY, absoluteZ);
+            for (let x = 0; x < ChunkSection.SIZE; x++) {
+                for (let y = 0; y < ChunkSection.SIZE; y++) {
+                    for (let z = 0; z < ChunkSection.SIZE; z++) {
+                        let typeId = this.getBlockAt(x, y, z);
+
+                        if (typeId !== 0) {
+                            let absoluteX = this.x * ChunkSection.SIZE + x;
+                            let absoluteY = this.y * ChunkSection.SIZE + y;
+                            let absoluteZ = this.z * ChunkSection.SIZE + z;
+
+                            let block = Block.getById(typeId);
+                            if (block.isTranslucent() !== isTranslucentRenderPhase) {
+                                continue;
+                            }
+
+                            renderer.blockRenderer.renderBlock(this.world, block, ambientOcclusion, absoluteX, absoluteY, absoluteZ);
+                        }
                     }
                 }
             }
-        }
 
-        // Draw chunk section
-        tessellator.draw(this.group);
+            // Draw chunk section
+            tessellator.draw(this.group);
+        }
     }
 
     getBlockAt(x, y, z) {

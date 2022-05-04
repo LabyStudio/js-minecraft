@@ -301,9 +301,9 @@ export default class World {
         return typeId !== 0 && Block.getById(typeId).isSolid();
     }
 
-    isTransparentBlockAt(x, y, z) {
+    isTranslucentBlockAt(x, y, z) {
         let typeId = this.getBlockAt(x, y, z);
-        return typeId === 0 || Block.getById(typeId).isTransparent();
+        return typeId === 0 || Block.getById(typeId).isTranslucent();
     }
 
     setBlockAt(x, y, z, type) {
