@@ -68,8 +68,8 @@ export default class BlockRenderer {
             this.tessellator.setColor(color, color, color);
         }
 
-        // Set opacity of block
-        this.tessellator.setAlpha(1 - block.getTransparency());
+        // Set opacity of block (Using alpha channel in texture right now)
+        // this.tessellator.setAlpha(1 - block.getTransparency());
 
         // Add face to tessellator
         this.addFace(world, face, ambientOcclusion, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
