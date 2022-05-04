@@ -8,7 +8,11 @@ The source code was ported from the [java-minecraft](https://github.com/LabyStud
 Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
 
 ### Feature Overview
+<details>
+<summary>Click here to expand feature list</summary>
+
 - Block rendering
+    - Biome color
 - Block collision
 - Player movement
     - Walking
@@ -16,10 +20,11 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - Sneaking
     - Flying
     - Swimming
-- Lightning 
+- Lightning
     - Dynamic lightning
-    - Smooth lightning
-    - Day/Night
+    - Smooth lightning (Ambient occlusion)
+    - Day/Night/Sunset
+    - Sky color rendering
     - Block light source
 - Entity Rendering
     - Item in hand
@@ -30,6 +35,8 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - 16x16x16 Chunks
     - Block type, data, sky & block lightning
     - Perlin world generation
+    - Cave generation
+    - Tree and big tree generation
 - Camera
     - Frustum Culling
     - Fog
@@ -45,11 +52,14 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
         - Controls Screen
     - Widgets
         - Button
-        - KeyBindButton
+        - KeyBinding
+        - Slider
+        - Switches
     - Overlay
         - Cross-hair
         - Font rendering
         - Hot-Bar
+</details>
 <hr>
 
 # Screenshots
