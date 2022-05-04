@@ -183,7 +183,6 @@ export default class WorldRenderer {
 
         // Reset rotation stack
         let stack = this.camera;
-        stack.rotation.order = "ZYX";
 
         // Position
         let x = player.prevX + (player.x - player.prevX) * partialTicks;
@@ -200,36 +199,30 @@ export default class WorldRenderer {
             let distance = WorldRenderer.THIRD_PERSON_DISTANCE;
             let frontView = mode === 2;
 
-            // Handle front view
-            if (frontView) {
-                // Flip to calculate opposite side of the player
-                pitch += 180;
-            }
-
-            // Calculate vector for back view and front view
+            // Calculate vector of yaw and pitch
             let vector = player.getVectorForRotation(pitch, yaw);
-            let vectorFlipped = player.getVectorForRotation(pitch + 180, yaw);
 
-            let rotationX = vector.x * distance;
-            let rotationY = vector.y * distance;
-            let rotationZ = vector.z * distance;
+            // Calculate max possible position of the third person camera
+            let maxX = x - vector.x * distance * (frontView ? -1 : 1);
+            let maxY = y - vector.y * distance * (frontView ? -1 : 1);
+            let maxZ = z - vector.z * distance * (frontView ? -1 : 1);
 
-            // Collision detection
+            // Make 8 different ray traces to make sure we don't get stuck in walls
             for (let i = 0; i < 8; i++) {
-                // Binary counting
-                let bit1 = (i & 1) * 2 - 1;
-                let bit2 = (i >> 1 & 1) * 2 - 1;
-                let bit3 = (i >> 2 & 1) * 2 - 1;
-
-                bit1 *= 0.1;
-                bit2 *= 0.1;
-                bit3 *= 0.1;
+                // Calculate all possible offset variations (Basically a binary counter)
+                let offsetX = ((i & 1) * 2 - 1) * 0.1;
+                let offsetY = ((i >> 1 & 1) * 2 - 1) * 0.1;
+                let offsetZ = ((i >> 2 & 1) * 2 - 1) * 0.1;
 
                 // Calculate ray trace from and to position
-                let from = new Vector3(x + bit1, y + bit2, z + bit3);
-                let to = new Vector3((x - rotationX) + bit1 + bit3, (y - rotationY) + bit2, (z - rotationZ) + bit3);
+                let from = new Vector3(x, y, z);
+                let to = new Vector3(maxX, maxY, maxZ);
 
-                // Calculate ray trace
+                // Add offset of this variation
+                from = from.addVector(offsetX, offsetY, offsetZ);
+                to = to.addVector(offsetX, offsetY, offsetZ);
+
+                // Make ray trace
                 let target = this.minecraft.world.rayTraceBlocks(from, to);
                 if (target === null) {
                     continue;
@@ -243,16 +236,12 @@ export default class WorldRenderer {
             }
 
             // Move camera to third person sphere
-            x += vectorFlipped.x * distance;
-            y += vectorFlipped.y * distance;
-            z += vectorFlipped.z * distance;
+            x -= vector.x * distance * (frontView ? -1 : 1);
+            y -= vector.y * distance * (frontView ? -1 : 1);
+            z -= vector.z * distance * (frontView ? -1 : 1);
 
-            // Handle front view
+            // Flip camera around if front view is enabled
             if (frontView) {
-                // Flip back
-                pitch += 180;
-
-                // Flip camera around
                 pitch *= -1;
                 yaw += 180;
             }
