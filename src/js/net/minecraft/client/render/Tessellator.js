@@ -36,6 +36,13 @@ export default class Tessellator {
         this.setAlpha(alpha);
     }
 
+    multiplyColor(red, green, blue, alpha = 1) {
+        this.red *= red;
+        this.green *= green;
+        this.blue *= blue;
+        this.alpha *= alpha;
+    }
+
     setAlpha(alpha) {
         this.alpha = alpha;
     }

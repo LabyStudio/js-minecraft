@@ -2,21 +2,6 @@ import Minecraft from './js/net/minecraft/client/Minecraft.js';
 
 let resources = [];
 
-// Browser test function
-function isES6() {
-    try {
-        Function("() => {};");
-        return true;
-    } catch (exception) {
-        return false;
-    }
-}
-
-// Test for browser support
-if (!isES6()) {
-    alert("Your browser isn't supported! Please use another one.");
-}
-
 // Script loader
 function loadScripts(scripts) {
     let total = scripts.length;
@@ -71,6 +56,7 @@ function updatePreStatus(message) {
 
 // Load textures
 loadTexture([
+    "misc/grasscolor.png",
     "gui/font.png",
     "gui/gui.png",
     "gui/background.png",

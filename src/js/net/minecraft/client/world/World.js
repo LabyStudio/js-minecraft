@@ -485,8 +485,12 @@ export default class World {
         return MathHelper.calculateCelestialAngle(this.time, partialTicks);
     }
 
-    getTemperature(x, z) {
-        return 1.24;
+    getTemperature(x, y, z) {
+        return 0.75; // TODO implement biomes
+    }
+
+    getHumidity(x, y, z) {
+        return 0.85; // TODO implement biomes
     }
 
     getSkyColor(x, z, partialTicks) {

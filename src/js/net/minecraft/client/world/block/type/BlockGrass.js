@@ -10,6 +10,22 @@ export default class BlockGrass extends Block {
         this.sound = Block.sounds.grass;
     }
 
+    getColor(world, x, y, z, face) {
+        // Only top face has a biome color
+        if (face !== EnumBlockFace.TOP) {
+            return 0xFFFFFF;
+        }
+
+        // Inventory items have a default color
+        if (world === null) {
+            return 0x7cbd6b;
+        }
+
+        let temperature = world.getTemperature(x, y, z);
+        let humidity = world.getHumidity(x, y, z);
+        return world.minecraft.grassColorizer.getColor(temperature, humidity);
+    }
+
     getTextureForFace(face) {
         switch (face) {
             case EnumBlockFace.TOP:

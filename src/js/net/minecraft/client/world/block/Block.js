@@ -48,6 +48,10 @@ export default class Block {
         return typeId === 0 || !Block.getById(typeId).isSolid();
     }
 
+    getColor(world, x, y, z, face) {
+        return 0xffffff;
+    }
+
     getLightValue() {
         return 0;
     }

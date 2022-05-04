@@ -13,6 +13,7 @@ import Block from "./world/block/Block.js";
 import BoundingBox from "../util/BoundingBox.js";
 import {BlockRegistry} from "./world/block/BlockRegistry.js";
 import FontRenderer from "./render/gui/FontRenderer.js";
+import GrassColorizer from "./render/GrassColorizer.js";
 
 export default class Minecraft {
 
@@ -58,6 +59,9 @@ export default class Minecraft {
 
         // Create font renderer
         this.fontRenderer = new FontRenderer(this);
+
+        // Grass colorizer
+        this.grassColorizer = new GrassColorizer(this);
 
         // Update window size
         this.window.updateWindowSize();

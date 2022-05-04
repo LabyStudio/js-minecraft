@@ -60,79 +60,85 @@ export default class BlockRenderer {
         minV = 1 - minV;
         maxV = 1 - maxV;
 
+        // Get color multiplier
+        let color = block.getColor(world, x, y, z, face);
+        let red = (color >> 16 & 255) / 255.0;
+        let green = (color >> 8 & 255) / 255.0;
+        let blue = (color & 255) / 255.0;
+
         // Classic lightning
         if (!ambientOcclusion) {
             let level = world === null ? 15 : world.getTotalLightAt(minX + face.x, minY + face.y, minZ + face.z);
             let brightness = 0.9 / 15.0 * level + 0.1;
-            let color = brightness * face.getShading();
-            this.tessellator.setColor(color, color, color);
+            let shade = brightness * face.getShading();
+            this.tessellator.setColor(red * shade, green * shade, blue * shade);
         }
 
         // Set opacity of block (Using alpha channel in texture right now)
         // this.tessellator.setAlpha(1 - block.getTransparency());
 
         // Add face to tessellator
-        this.addFace(world, face, ambientOcclusion, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
+        this.addFace(world, face, ambientOcclusion, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, red, green, blue);
     }
 
-    addFace(world, face, ambientOcclusion, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV) {
+    addFace(world, face, ambientOcclusion, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, red = 1, green = 1, blue = 1) {
         if (face === EnumBlockFace.BOTTOM) {
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, maxZ, maxU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, minZ, maxU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, minZ, minU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, maxZ, minU, maxV);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, maxZ, maxU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, minZ, maxU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, minZ, minU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, maxZ, minU, maxV, red, green, blue);
         }
         if (face === EnumBlockFace.TOP) {
-            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, maxZ, minU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, minZ, minU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, minZ, maxU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, maxZ, maxU, maxV);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, maxZ, minU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, minZ, minU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, minZ, maxU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, maxZ, maxU, maxV, red, green, blue);
         }
         if (face === EnumBlockFace.NORTH) {
-            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, minZ, minU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, minZ, minU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, minZ, maxU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, minZ, maxU, minV);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, minZ, minU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, minZ, minU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, minZ, maxU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, minZ, maxU, minV, red, green, blue);
         }
         if (face === EnumBlockFace.SOUTH) {
-            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, maxZ, maxU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, maxZ, minU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, maxZ, minU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, maxZ, maxU, maxV);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, maxZ, maxU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, maxZ, minU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, maxZ, minU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, maxZ, maxU, maxV, red, green, blue);
         }
         if (face === EnumBlockFace.WEST) {
-            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, maxZ, minU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, minZ, maxU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, minZ, maxU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, maxZ, minU, minV);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, maxZ, minU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, minY, minZ, maxU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, minZ, maxU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, minX, maxY, maxZ, minU, minV, red, green, blue);
         }
         if (face === EnumBlockFace.EAST) {
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, maxZ, maxU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, minZ, minU, minV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, minZ, minU, maxV);
-            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, maxZ, maxU, maxV);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, maxZ, maxU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, maxY, minZ, minU, minV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, minZ, minU, maxV, red, green, blue);
+            this.addBlockCorner(world, face, ambientOcclusion, maxX, minY, maxZ, maxU, maxV, red, green, blue);
         }
     }
 
-    addBlockCorner(world, face, ambientOcclusion, x, y, z, u, v) {
+    addBlockCorner(world, face, ambientOcclusion, x, y, z, u, v, red, green, blue) {
         // Smooth lightning
         if (ambientOcclusion) {
-            this.setAverageColor(world, face, x, y, z);
+            this.setAverageBrightness(world, face, x, y, z, red, green, blue);
         }
 
         this.tessellator.addVertexWithUV(x, y, z, u, v);
     }
 
-    setAverageColor(world, face, x, y, z) {
+    setAverageBrightness(world, face, x, y, z, red = 1, green = 1, blue = 1) {
         // Get the average light level of all 4 blocks at this corner
         let lightLevelAtThisCorner = this.getAverageLightLevelAt(world, x, y, z);
 
         // Convert light level from [0 - 15] to [0.1 - 1.0]
         let brightness = 0.9 / 15.0 * lightLevelAtThisCorner + 0.1;
-        let color = brightness * face.getShading();
+        let shading = brightness * face.getShading();
 
-        // Set color with shading
-        this.tessellator.setColorRGB(color, color, color);
+        // Transform brightness of edge
+        this.tessellator.setColor(red * shading, green * shading, blue * shading);
     }
 
     getAverageLightLevelAt(world, x, y, z) {
