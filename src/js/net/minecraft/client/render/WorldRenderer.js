@@ -555,6 +555,7 @@ export default class WorldRenderer {
             if (distanceX < renderDistance && distanceZ < renderDistance) {
                 // Make chunk visible
                 chunk.group.visible = true;
+                chunk.loaded = true;
 
                 // For all chunk sections
                 for (let y in chunk.sections) {
