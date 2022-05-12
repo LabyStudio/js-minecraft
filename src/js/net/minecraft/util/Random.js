@@ -9,6 +9,8 @@ export default class Random {
         this.mask = Long.fromInt(1).shiftLeft(48).subtract(1);
         this.addend = Long.fromInt(0xB);
         this.doubleUnit = 1.1102230246251565E-16;
+        this.maxInt = Long.fromInt(0x7fffffff);
+        this.intMask = Long.fromInt(0x80000000);
 
         this.setSeed(seed);
     }
@@ -51,7 +53,9 @@ export default class Random {
             oldSeed = this.seed;
             nextSeed = oldSeed.multiply(this.multiplier).add(this.addend).and(this.mask);
         } while (!this._compareAndSet(oldSeed, nextSeed));
-        return nextSeed.shiftRight(48 - bits);
+
+        let num = nextSeed.shiftRight(48 - bits);
+        return num.greaterThan(this.maxInt) ? num.or(this.intMask) : num; // Cast to integer
     }
 
     _compareAndSet(expect, update) {
