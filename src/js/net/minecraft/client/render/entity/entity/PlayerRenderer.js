@@ -1,6 +1,7 @@
 import ModelPlayer from "../../model/model/ModelPlayer.js";
 import EntityRenderer from "../EntityRenderer.js";
 import Block from "../../../world/block/Block.js";
+import * as THREE from "../../../../../../../../libraries/three.module.js";
 
 export default class PlayerRenderer extends EntityRenderer {
 

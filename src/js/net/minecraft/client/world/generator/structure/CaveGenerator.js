@@ -11,18 +11,14 @@ export default class CaveGenerator extends Generator {
     }
 
     generateInChunk(originChunkX, originChunkZ, primer) {
-        // Reset seed
-        this.random.setSeed(this.seed);
-
         let offset = this.chunkRange;
-        let seedX = (this.random.nextInt() / 2) * 2 + 1;
-        let seedZ = (this.random.nextInt() / 2) * 2 + 1;
+        let {seedX, seedZ} = this.generateSeedOffset();
 
         // Generate entire cave over 16x16 chunk area
         for (let chunkX = originChunkX - offset; chunkX <= originChunkX + offset; chunkX++) {
             for (let chunkZ = originChunkZ - offset; chunkZ <= originChunkZ + offset; chunkZ++) {
                 // Set seed for position
-                this.random.setSeed(chunkX * seedX + chunkZ * seedZ ^ this.seed);
+                this.setSeedOffset(chunkX, chunkZ, seedX, seedZ);
 
                 // Generate entire cave
                 this.generateCave(chunkX, chunkZ, originChunkX, originChunkZ, primer);
@@ -50,10 +46,10 @@ export default class CaveGenerator extends Generator {
             }
 
             for (let j = 0; j < amount; j++) {
-                let num1 = this.random.nextFloat() * Math.PI * 2.0;
-                let num2 = ((this.random.nextFloat() - 0.5) * 2.0) / 8;
-                let num3 = this.random.nextFloat() * 2.0 + this.random.nextFloat();
-                this.generateCaveAtBlock(originChunkX, originChunkZ, primer, x, y, z, num3, num1, num2, 0, 0, 1.0);
+                let rotation1 = this.random.nextFloat() * Math.PI * 2.0;
+                let rotation2 = ((this.random.nextFloat() - 0.5) * 2.0) / 8;
+                let amplitude = this.random.nextFloat() * 2.0 + this.random.nextFloat();
+                this.generateCaveAtBlock(originChunkX, originChunkZ, primer, x, y, z, amplitude, rotation1, rotation2, 0, 0, 1.0);
             }
         }
     }
@@ -67,47 +63,47 @@ export default class CaveGenerator extends Generator {
         );
     }
 
-    generateCaveAtBlock(originChunkX, originChunkZ, primer, absoluteX, absoluteY, absoluteZ, amplitude, rotation2, rotation1, progress, distance, strength) {
+    generateCaveAtBlock(originChunkX, originChunkZ, primer, absoluteX, absoluteY, absoluteZ, amplitude, rotation1, rotation2, progress, distance, strength) {
         let centerX = originChunkX * 16 + 8;
         let centerZ = originChunkZ * 16 + 8;
 
         let motion2 = 0;
         let motion1 = 0;
 
-        let random = new Random(this.random.nextInt());
+        let random = new Random(this.random.nextLong());
         if (distance <= 0) {
-            let i1 = this.chunkRange * 16 - 16;
-            distance = i1 - random.nextInt(i1 / 4);
+            let range = this.chunkRange * 16 - 16;
+            distance = range - random.nextInt(Math.floor(range / 4));
         }
 
         let isBeginning = false;
         if (progress === -1) {
-            progress = distance / 2;
+            progress = Math.floor(distance / 2);
             isBeginning = true;
         }
 
-        let maxProgress = random.nextInt(distance / 2) + distance / 4;
+        let maxProgress = random.nextInt(Math.floor(distance / 2)) + Math.floor(distance / 4);
         let isStrong = random.nextInt(6) === 0;
 
         for (; progress < distance; progress++) {
             let value = 1.5 + (Math.sin((progress * Math.PI) / distance) * amplitude);
             let valueWithStrength = value * strength;
 
-            let cos = Math.cos(rotation1);
-            let sin = Math.sin(rotation1);
+            let cos = Math.cos(rotation2);
+            let sin = Math.sin(rotation2);
 
-            absoluteX += Math.cos(rotation2) * cos;
+            absoluteX += Math.cos(rotation1) * cos;
             absoluteY += sin;
-            absoluteZ += Math.sin(rotation2) * cos;
+            absoluteZ += Math.sin(rotation1) * cos;
 
             if (isStrong) {
-                rotation1 *= 0.92;
+                rotation2 *= 0.92;
             } else {
-                rotation1 *= 0.7;
+                rotation2 *= 0.7;
             }
 
-            rotation1 += motion1 * 0.1;
-            rotation2 += motion2 * 0.1;
+            rotation2 += motion1 * 0.1;
+            rotation1 += motion2 * 0.1;
 
             motion1 *= 0.9;
             motion2 *= 0.75;
@@ -119,12 +115,12 @@ export default class CaveGenerator extends Generator {
                 this.generateCaveAtBlock(
                     originChunkX, originChunkZ, primer,
                     absoluteX, absoluteY, absoluteZ,
-                    random.nextFloat() * 0.5 + 0.5, rotation2 - 1.570796, rotation1 / 3, progress, distance, 1.0
+                    random.nextFloat() * 0.5 + 0.5, rotation1 - 1.570796, rotation2 / 3, progress, distance, 1.0
                 );
                 this.generateCaveAtBlock(
                     originChunkX, originChunkZ, primer,
                     absoluteX, absoluteY, absoluteZ,
-                    random.nextFloat() * 0.5 + 0.5, rotation2 + 1.570796, rotation1 / 3, progress, distance, 1.0
+                    random.nextFloat() * 0.5 + 0.5, rotation1 + 1.570796, rotation2 / 3, progress, distance, 1.0
                 );
                 return;
             }

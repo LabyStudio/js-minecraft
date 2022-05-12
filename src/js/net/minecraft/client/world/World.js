@@ -8,12 +8,16 @@ import EnumBlockFace from "../../util/EnumBlockFace.js";
 import Vector3 from "../../util/Vector3.js";
 import Vector4 from "../../util/Vector4.js";
 import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
+import Long from "../../../../../../libraries/long.js";
+import * as THREE from "../../../../../../libraries/three.module.js";
+import WorldRenderer from "../render/WorldRenderer.js";
+import Random from "../../util/Random.js";
 
 export default class World {
 
     static TOTAL_HEIGHT = ChunkSection.SIZE * 8 - 1; // ChunkSection.SIZE * 16 - 1;
 
-    constructor(minecraft) {
+    constructor(minecraft, seed = Long.fromInt(Date.now() % 100000)) {
         this.minecraft = minecraft;
 
         this.entities = [];
@@ -25,10 +29,9 @@ export default class World {
         this.lightUpdateQueue = [];
 
         this.time = 0;
+        this.spawn = new Vector3(0, 0, 0);
 
-        // Load world
-        this.seed = Date.now() % 100000;
-        this.generator = new WorldGenerator(this, this.seed);
+        this.setSeed(seed);
 
         // Update lights async
         let scope = this;
@@ -41,18 +44,17 @@ export default class World {
         }, 0);
     }
 
+    setSeed(seed) {
+        this.seed = seed;
+        this.generator = new WorldGenerator(this, seed);
+        this.random = new Random(seed);
+    }
+
+    getSeed() {
+        return this.seed;
+    }
+
     onTick() {
-        let player = this.minecraft.player;
-        let cameraChunkX = Math.floor(player.x >> 4);
-        let cameraChunkZ = Math.floor(player.z >> 4);
-
-        // Update render order of chunks
-        this.group.children.sort((a, b) => {
-            let distance1 = Math.floor(Math.pow(a.chunkX - cameraChunkX, 2) + Math.pow(a.chunkZ - cameraChunkZ, 2));
-            let distance2 = Math.floor(Math.pow(b.chunkX - cameraChunkX, 2) + Math.pow(b.chunkZ - cameraChunkZ, 2));
-            return distance2 - distance1;
-        });
-
         // Update skylight subtracted (To make the night dark)
         let lightLevel = this.calculateSkylightSubtracted(1.0);
         if (lightLevel !== this.skylightSubtracted) {
@@ -108,9 +110,6 @@ export default class World {
     }
 
     getChunkAtBlock(x, y, z) {
-        if (!this.blockExists(x, y, z)) {
-            return null;
-        }
         return this.getChunkAt(x >> 4, z >> 4).getSection(y >> 4);
     }
 
@@ -617,4 +616,42 @@ export default class World {
         }
         return null;
     }
+
+    getSpawn() {
+        return this.spawn;
+    }
+
+    setSpawn(x, z) {
+        let y = this.getHeightAt(x, z);
+        this.spawn = new Vector3(x, y + 8, z);
+    }
+
+    findSpawn() {
+        if (this.spawn.y <= 0) {
+            this.spawn.y = 64;
+        }
+
+        while (this.getBlockAboveSeaLevel(this.spawn.x, this.spawn.z) === 0) {
+            this.spawn.x += this.random.nextInt(8) - this.random.nextInt(8);
+            this.spawn.z += this.random.nextInt(8) - this.random.nextInt(8);
+        }
+    }
+
+    getBlockAboveSeaLevel(x, z) {
+        let y = this.generator.seaLevel;
+        while (this.getBlockAt(x, y + 1, z) !== 0) {
+            y++;
+        }
+        return this.getBlockAt(x, y, z);
+    }
+
+    loadSpawnChunks() {
+        for (let x = -WorldRenderer.RENDER_DISTANCE; x <= WorldRenderer.RENDER_DISTANCE; x++) {
+            for (let z = -WorldRenderer.RENDER_DISTANCE; z <= WorldRenderer.RENDER_DISTANCE; z++) {
+                this.getChunkAt(x + this.spawn.x >> 4, z + this.spawn.z >> 4);
+            }
+        }
+        this.spawn.y = this.getHeightAt(this.spawn.x, this.spawn.z) + 8;
+    }
+
 }

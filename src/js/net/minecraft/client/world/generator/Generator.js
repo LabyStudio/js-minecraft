@@ -1,4 +1,5 @@
 import Random from "../../../util/Random.js";
+import Long from "../../../../../../../libraries/long.js";
 
 export default class Generator {
 
@@ -14,5 +15,24 @@ export default class Generator {
 
     generateAtBlock(x, y, z, primer) {
 
+    }
+
+    generateSeedOffset() {
+        this.random.setSeed(this.seed);
+
+        let seedX = this.random.nextLong().divide(2).multiply(2).add(1);
+        let seedZ = this.random.nextLong().divide(2).multiply(2).add(1);
+
+        return {seedX, seedZ};
+    }
+
+    setSeedOffset(chunkX, chunkZ, seedX, seedZ) {
+        let seed = Long.fromInt(chunkX).multiply(seedX).add(Long.fromInt(chunkZ).multiply(seedZ)).xor(this.seed);
+        this.random.setSeed(seed);
+    }
+
+    setChunkSeed(chunkX, chunkZ) {
+        let {seedX, seedZ} = this.generateSeedOffset();
+        this.setSeedOffset(chunkX, chunkZ, seedX, seedZ);
     }
 }

@@ -29,17 +29,6 @@ export default class GameWindow {
         this.canvasItems = document.createElement('canvas');
         this.wrapper.appendChild(this.canvasItems);
 
-        // Stats
-        this.statsFps = new Stats()
-        this.statsFps.showPanel(0);
-        this.statsFps.domElement.style.cssText = 'position:absolute;top:0px;right:80px;float:right';
-        //this.wrapper.appendChild(this.statsFps.dom);
-
-        this.statsMs = new Stats()
-        this.statsMs.showPanel(1);
-        this.statsMs.domElement.style.cssText = 'position:absolute;top:0px;right:160px;float:right';
-        //this.wrapper.appendChild(this.statsMs.dom);
-
         // On resize
         let scope = this;
 

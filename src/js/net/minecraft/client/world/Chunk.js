@@ -2,6 +2,7 @@ import EnumSkyBlock from "../../util/EnumSkyBlock.js";
 import Block from "./block/Block.js";
 import World from "./World.js";
 import ChunkSection from "./ChunkSection.js";
+import * as THREE from "../../../../../../libraries/three.module.js";
 
 export default class Chunk {
 

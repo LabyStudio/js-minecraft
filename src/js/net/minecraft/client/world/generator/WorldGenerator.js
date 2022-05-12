@@ -20,11 +20,12 @@ export default class WorldGenerator extends Generator {
         this.terrainGenerator4 = new NoiseGeneratorOctaves(this.random, 16);
         this.terrainGenerator5 = new NoiseGeneratorOctaves(this.random, 16);
         this.terrainGenerator3 = new NoiseGeneratorOctaves(this.random, 8);
-        this.terrainGenerator1 = new NoiseGeneratorOctaves(this.random, 10);
-        this.terrainGenerator2 = new NoiseGeneratorOctaves(this.random, 16);
 
         this.natureGenerator1 = new NoiseGeneratorOctaves(this.random, 4);
         this.natureGenerator2 = new NoiseGeneratorOctaves(this.random, 4);
+
+        this.terrainGenerator1 = new NoiseGeneratorOctaves(this.random, 10);
+        this.terrainGenerator2 = new NoiseGeneratorOctaves(this.random, 16);
 
         this.populationNoiseGenerator = new NoiseGeneratorOctaves(this.random, 8);
     }
@@ -52,18 +53,13 @@ export default class WorldGenerator extends Generator {
     }
 
     populateChunk(chunkX, chunkZ) {
-        // Reset seed
-        this.random.setSeed(this.seed);
-
         // Set seed for chunk
-        let seedX = (this.random.nextInt() / 2) * 2 + 1;
-        let seedZ = (this.random.nextInt() / 2) * 2 + 1;
-        this.random.setSeed(chunkX * seedX + chunkZ * seedZ ^ this.seed);
+        this.setChunkSeed(chunkX, chunkZ);
 
         // Access noise data for population
         let absoluteX = chunkX * 16;
         let absoluteY = chunkZ * 16;
-        let amount = Math.floor((this.populationNoiseGenerator.perlin(absoluteX * 0.5, absoluteY * 0.5) / 8 + this.random.nextFloat() * 4 + 4) / 3);
+        let amount = Math.floor((this.populationNoiseGenerator.perlin(absoluteX * 0.5, absoluteY * 0.5) / 8 + this.random.nextDouble() * 4 + 4) / 3);
         if (amount < 0) {
             amount = 0;
         }

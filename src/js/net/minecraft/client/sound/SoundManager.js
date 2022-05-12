@@ -1,4 +1,5 @@
 import Block from "../world/block/Block.js";
+import * as THREE from "../../../../../../libraries/three.module.js";
 
 export default class SoundManager {
 

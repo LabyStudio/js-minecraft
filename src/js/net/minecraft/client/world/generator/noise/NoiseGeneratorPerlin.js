@@ -5,9 +5,9 @@ export default class NoiseGeneratorPerlin extends NoiseGenerator {
     constructor(random) {
         super();
 
-        this.offsetX = random.nextFloat() * 256;
-        this.offsetY = random.nextFloat() * 256;
-        this.offsetZ = random.nextFloat() * 256;
+        this.offsetX = random.nextDouble() * 256;
+        this.offsetY = random.nextDouble() * 256;
+        this.offsetZ = random.nextDouble() * 256;
 
         this.permutations = [];
         for (let i = 0; i < 256; i++) {

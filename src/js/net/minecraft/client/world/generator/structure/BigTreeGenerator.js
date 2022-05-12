@@ -21,7 +21,7 @@ export default class BigTreeGenerator extends Generator {
     }
 
     generateAtBlock(x, y, z) {
-        let seed = this.random.nextInt();
+        let seed = this.random.nextLong();
         this.random.setSeed(seed);
 
         this.coords[0] = x;

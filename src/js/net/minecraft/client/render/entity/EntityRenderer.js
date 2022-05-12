@@ -1,5 +1,6 @@
 import Tessellator from "../Tessellator.js";
 import MathHelper from "../../../util/MathHelper.js";
+import * as THREE from "../../../../../../../libraries/three.module.js";
 
 export default class EntityRenderer {
 

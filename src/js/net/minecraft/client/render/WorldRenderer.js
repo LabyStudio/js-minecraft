@@ -6,6 +6,7 @@ import Tessellator from "./Tessellator.js";
 import ChunkSection from "../world/ChunkSection.js";
 import Random from "../../util/Random.js";
 import Vector3 from "../../util/Vector3.js";
+import * as THREE from "../../../../../../libraries/three.module.js";
 
 export default class WorldRenderer {
 
@@ -105,8 +106,8 @@ export default class WorldRenderer {
 
         // Render chunks
         let player = this.minecraft.player;
-        let cameraChunkX = Math.floor(player.x >> 4);
-        let cameraChunkZ = Math.floor(player.z >> 4);
+        let cameraChunkX = Math.floor(player.x) >> 4;
+        let cameraChunkZ = Math.floor(player.z) >> 4;
         this.renderChunks(cameraChunkX, cameraChunkZ);
 
         // Render sky
@@ -611,6 +612,13 @@ export default class WorldRenderer {
                 }
             }
         }
+
+        // Update render order of chunks
+        world.group.children.sort((a, b) => {
+            let distance1 = Math.floor(Math.pow(a.chunkX - cameraChunkX, 2) + Math.pow(a.chunkZ - cameraChunkZ, 2));
+            let distance2 = Math.floor(Math.pow(b.chunkX - cameraChunkX, 2) + Math.pow(b.chunkZ - cameraChunkZ, 2));
+            return distance2 - distance1;
+        });
     }
 
     rebuildAll() {

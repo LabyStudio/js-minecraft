@@ -1,32 +1,78 @@
+import Long from "../../../../../libraries/long.js";
+
 export default class Random {
 
     static instances = 0;
 
     constructor(seed = Date.now() % 1000000000 ^ Random.instances++ * 1000) {
-        this.mask = 0xffffffff;
+        this.multiplier = Long.fromString("25214903917");
+        this.mask = Long.fromInt(1).shiftLeft(48).subtract(1);
+        this.addend = Long.fromInt(0xB);
+        this.doubleUnit = 1.1102230246251565E-16;
+
         this.setSeed(seed);
     }
 
-    nextBoolean() {
-        return this.nextFloat() > 0.5;
-    }
-
-    nextInt(max = 0x7fffffff) {
-        return Math.floor(this.nextFloat() * (max + 1));
-    }
-
     nextFloat() {
-        this.m_z = (36969 * (this.m_z & 65535) + (this.m_z >>> 16)) & this.mask;
-        this.m_w = (18000 * (this.m_w & 65535) + (this.m_w >>> 16)) & this.mask;
-
-        let result = ((this.m_z << 16) + (this.m_w & 65535)) >>> 0;
-        result /= 4294967296;
-        return result;
+        return this.next(24) / (1 << 24);
     }
 
-    setSeed(seed) {
-        this.seed = seed;
-        this.m_w = (123456789 + seed) & this.mask;
-        this.m_z = (987654321 - seed) & this.mask;
+    nextDouble() {
+        return Long.fromInt(this.next(26)).shiftLeft(27).add(Long.fromInt(this.next(27))).toNumber() * this.doubleUnit;
+    }
+
+    nextInt(max = -1) {
+        if (max === -1) {
+            return this.next(32);
+        }
+
+        let r = this.next(31);
+        let m = max - 1;
+        if ((max & m) === 0)  // i.e., bound is a power of 2
+            r = Long.fromInt(max).multiply(Long.fromInt(r)).shiftRightUnsigned(31).toNumber();
+        else {
+            for (let u = r;
+                 u - (r = u % max) + m < 0;
+                 u = this.next(31))
+                ;
+        }
+        return r;
+    }
+
+    nextLong() {
+        return Long.fromInt(this.next(32)).shiftLeft(32).add(Long.fromInt(this.next(32)));
+    }
+
+    next(bits) {
+        let oldSeed;
+        let nextSeed;
+        do {
+            oldSeed = this.seed;
+            nextSeed = oldSeed.multiply(this.multiplier).add(this.addend).and(this.mask);
+        } while (!this._compareAndSet(oldSeed, nextSeed));
+        return nextSeed.shiftRight(48 - bits).toNumber();
+    }
+
+    _compareAndSet(expect, update) {
+        if (!this.seed.equals(expect)) {
+            return false;
+        }
+
+        this.seed = update;
+        return true;
+    }
+
+    setSeed(n) {
+        let long;
+
+        if (typeof n === "number") {
+            long = Long.fromInt(n);
+        } else if (n instanceof Long) {
+            long = n;
+        } else {
+            long = Long.fromString(n);
+        }
+
+        this.seed = long.xor(this.multiplier).and(this.mask);
     }
 }

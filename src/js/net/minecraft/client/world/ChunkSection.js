@@ -1,5 +1,6 @@
 import EnumSkyBlock from "../../util/EnumSkyBlock.js";
 import Block from "./block/Block.js";
+import * as THREE from "../../../../../../libraries/three.module.js";
 
 export default class ChunkSection {
 

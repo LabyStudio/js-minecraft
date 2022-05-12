@@ -47,8 +47,8 @@ export default class PlayerEntity extends EntityLiving {
     }
 
     respawn() {
-        let spawnY = this.world.getHeightAt(0, 0);
-        this.setPosition(0, spawnY + 8, 0);
+        let spawn = this.world.getSpawn();
+        this.setPosition(spawn.x, spawn.y, spawn.z);
     }
 
     setPosition(x, y, z) {

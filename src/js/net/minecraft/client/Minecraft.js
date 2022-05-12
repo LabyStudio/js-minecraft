@@ -84,17 +84,14 @@ export default class Minecraft {
     }
 
     init() {
-        // Load spawn chunk
-        for (let x = -WorldRenderer.RENDER_DISTANCE; x <= WorldRenderer.RENDER_DISTANCE; x++) {
-            for (let z = -WorldRenderer.RENDER_DISTANCE; z <= WorldRenderer.RENDER_DISTANCE; z++) {
-                this.world.getChunkAt(x, z);
-            }
-        }
-        this.player.respawn();
-
         // Start render loop
         this.running = true;
         this.requestNextFrame();
+
+        // Load spawn chunks and respawn player
+        this.world.findSpawn();
+        this.world.loadSpawnChunks();
+        this.player.respawn();
     }
 
     hasInGameFocus() {
@@ -112,9 +109,6 @@ export default class Minecraft {
     }
 
     onLoop() {
-        this.window.statsFps.begin();
-        this.window.statsMs.begin();
-
         // Update the timer
         this.timer.advanceTime();
 
@@ -135,9 +129,6 @@ export default class Minecraft {
             this.lastTime += 1000;
             this.frames = 0;
         }
-
-        this.window.statsFps.end();
-        this.window.statsMs.end();
     }
 
     onRender(partialTicks) {

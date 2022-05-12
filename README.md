@@ -34,9 +34,11 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
 - World
     - 16x16x16 Chunks
     - Block type, data, sky & block lightning
-    - Perlin world generation
-    - Cave generation
-    - Tree and big tree generation
+    - Minecraft Alpha Generator
+      - 64 bits seed
+      - Perlin terrain generation
+      - Perlin cave generation
+      - Perlin tree and big tree generation
 - Camera
     - Frustum Culling
     - Fog
@@ -47,18 +49,18 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - First person item in hand
 - GUI
     - Screens
-        - Loading Screen
-        - InGame Menu
-        - Controls Screen
+      - Loading Screen
+      - InGame Menu
+      - Controls Screen
     - Widgets
-        - Button
-        - KeyBinding
-        - Slider
-        - Switches
+      - Button
+      - KeyBinding
+      - Slider
+      - Switches
     - Overlay
-        - Cross-hair
-        - Font rendering
-        - Hot-Bar
+      - Cross-hair
+      - Font rendering
+      - Hot-Bar
 </details>
 <hr>
 
@@ -72,8 +74,6 @@ _Note: All textures from the original game were used for the screenshots only!_
 
 ### Licensing
 - The main rendering library is [three.js](https://github.com/mrdoob/three.js/)
-- The [stats.js](https://github.com/mrdoob/stats.js/) library is used for performance tracking
-- Safari render issues fixed by [context-filter-polyfill](https://github.com/davidenke/context-filter-polyfill)
 - All used sound resources are taken from [freesounds.org](https://freesound.org/people/C418/downloaded_sounds/?page=8#sound)
 
 <hr>

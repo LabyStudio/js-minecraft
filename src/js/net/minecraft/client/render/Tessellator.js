@@ -1,3 +1,5 @@
+import * as THREE from "../../../../../../libraries/three.module.js";
+
 export default class Tessellator {
 
     constructor() {
