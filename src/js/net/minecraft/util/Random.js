@@ -14,33 +14,34 @@ export default class Random {
     }
 
     nextFloat() {
-        return this.next(24) / (1 << 24);
+        return this.next(24).toNumber() / (1 << 24);
     }
 
     nextDouble() {
-        return Long.fromInt(this.next(26)).shiftLeft(27).add(Long.fromInt(this.next(27))).toNumber() * this.doubleUnit;
+        return this.next(26).shiftLeft(27).add(this.next(27)).toNumber() * this.doubleUnit;
     }
 
     nextInt(max = -1) {
         if (max === -1) {
-            return this.next(32);
+            return this.next(32).toNumber();
         }
 
         let r = this.next(31);
         let m = max - 1;
         if ((max & m) === 0)  // i.e., bound is a power of 2
-            r = Long.fromInt(max).multiply(Long.fromInt(r)).shiftRightUnsigned(31).toNumber();
+            r = Long.fromInt(max).multiply(r).shiftRightUnsigned(31).toNumber();
         else {
+            r = r.toNumber();
             for (let u = r;
                  u - (r = u % max) + m < 0;
-                 u = this.next(31))
+                 u = this.next(31).toNumber())
                 ;
         }
         return r;
     }
 
     nextLong() {
-        return Long.fromInt(this.next(32)).shiftLeft(32).add(Long.fromInt(this.next(32)));
+        return this.next(32).shiftLeft(32).add(this.next(32));
     }
 
     next(bits) {
@@ -50,7 +51,7 @@ export default class Random {
             oldSeed = this.seed;
             nextSeed = oldSeed.multiply(this.multiplier).add(this.addend).and(this.mask);
         } while (!this._compareAndSet(oldSeed, nextSeed));
-        return nextSeed.shiftRight(48 - bits).toNumber();
+        return nextSeed.shiftRight(48 - bits);
     }
 
     _compareAndSet(expect, update) {
