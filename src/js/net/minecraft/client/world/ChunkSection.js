@@ -30,19 +30,7 @@ export default class ChunkSection {
         this.blocksData = [];
         this.blockLight = [];
         this.skyLight = [];
-
-        // Fill chunk with air and light
-        for (let tX = 0; tX < ChunkSection.SIZE; tX++) {
-            for (let tY = 0; tY < ChunkSection.SIZE; tY++) {
-                for (let tZ = 0; tZ < ChunkSection.SIZE; tZ++) {
-                    let index = tY << 8 | tZ << 4 | tX;
-                    this.blocks[index] = 0;
-                    this.blocksData[index] = 0;
-                    this.blockLight[index] = 0;
-                    this.skyLight[index] = 14;
-                }
-            }
-        }
+        this.empty = true;
     }
 
     render() {
@@ -91,25 +79,27 @@ export default class ChunkSection {
 
     getBlockAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        return this.blocks[index];
+        return !this.empty && index in this.blocks ? this.blocks[index] : 0;
     }
 
     getBlockDataAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        return this.blocksData[index];
+        return !this.empty && index in this.blocksData ? this.blocksData[index] : 0;
     }
 
     setBlockAt(x, y, z, typeId) {
         let index = y << 8 | z << 4 | x;
         this.blocks[index] = typeId;
-
         this.isModified = true;
+
+        if (this.empty && typeId !== 0) {
+            this.empty = false;
+        }
     }
 
     setBlockDataAt(x, y, z, data) {
         let index = y << 8 | z << 4 | x;
         this.blocksData[index] = data;
-
         this.isModified = true;
     }
 
@@ -128,8 +118,8 @@ export default class ChunkSection {
 
     getTotalLightAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        let skyLight = this.skyLight[index] - this.world.skylightSubtracted;
-        let blockLight = this.blockLight[index];
+        let skyLight = (!this.empty && index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14)) - this.world.skylightSubtracted;
+        let blockLight = !this.empty && index in this.blockLight ? this.blockLight[index] : 0;
         if (blockLight > skyLight) {
             skyLight = blockLight;
         }
@@ -139,25 +129,15 @@ export default class ChunkSection {
     getLightAt(sourceType, x, y, z) {
         let index = y << 8 | z << 4 | x;
         if (sourceType === EnumSkyBlock.SKY) {
-            return this.skyLight[index];
+            return !this.empty && index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14);
         }
         if (sourceType === EnumSkyBlock.BLOCK) {
-            return this.blockLight[index];
+            return !this.empty && index in this.blockLight ? this.blockLight[index] : 0;
         }
         return 0;
     }
 
     isEmpty() {
-        for (let x = 0; x < ChunkSection.SIZE; x++) {
-            for (let y = 0; y < ChunkSection.SIZE; y++) {
-                for (let z = 0; z < ChunkSection.SIZE; z++) {
-                    let index = y << 8 | z << 4 | x;
-                    if (this.blocks[index] !== 0) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        return this.empty;
     }
 }

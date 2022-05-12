@@ -74,6 +74,7 @@ _Note: All textures from the original game were used for the screenshots only!_
 
 ### Licensing
 - The main rendering library is [three.js](https://github.com/mrdoob/three.js/)
+- 64 bits number implementation by [long.js](https://github.com/dcodeIO/long.js)
 - All used sound resources are taken from [freesounds.org](https://freesound.org/people/C418/downloaded_sounds/?page=8#sound)
 
 <hr>
