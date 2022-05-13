@@ -50,8 +50,13 @@ class Start {
 
 // Listen on history back
 window.addEventListener('pageshow', function (event) {
-    // Launch game
-    if (!window.app || !window.app.running) {
+    if (window.app) {
+        // Reload page to restart the game
+        if (!window.app.running) {
+            window.location.reload();
+        }
+    } else {
+        // Launch game
         new Start().launch("canvas-container");
     }
 });
