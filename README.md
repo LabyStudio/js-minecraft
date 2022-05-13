@@ -5,7 +5,7 @@ The main purpose of this project is to understand the render and physics engine 
 The source code was ported from the [java-minecraft](https://github.com/LabyStudio/java-minecraft) project.
 
 ![Ingame](.github/assets/ingame.png)<br>
-Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
+Click [here](https://labystudio.de/page/minecraft/) for a demo!
 
 ### Feature Overview
 <details>
