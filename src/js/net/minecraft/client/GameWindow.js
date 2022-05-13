@@ -78,8 +78,15 @@ export default class GameWindow {
             clearInterval(mouseDownInterval);
         });
 
+        // Right click
+        document.addEventListener('contextmenu', event => {
+            event.preventDefault();
+        });
+
         // Mouse buttons
         document.addEventListener('mousedown', event => {
+            event.preventDefault();
+
             // Create sound engine (It has to be created after user interaction)
             if (!minecraft.soundManager.isCreated()) {
                 minecraft.soundManager.create(minecraft.worldRenderer);
