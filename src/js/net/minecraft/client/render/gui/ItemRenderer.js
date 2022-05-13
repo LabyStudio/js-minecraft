@@ -87,4 +87,12 @@ export default class ItemRenderer {
         }
         this.itemInHand = null;
     }
+
+    reset() {
+        for (let i in this.items) {
+            this.scene.remove(this.items[i].group);
+        }
+        this.items = [];
+        this.webRenderer.clear();
+    }
 }

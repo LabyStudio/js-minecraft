@@ -28,6 +28,10 @@ export default class GuiButton extends Gui {
         }
     }
 
+    onTick() {
+
+    }
+
     mouseClicked(mouseX, mouseY, mouseButton) {
         this.onPress();
     }
@@ -40,7 +44,11 @@ export default class GuiButton extends Gui {
 
     }
 
-    keyTyped(key) {
+    keyTyped(key, character) {
+
+    }
+
+    keyReleased(key) {
 
     }
 
@@ -54,6 +62,11 @@ export default class GuiButton extends Gui {
 
         this.drawSprite(stack, textureGui, 0, spriteY, width / 2, 20, x, y, width / 2, height);
         this.drawSprite(stack, textureGui, 200 - width / 2, spriteY, width / 2, 20, x + width / 2, y, width / 2, height);
+    }
+
+    setEnabled(enabled) {
+        this.enabled = enabled;
+        return this;
     }
 
 }

@@ -8,7 +8,6 @@ import EnumBlockFace from "../../util/EnumBlockFace.js";
 import Vector3 from "../../util/Vector3.js";
 import Vector4 from "../../util/Vector4.js";
 import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
-import Long from "../../../../../../libraries/long.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
 import WorldRenderer from "../render/WorldRenderer.js";
 import Random from "../../util/Random.js";
@@ -17,7 +16,7 @@ export default class World {
 
     static TOTAL_HEIGHT = ChunkSection.SIZE * 8 - 1; // ChunkSection.SIZE * 16 - 1;
 
-    constructor(minecraft, seed = Long.fromInt(Date.now() % 100000)) {
+    constructor(minecraft, seed) {
         this.minecraft = minecraft;
 
         this.entities = [];
@@ -179,6 +178,13 @@ export default class World {
 
         let centerChunk = this.getChunkAt(centerX >> 4, centerZ >> 4);
         if (!centerChunk.loaded) {
+            return;
+        }
+
+        // Skip if section has no blocks
+        let section1 = this.getChunkSectionAt(x1 >> 4, y1 >> 4, z1 >> 4);
+        let section2 = this.getChunkSectionAt(x2 >> 4, y2 >> 4, z2 >> 4);
+        if (section1 === section2 && section1.isEmpty()) {
             return;
         }
 

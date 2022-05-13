@@ -1,4 +1,5 @@
 import Gui from "../../gui/Gui.js";
+import MathHelper from "../../../util/MathHelper.js";
 
 export default class FontRenderer {
 
@@ -47,17 +48,18 @@ export default class FontRenderer {
     }
 
     drawString(stack, string, x, y, color = -1) {
-        if (!this.isSafari) { // TODO Fix brightness filter on Safari
-            this.drawStringRaw(stack, string, x + 1, y + 1, (color & 0xFCFCFC) >> 2, true);
+        if (!this.isSafari) { // TODO Fix filter on Safari
+            this.drawStringRaw(stack, string, x + 1, y + 1, color, true);
         }
-        this.drawStringRaw(stack, string, x, y, color, false);
+        this.drawStringRaw(stack, string, x, y, color);
     }
 
-    drawStringRaw(stack, string, x, y, color = -1, isShadow = true) {
+    drawStringRaw(stack, string, x, y, color = -1, isShadow = false) {
         stack.save();
 
-        if (isShadow) {
-            stack.filter = "brightness(20%)";
+        // Set color
+        if (color !== -1 || isShadow) {
+            this.setColor(stack, color, isShadow);
         }
 
         // For each character
@@ -71,7 +73,7 @@ export default class FontRenderer {
                 let nextCharacter = string[i + 1];
 
                 // Change color of string
-                //this.setColor(this.getColorOfCharacter(nextCharacter), isShadow);
+                this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
 
                 // Skip the color code for rendering
                 i += 1;
@@ -137,5 +139,33 @@ export default class FontRenderer {
         canvas.height = img.height;
         canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
         return canvas.getContext('2d').getImageData(0, 0, img.width, img.height).data;
+    }
+
+    setColor(stack, color, isShadow = false) {
+        if (isShadow) {
+            color = (color & 0xFCFCFC) >> 2;
+        }
+
+        let r = (color & 0xFF0000) >> 16;
+        let g = (color & 0x00FF00) >> 8;
+        let b = (color & 0x0000FF);
+        let hsv = MathHelper.rgb2hsv(r, g, b);
+        let hue = hsv[0] + 270;
+        let saturation = hsv[1];
+        let brightness = hsv[2] / 255 * 100;
+
+        // TODO fix colors
+        let saturate1 = saturation * 1000;
+        let saturate2 = saturation * 5000;
+        let saturate3 = saturation * 100;
+
+        if (!this.isSafari) { // TODO Fix filter on Safari
+            stack.filter = "sepia()"
+                + " saturate(" + saturate1 + "%)"
+                + " hue-rotate(" + hue + "deg)"
+                + " saturate(" + saturate2 + "%)"
+                + " brightness(" + brightness + "%)"
+                + " saturate(" + saturate3 + "%)";
+        }
     }
 }

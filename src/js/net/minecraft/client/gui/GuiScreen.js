@@ -12,6 +12,7 @@ export default class GuiScreen extends Gui {
         this.minecraft = minecraft;
         this.width = width;
         this.height = height;
+        this.textureBackground = this.getTexture("gui/background.png");
 
         this.init();
     }
@@ -32,7 +33,15 @@ export default class GuiScreen extends Gui {
         }
     }
 
-    keyTyped(key) {
+    updateScreen() {
+        for (let i in this.buttonList) {
+            let button = this.buttonList[i];
+
+            button.onTick();
+        }
+    }
+
+    keyTyped(key, character) {
         if (key === "Escape") {
             this.minecraft.displayScreen(null);
             return true;
@@ -41,7 +50,17 @@ export default class GuiScreen extends Gui {
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
 
-            button.keyTyped(key);
+            button.keyTyped(key, character);
+        }
+
+        return false;
+    }
+
+    keyReleased(key) {
+        for (let i in this.buttonList) {
+            let button = this.buttonList[i];
+
+            button.keyReleased(key);
         }
 
         return false;
@@ -70,6 +89,16 @@ export default class GuiScreen extends Gui {
             let button = this.buttonList[i];
 
             button.mouseDragged(mouseX, mouseY, mouseButton);
+        }
+    }
+
+    drawDefaultBackground(stack) {
+        if (this.minecraft.isInGame()) {
+            // Render transparent background
+            this.drawRect(stack, 0, 0, this.width, this.height, 'black', 0.6);
+        } else {
+            // Render dirt background
+            this.drawBackground(stack, this.textureBackground, this.width, this.height);
         }
     }
 }

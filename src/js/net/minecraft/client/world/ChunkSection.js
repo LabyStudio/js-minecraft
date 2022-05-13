@@ -24,7 +24,7 @@ export default class ChunkSection {
 
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
-        this.isModified = false;
+        this.isModified = true;
 
         this.blocks = [];
         this.blocksData = [];
@@ -118,8 +118,8 @@ export default class ChunkSection {
 
     getTotalLightAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        let skyLight = (!this.empty && index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14)) - this.world.skylightSubtracted;
-        let blockLight = !this.empty && index in this.blockLight ? this.blockLight[index] : 0;
+        let skyLight = (index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14)) - this.world.skylightSubtracted;
+        let blockLight = index in this.blockLight ? this.blockLight[index] : 0;
         if (blockLight > skyLight) {
             skyLight = blockLight;
         }
@@ -129,10 +129,10 @@ export default class ChunkSection {
     getLightAt(sourceType, x, y, z) {
         let index = y << 8 | z << 4 | x;
         if (sourceType === EnumSkyBlock.SKY) {
-            return !this.empty && index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14);
+            return index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14);
         }
         if (sourceType === EnumSkyBlock.BLOCK) {
-            return !this.empty && index in this.blockLight ? this.blockLight[index] : 0;
+            return index in this.blockLight ? this.blockLight[index] : 0;
         }
         return 0;
     }

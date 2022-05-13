@@ -8,7 +8,6 @@ export default class GuiLoadingScreen extends GuiScreen {
 
     init() {
         super.init();
-        this.textureBackground = this.getTexture("gui/background.png");
     }
 
     drawScreen(stack, mouseX, mouseY, partialTicks) {

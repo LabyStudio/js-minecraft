@@ -6,6 +6,8 @@ import * as THREE from "../../../../../../libraries/three.module.js";
 
 export default class Chunk {
 
+    static SECTION_AMOUNT = 16;
+
     constructor(world, x, z) {
         this.world = world;
         this.x = x;
@@ -21,7 +23,7 @@ export default class Chunk {
 
         // Initialize sections
         this.sections = [];
-        for (let y = 0; y < 16; y++) {
+        for (let y = 0; y < Chunk.SECTION_AMOUNT; y++) {
             let section = new ChunkSection(world, this, x, y, z);
 
             this.sections[y] = section;

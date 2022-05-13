@@ -11,7 +11,7 @@ export default class PlayerRenderer extends EntityRenderer {
         this.worldRenderer = worldRenderer;
 
         // Load character texture
-        this.textureCharacter = new THREE.TextureLoader().load('src/resources/char.png');
+        this.textureCharacter = worldRenderer.minecraft.getThreeTexture('char.png');
         this.textureCharacter.magFilter = THREE.NearestFilter;
         this.textureCharacter.minFilter = THREE.NearestFilter;
 

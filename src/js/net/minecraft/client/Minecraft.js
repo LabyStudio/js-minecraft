@@ -5,17 +5,21 @@ import WorldRenderer from "./render/WorldRenderer.js";
 import ScreenRenderer from "./render/gui/ScreenRenderer.js";
 import ItemRenderer from "./render/gui/ItemRenderer.js";
 import IngameOverlay from "./gui/IngameOverlay.js";
-import GuiLoadingScreen from "./gui/screens/GuiLoadingScreen.js";
 import PlayerEntity from "./entity/PlayerEntity.js";
 import SoundManager from "./sound/SoundManager.js";
-import World from "./world/World.js";
 import Block from "./world/block/Block.js";
 import BoundingBox from "../util/BoundingBox.js";
 import {BlockRegistry} from "./world/block/BlockRegistry.js";
 import FontRenderer from "./render/gui/FontRenderer.js";
 import GrassColorizer from "./render/GrassColorizer.js";
+import GuiMainMenu from "./gui/screens/GuiMainMenu.js";
+import GuiLoadingScreen from "./gui/screens/GuiLoadingScreen.js";
+import * as THREE from "../../../../../libraries/three.module.js";
 
 export default class Minecraft {
+
+    static VERSION = "1.0.0"
+    static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
 
     /**
      * Create Minecraft instance and render it on a canvas
@@ -25,6 +29,8 @@ export default class Minecraft {
 
         this.currentScreen = null;
         this.loadingScreen = null;
+        this.world = null;
+        this.player = null;
 
         this.fps = 0;
 
@@ -45,10 +51,6 @@ export default class Minecraft {
         // Create current screen and overlay
         this.ingameOverlay = new IngameOverlay(this, this.window);
 
-        // Display loading screen
-        this.loadingScreen = new GuiLoadingScreen();
-        this.loadingScreen.setTitle("Building terrain...");
-
         this.frames = 0;
         this.lastTime = Date.now();
 
@@ -66,18 +68,10 @@ export default class Minecraft {
         // Update window size
         this.window.updateWindowSize();
 
-        // Create world
-        this.world = new World(this);
-        this.worldRenderer.scene.add(this.world.group);
-
         // Create sound manager
         this.soundManager = new SoundManager();
 
-        // Create player
-        this.player = new PlayerEntity(this, this.world);
-        this.world.addEntity(this.player);
-
-        this.displayScreen(this.loadingScreen);
+        this.displayScreen(new GuiMainMenu());
 
         // Initialize
         this.init();
@@ -87,23 +81,53 @@ export default class Minecraft {
         // Start render loop
         this.running = true;
         this.requestNextFrame();
+    }
 
-        // Load spawn chunks and respawn player
-        this.world.findSpawn();
-        this.world.loadSpawnChunks();
-        this.player.respawn();
+    loadWorld(world) {
+        if (world === null) {
+            this.worldRenderer.reset();
+            this.itemRenderer.reset();
+
+            this.world = null;
+            this.player = null;
+            this.loadingScreen = null;
+            this.displayScreen(new GuiMainMenu());
+        } else {
+            // Display loading screen
+            this.loadingScreen = new GuiLoadingScreen();
+            this.loadingScreen.setTitle("Building terrain...");
+            this.displayScreen(this.loadingScreen);
+
+            // Create world
+            this.world = world;
+            this.worldRenderer.scene.add(this.world.group);
+
+            // Create player
+            this.player = new PlayerEntity(this, this.world);
+            this.world.addEntity(this.player);
+
+            // Load spawn chunks and respawn player
+            this.world.findSpawn();
+            this.world.loadSpawnChunks();
+            this.player.respawn();
+        }
     }
 
     hasInGameFocus() {
         return this.window.mouseLocked && this.currentScreen === null;
     }
 
+    isInGame() {
+        return this.world !== null && this.worldRenderer !== null && this.player !== null;
+    }
+
     requestNextFrame() {
-        let scope = this;
-        requestAnimationFrame(function () {
-            if (scope.running) {
-                scope.requestNextFrame();
-                scope.onLoop();
+        requestAnimationFrame(() => {
+            if (this.running) {
+                this.requestNextFrame();
+                this.onLoop();
+            } else {
+                this.window.close();
             }
         });
     }
@@ -132,30 +156,34 @@ export default class Minecraft {
     }
 
     onRender(partialTicks) {
-        // Player rotation
-        if (!this.isPaused()) {
-            this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
+        if (this.isInGame()) {
+            // Player rotation
+            if (!this.isPaused()) {
+                this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
 
-            this.window.mouseMotionX = 0;
-            this.window.mouseMotionY = 0;
+                this.window.mouseMotionX = 0;
+                this.window.mouseMotionY = 0;
+            }
+
+            // Update lights
+            while (this.world.updateLights()) {
+                // Empty
+            }
+
+            // Render the game
+            if (this.hasInGameFocus()) {
+                this.worldRenderer.render(partialTicks);
+            }
         }
 
-        // Update lights
-        while (this.world.updateLights()) {
-            // Empty
-        }
-
-        // Render the game
-        if (this.hasInGameFocus()) {
-            this.worldRenderer.render(partialTicks);
-        }
+        // Render current screen
         this.screenRenderer.render(partialTicks);
         this.itemRenderer.render(partialTicks);
     }
 
     displayScreen(screen) {
         if (typeof screen === "undefined") {
-            console.log("Tried to display an undefined screen");
+            console.error("Tried to display an undefined screen");
             return;
         }
 
@@ -183,7 +211,7 @@ export default class Minecraft {
     }
 
     onTick() {
-        if (!this.isPaused()) {
+        if (this.isInGame() && !this.isPaused()) {
             // Tick world
             this.world.onTick();
 
@@ -194,13 +222,35 @@ export default class Minecraft {
             this.player.onUpdate();
         }
 
+        // Tick the screen
+        if (this.currentScreen !== null) {
+            this.currentScreen.updateScreen();
+        }
+
         // Update loading progress
-        if (!(this.loadingScreen === null)) {
-            let progress = Math.max(0, 1 - this.world.lightUpdateQueue.length / 10000);
+        if (this.loadingScreen !== null && this.isInGame()) {
+            let cameraChunkX = Math.floor(this.player.x) >> 4;
+            let cameraChunkZ = Math.floor(this.player.z) >> 4;
+
+            let renderDistance = WorldRenderer.RENDER_DISTANCE;
+            let requiredChunks = Math.pow(renderDistance * 2 - 1, 2);
+            let loadedChunks = this.world.chunks.size;
+
+            // Load chunks and count
+            setTimeout(() => {
+                for (let x = -renderDistance + 1; x < renderDistance; x++) {
+                    for (let z = -renderDistance + 1; z < renderDistance; z++) {
+                        this.world.getChunkAt(cameraChunkX + x, cameraChunkZ + z);
+                    }
+                }
+            }, 0);
+
+            // Update progress
+            let progress = 1 / requiredChunks * Math.max(0, loadedChunks - this.world.lightUpdateQueue.length / 1000);
             this.loadingScreen.setProgress(progress);
 
             // Finish loading
-            if (progress >= 1) {
+            if (progress >= 0.99) {
                 this.loadingScreen = null;
                 this.displayScreen(null);
             }
@@ -308,10 +358,35 @@ export default class Minecraft {
     }
 
     onMouseScroll(delta) {
-        this.player.inventory.shiftSelectedSlot(delta);
+        if (this.isInGame()) {
+            this.player.inventory.shiftSelectedSlot(delta);
+        }
     }
 
     isPaused() {
         return !this.hasInGameFocus() && this.loadingScreen === null;
+    }
+
+    stop() {
+        this.running = false;
+        this.worldRenderer.reset();
+        this.itemRenderer.reset();
+        this.screenRenderer.reset();
+    }
+
+    getThreeTexture(id) {
+        if (!(id in this.resources)) {
+            console.error("Texture not found: " + id);
+            return;
+        }
+
+        let image = this.resources[id];
+        let canvas = document.createElement('canvas');
+        let context = canvas.getContext("2d");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        context.imageSmoothingEnabled = false;
+        context.drawImage(image, 0, 0, image.width, image.height);
+        return new THREE.CanvasTexture(canvas);
     }
 }

@@ -2,10 +2,6 @@ import Minecraft from './net/minecraft/client/Minecraft.js';
 
 class Start {
 
-    constructor(preStatusElementId) {
-        this.preStatusElement = document.getElementById(preStatusElementId);
-    }
-
     loadTextures(textures) {
         let resources = [];
         let index = 0;
@@ -37,10 +33,15 @@ class Start {
             "terrain/terrain.png",
             "terrain/sun.png",
             "terrain/moon.png",
-            "char.png"
+            "char.png",
+            "gui/title/minecraft.png",
+            "gui/title/background/panorama_0.png",
+            "gui/title/background/panorama_1.png",
+            "gui/title/background/panorama_2.png",
+            "gui/title/background/panorama_3.png",
+            "gui/title/background/panorama_4.png",
+            "gui/title/background/panorama_5.png"
         ]).then((resources) => {
-            this.preStatusElement.remove();
-
             // Launch actual game on canvas
             window.app = new Minecraft(canvasWrapperId, resources);
         });
@@ -48,4 +49,4 @@ class Start {
 }
 
 // Launch game
-new Start("pre-status").launch("canvas-container");
+new Start().launch("canvas-container");

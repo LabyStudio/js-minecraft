@@ -36,7 +36,6 @@ export default class IngameOverlay extends Gui {
         // Debug
         this.drawString(stack, fps + " fps," + " " + lightUpdates + " light updates," + " " + chunkUpdates + " chunk updates", 1, 1);
         this.drawString(stack, x + ", " + y + ", " + z + " (" + (x >> 4) + ", " + (y >> 4) + ", " + (z >> 4) + ")", 1, 1 + 9);
-        this.drawString(stack, "Light: " + lightLevel, 1, 1 + 9 + 10);
     }
 
     renderCrosshair(stack, x, y) {

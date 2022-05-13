@@ -16,6 +16,10 @@ export default class Gui {
         this.minecraft.fontRenderer.drawString(stack, string, x - this.getStringWidth(stack, string) / 2, y, color);
     }
 
+    drawRightString(stack, string, x, y, color = -1) {
+        this.minecraft.fontRenderer.drawString(stack, string, x - this.getStringWidth(stack, string), y, color);
+    }
+
     drawString(stack, string, x, y, color = -1) {
         this.minecraft.fontRenderer.drawString(stack, string, x, y, color);
     }
@@ -43,7 +47,7 @@ export default class Gui {
     drawBackground(stack, texture, width, height, scale = 2) {
         let pattern = stack.createPattern(texture, "repeat");
         stack.save();
-        stack.filter = "brightness(50%)";
+        stack.filter = "brightness(28%)";
         stack.scale(scale, scale);
         stack.rect(0, 0, width / scale, height / scale);
         stack.fillStyle = pattern;

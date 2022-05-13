@@ -1,51 +1,22 @@
-@font-face {
-    font-family: "Minecraftia";
-    src: url(src/resources/font.ttf);
-}
-
 body {
     margin: 0;
 }
 
 canvas {
     position: absolute;
-    image-rendering: -moz-crisp-edges;    /* Firefox */
+    image-rendering: -moz-crisp-edges; /* Firefox */
     image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
-    image-rendering: pixelated;           /* Chrome */
+    image-rendering: pixelated; /* Chrome */
 }
 
 #background {
-    background-image: url(src/resources/gui/background.png);
-    background-size: 128px 128px;
-    image-rendering: pixelated;
-    filter: brightness(0.5);
-}
-
-#pre-status {
-    /* Position */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    /* No select */
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none;
-    /* Non-prefixed version, currently
-                                     supported by Chrome, Edge, Opera and Firefox */
-    /* No overflow */
-    white-space: nowrap;
-    overflow: hidden;
-
-    /* Font */
-    font-size: 25px;
-    font-family: "Minecraftia", sans-serif;
-    text-shadow: 2px 2px #000000;
-    color: white;
+    background-image: url(src/resources/gui/title/splash.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    image-rendering: -moz-crisp-edges; /* Firefox */
+    image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
+    image-rendering: pixelated; /* Chrome */
 }
 
 .fullscreen {

@@ -21,17 +21,17 @@ export default class WorldRenderer {
         this.tessellator = new Tessellator();
 
         // Load terrain texture
-        this.textureTerrain = new THREE.TextureLoader().load('src/resources/terrain/terrain.png');
+        this.textureTerrain = minecraft.getThreeTexture('terrain/terrain.png');
         this.textureTerrain.magFilter = THREE.NearestFilter;
         this.textureTerrain.minFilter = THREE.NearestFilter;
 
         // Load sun texture
-        this.textureSun = new THREE.TextureLoader().load('src/resources/terrain/sun.png');
+        this.textureSun = minecraft.getThreeTexture('terrain/sun.png');
         this.textureSun.magFilter = THREE.NearestFilter;
         this.textureSun.minFilter = THREE.NearestFilter;
 
         // Load moon texture
-        this.textureMoon = new THREE.TextureLoader().load('src/resources/terrain/moon.png');
+        this.textureMoon = minecraft.getThreeTexture('terrain/moon.png');
         this.textureMoon.magFilter = THREE.NearestFilter;
         this.textureMoon.minFilter = THREE.NearestFilter;
 
@@ -540,13 +540,6 @@ export default class WorldRenderer {
         let world = this.minecraft.world;
         let renderDistance = WorldRenderer.RENDER_DISTANCE;
 
-        // Load chunks
-        for (let x = -renderDistance + 1; x < renderDistance; x++) {
-            for (let z = -renderDistance + 1; z < renderDistance; z++) {
-                world.getChunkAt(cameraChunkX + x, cameraChunkZ + z);
-            }
-        }
-
         // Update chunks
         for (let [index, chunk] of world.chunks) {
             let distanceX = Math.abs(cameraChunkX - chunk.x);
@@ -563,7 +556,7 @@ export default class WorldRenderer {
                     let chunkSection = chunk.sections[y];
 
                     // Is in camera view check
-                    if (this.frustum.intersectsBox(chunkSection.boundingBox)) {
+                    if (this.frustum.intersectsBox(chunkSection.boundingBox) && !chunkSection.isEmpty()) {
                         // Make section visible
                         chunkSection.group.visible = true;
 
@@ -590,7 +583,7 @@ export default class WorldRenderer {
                     // TODO Implement chunk unloading
                     //let index = chunk.x + (chunk.z << 16);
                     //world.chunks.delete(index);
-                    //world.group.add(chunk.group);
+                    //world.group.remove(chunk.group);
                 }
             }
         }
@@ -602,8 +595,15 @@ export default class WorldRenderer {
             return distance1 - distance2;
         });
 
-        // Rebuild 16 chunk sections per frame (An entire chunk)
-        for (let i = 0; i < 16; i++) {
+        // Update render order of chunks
+        world.group.children.sort((a, b) => {
+            let distance1 = Math.floor(Math.pow(a.chunkX - cameraChunkX, 2) + Math.pow(a.chunkZ - cameraChunkZ, 2));
+            let distance2 = Math.floor(Math.pow(b.chunkX - cameraChunkX, 2) + Math.pow(b.chunkZ - cameraChunkZ, 2));
+            return distance2 - distance1;
+        });
+
+        // Rebuild 8 chunk sections each frame
+        for (let i = 0; i < 8; i++) {
             if (this.chunkSectionUpdateQueue.length !== 0) {
                 let chunkSection = this.chunkSectionUpdateQueue.shift();
                 if (chunkSection != null) {
@@ -612,13 +612,6 @@ export default class WorldRenderer {
                 }
             }
         }
-
-        // Update render order of chunks
-        world.group.children.sort((a, b) => {
-            let distance1 = Math.floor(Math.pow(a.chunkX - cameraChunkX, 2) + Math.pow(a.chunkZ - cameraChunkZ, 2));
-            let distance2 = Math.floor(Math.pow(b.chunkX - cameraChunkX, 2) + Math.pow(b.chunkZ - cameraChunkZ, 2));
-            return distance2 - distance1;
-        });
     }
 
     rebuildAll() {
@@ -774,5 +767,13 @@ export default class WorldRenderer {
         stack.rotateZ(MathHelper.toRadians(Math.sin(walked * Math.PI) * yaw * 3.0));
         stack.rotateX(MathHelper.toRadians(Math.abs(Math.cos(walked * Math.PI - 0.2) * yaw) * 5.0));
         stack.rotateX(MathHelper.toRadians(pitch));
+    }
+
+    reset() {
+        if (this.minecraft.world !== null) {
+            this.scene.remove(this.minecraft.world.group);
+        }
+        this.webRenderer.clear();
+        this.overlay.clear();
     }
 }

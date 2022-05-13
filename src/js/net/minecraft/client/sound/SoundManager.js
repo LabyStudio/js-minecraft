@@ -50,12 +50,12 @@ export default class SoundManager {
         sound.setRefDistance(0.1);
         sound.setRolloffFactor(6);
         sound.setFilter(sound.context.createBiquadFilter());
+        sound.setVolume(0);
 
         // Load sound
-        let scope = this;
-        this.audioLoader.load(path, function (buffer) {
+        this.audioLoader.load(path, buffer => {
             sound.setBuffer(buffer);
-            scope.scene.add(sound);
+            this.scene.add(sound);
         });
 
         return sound;
@@ -87,6 +87,7 @@ export default class SoundManager {
             sound.filters[0].frequency.setValueAtTime(12000 * pitch, sound.context.currentTime);
 
             // Play sound
+            sound.offset = 0;
             sound.play();
         }
     }

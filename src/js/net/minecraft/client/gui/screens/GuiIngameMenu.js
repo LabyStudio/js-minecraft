@@ -1,7 +1,6 @@
 import GuiButton from "../widgets/GuiButton.js";
-import GuiControls from "./GuiControls.js";
 import GuiScreen from "../GuiScreen.js";
-import GuiSettings from "./GuiSettings.js";
+import GuiOptions from "./GuiOptions.js";
 
 export default class GuiIngameMenu extends GuiScreen {
 
@@ -12,17 +11,17 @@ export default class GuiIngameMenu extends GuiScreen {
     init() {
         super.init();
 
-        let scope = this;
-        this.buttonList.push(new GuiButton("Back to game", this.width / 2 - 100, this.height / 2 - 20, 200, 20, function () {
-            scope.minecraft.displayScreen(null);
+        let y = this.height / 2 - 30;
+        this.buttonList.push(new GuiButton("Back to game", this.width / 2 - 100, y, 200, 20, () => {
+            this.minecraft.displayScreen(null);
         }));
 
-        this.buttonList.push(new GuiButton("Settings...", this.width / 2 - 100, this.height / 2 + 20, 98, 20, function () {
-            scope.minecraft.displayScreen(new GuiSettings(scope));
+        this.buttonList.push(new GuiButton("Options...", this.width / 2 - 100, y + 24, 200, 20, () => {
+            this.minecraft.displayScreen(new GuiOptions(this));
         }));
 
-        this.buttonList.push(new GuiButton("Controls...", this.width / 2 + 2, this.height / 2 + 20, 98, 20, function () {
-            scope.minecraft.displayScreen(new GuiControls(scope));
+        this.buttonList.push(new GuiButton("Save and Quit to Title", this.width / 2 - 100, y + 70, 200, 20, () => {
+            this.minecraft.loadWorld(null);
         }));
     }
 

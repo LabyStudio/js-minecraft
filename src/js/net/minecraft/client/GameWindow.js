@@ -1,5 +1,6 @@
 import GuiIngameMenu from "./gui/screens/GuiIngameMenu.js";
 import Keyboard from "../util/Keyboard.js";
+import Minecraft from "./Minecraft.js";
 
 export default class GameWindow {
 
@@ -29,17 +30,16 @@ export default class GameWindow {
         this.canvasItems = document.createElement('canvas');
         this.wrapper.appendChild(this.canvasItems);
 
-        // On resize
-        let scope = this;
+        let mouseDownInterval = null;
 
         // Request focus
-        document.onclick = function () {
-            if (scope.minecraft.currentScreen === null) {
-                scope.requestFocus();
+        document.onclick = () => {
+            if (this.minecraft.currentScreen === null) {
+                this.requestFocus();
             }
         }
 
-        window.addEventListener('resize', _ => scope.updateWindowSize(), false);
+        window.addEventListener('resize', _ => this.updateWindowSize(), false);
 
         // Focus listener
         document.addEventListener('pointerlockchange', _ => this.onFocusChanged(), false);
@@ -50,7 +50,7 @@ export default class GameWindow {
 
             // Handle mouse move on screen
             if (!(minecraft.currentScreen === null)) {
-                minecraft.currentScreen.mouseDragged(event.x / scope.scaleFactor, event.y / scope.scaleFactor, event.code);
+                minecraft.currentScreen.mouseDragged(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
             }
         }, false);
 
@@ -58,43 +58,51 @@ export default class GameWindow {
         document.addEventListener('mouseup', event => {
             // Handle mouse release on screen
             if (!(minecraft.currentScreen === null)) {
-                minecraft.currentScreen.mouseReleased(event.x / scope.scaleFactor, event.y / scope.scaleFactor, event.code);
+                minecraft.currentScreen.mouseReleased(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
             }
+
+            clearInterval(mouseDownInterval);
         }, false);
 
         // Losing focus event
-        this.canvas.addEventListener("mouseout", function () {
+        this.canvas.addEventListener("mouseout", () => {
             if (minecraft.currentScreen === null) {
                 minecraft.displayScreen(new GuiIngameMenu());
             }
+
+            clearInterval(mouseDownInterval);
         });
 
         // Mouse buttons
-        document.addEventListener('mousedown', function (event) {
+        document.addEventListener('mousedown', event => {
             // Create sound engine (It has to be created after user interaction)
             if (!minecraft.soundManager.isCreated()) {
                 minecraft.soundManager.create(minecraft.worldRenderer);
             }
 
             // Handle in-game mouse click
-            if (!scope.isMobile) {
+            if (!this.isMobile) {
                 minecraft.onMouseClicked(event.button);
+
+                // Start interval to repeat the mouse event
+                clearInterval(mouseDownInterval);
+                mouseDownInterval = setInterval(() => minecraft.onMouseClicked(event.button), 250);
             }
 
             // Handle mouse click on screen
             if (!(minecraft.currentScreen === null)) {
-                minecraft.currentScreen.mouseClicked(event.x / scope.scaleFactor, event.y / scope.scaleFactor, event.code);
+                minecraft.currentScreen.mouseClicked(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
             }
         }, false);
 
         // Mouse scroll
-        document.addEventListener('wheel', function (event) {
+        document.addEventListener('wheel', (event) => {
             let delta = Math.sign(event.deltaY);
             minecraft.onMouseScroll(delta);
         }, false);
 
         // Keyboard interaction with screen
-        window.addEventListener('keydown', function (event) {
+        window.addEventListener('keydown', (event) => {
             if (event.code === "F11") {
                 return; // Toggle fullscreen
             }
@@ -104,7 +112,7 @@ export default class GameWindow {
 
             if (!(minecraft.currentScreen === null)) {
                 // Handle key type on screen
-                minecraft.currentScreen.keyTyped(event.code);
+                minecraft.currentScreen.keyTyped(event.code, event.key);
             } else if (event.code === 'Escape') {
                 minecraft.displayScreen(new GuiIngameMenu());
             } else {
@@ -112,24 +120,35 @@ export default class GameWindow {
             }
         });
 
+        // Keyboard interaction with screen
+        window.addEventListener('keyup', (event) => {
+            // Prevent key
+            event.preventDefault();
+
+            if (!(minecraft.currentScreen === null)) {
+                // Handle key release on screen
+                minecraft.currentScreen.keyReleased(event.code);
+            }
+        });
+
         // Touch interaction
         let touchStart;
-        window.addEventListener('touchstart', function (event) {
+        window.addEventListener('touchstart', (event) => {
             for (let i = 0; i < event.touches.length; i++) {
                 let touch = event.touches[i];
 
                 let x = touch.pageX;
                 let y = touch.pageY;
 
-                let isRightHand = x > scope.wrapper.offsetWidth / 2;
+                let isRightHand = x > this.wrapper.offsetWidth / 2;
 
                 if (isRightHand) {
                     touchStart = Date.now();
                 } else {
-                    let tileSize = scope.wrapper.offsetWidth / 8;
+                    let tileSize = this.wrapper.offsetWidth / 8;
 
                     let tileX = 0;
-                    let tileY = scope.wrapper.offsetHeight - tileSize * 3;
+                    let tileY = this.wrapper.offsetHeight - tileSize * 3;
 
                     let relX = x - tileX;
                     let relY = y - tileY;
@@ -169,7 +188,7 @@ export default class GameWindow {
 
         // Touch movement
         let prevTouch;
-        window.addEventListener('touchmove', function (event) {
+        window.addEventListener('touchmove', (event) => {
             for (let i = 0; i < event.touches.length; i++) {
                 let touch = event.touches[i];
 
@@ -177,20 +196,20 @@ export default class GameWindow {
                 let y = touch.pageY;
 
                 // Right hand
-                let isRightHand = x > scope.wrapper.offsetWidth / 2;
+                let isRightHand = x > this.wrapper.offsetWidth / 2;
 
                 if (isRightHand) {
                     // Player movement
                     if (prevTouch) {
-                        scope.mouseMotionX = (x - prevTouch.pageX) * 10;
-                        scope.mouseMotionY = -(y - prevTouch.pageY) * 10;
+                        this.mouseMotionX = (x - prevTouch.pageX) * 10;
+                        this.mouseMotionY = -(y - prevTouch.pageY) * 10;
                     }
 
                     prevTouch = touch;
                 }
             }
         });
-        window.addEventListener('touchend', function (event) {
+        window.addEventListener('touchend', (event) => {
             // Break block
             if (!prevTouch && touchStart && (Date.now() - touchStart) < 1000) {
                 minecraft.onMouseClicked(2);
@@ -204,7 +223,7 @@ export default class GameWindow {
                 let touch = event.changedTouches[i];
 
                 // Left hand
-                let isLeftHand = touch.pageX < scope.wrapper.offsetWidth / 2;
+                let isLeftHand = touch.pageX < this.wrapper.offsetWidth / 2;
 
                 // Release all keys
                 if (isLeftHand) {
@@ -324,6 +343,22 @@ export default class GameWindow {
             return mq.matches;
         }
         return false;
+    }
+
+    close() {
+        this.openUrl(Minecraft.URL_GITHUB);
+    }
+
+    openUrl(url, newTab) {
+        if (newTab) {
+            window.open(url, '_blank').focus();
+        } else {
+            window.location = url;
+        }
+    }
+
+    async getClipboardText() {
+        return navigator.clipboard.readText();
     }
 
 }
