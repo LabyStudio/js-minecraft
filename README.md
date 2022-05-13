@@ -49,14 +49,18 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
     - First person item in hand
 - GUI
     - Screens
+      - Main Menu
+      - Create World Screen
       - Loading Screen
       - InGame Menu
+      - Options Screen
       - Controls Screen
     - Widgets
       - Button
       - KeyBinding
       - Slider
       - Switches
+      - TextField
     - Overlay
       - Cross-hair
       - Font rendering
@@ -67,7 +71,8 @@ Click [here](https://labystudio.github.io/js-minecraft/) for a demo!
 # Screenshots
 _Note: All textures from the original game were used for the screenshots only!_
 
-![Loading Screen](.github/assets/loading_screen.png)
+![Main Menu](.github/assets/main_menu.png)
+![Create World](.github/assets/create_world.png)
 ![Lightning](.github/assets/lightning.png)
 ![Night](.github/assets/night.png)
 ![Controls](.github/assets/controls.png)
