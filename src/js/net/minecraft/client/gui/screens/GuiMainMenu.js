@@ -158,7 +158,7 @@ export default class GuiMainMenu extends GuiScreen {
         this.camera.rotation.order = 'ZYX';
 
         // Apply blur
-        this.minecraft.window.canvas2d.style.backdropFilter = "saturate(80%) blur(10px)";
+        this.minecraft.window.canvas2d.style.backdropFilter = "blur(10px)";
     }
 
     onClose() {
