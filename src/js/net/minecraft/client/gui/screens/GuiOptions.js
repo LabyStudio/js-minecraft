@@ -28,11 +28,14 @@ export default class GuiOptions extends GuiScreen {
         this.buttonList.push(new GuiSliderButton("FOV", settings.fov, 50, 100, this.width / 2 - 100, y + 24 * 2, 200, 20, value => {
             settings.fov = value;
         }));
-        this.buttonList.push(new GuiButton("Controls...", this.width / 2 - 100, y + 24 * 3, 200, 20, () => {
+        this.buttonList.push(new GuiSliderButton("Render Distance", settings.viewDistance, 2, 16, this.width / 2 - 100, y + 24 * 3, 200, 20, value => {
+            settings.viewDistance = value;
+        }));
+        this.buttonList.push(new GuiButton("Controls...", this.width / 2 - 100, y + 24 * 4, 200, 20, () => {
             this.minecraft.displayScreen(new GuiControls(this));
         }));
 
-        this.buttonList.push(new GuiButton("Done", this.width / 2 - 100, y + 110, 200, 20, () => {
+        this.buttonList.push(new GuiButton("Done", this.width / 2 - 100, y + 130, 200, 20, () => {
             this.minecraft.displayScreen(this.previousScreen);
         }));
     }

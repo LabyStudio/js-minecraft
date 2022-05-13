@@ -9,7 +9,6 @@ import Vector3 from "../../util/Vector3.js";
 import Vector4 from "../../util/Vector4.js";
 import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
-import WorldRenderer from "../render/WorldRenderer.js";
 import Random from "../../util/Random.js";
 
 export default class World {
@@ -652,8 +651,9 @@ export default class World {
     }
 
     loadSpawnChunks() {
-        for (let x = -WorldRenderer.RENDER_DISTANCE; x <= WorldRenderer.RENDER_DISTANCE; x++) {
-            for (let z = -WorldRenderer.RENDER_DISTANCE; z <= WorldRenderer.RENDER_DISTANCE; z++) {
+        let viewDistance = this.minecraft.settings.viewDistance;
+        for (let x = -viewDistance; x <= viewDistance; x++) {
+            for (let z = -viewDistance; z <= viewDistance; z++) {
                 this.getChunkAt(x + this.spawn.x >> 4, z + this.spawn.z >> 4);
             }
         }

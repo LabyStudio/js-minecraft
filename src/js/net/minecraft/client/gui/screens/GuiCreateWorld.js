@@ -3,6 +3,7 @@ import GuiButton from "../widgets/GuiButton.js";
 import World from "../../world/World.js";
 import GuiTextField from "../widgets/GuiTextField.js";
 import Random from "../../../util/Random.js";
+import Long from "../../../../../../../libraries/long.js";
 
 export default class GuiCreateWorld extends GuiScreen {
 
@@ -25,6 +26,12 @@ export default class GuiCreateWorld extends GuiScreen {
             let seed = this.fieldSeed.getText();
             if (seed.length === 0) {
                 seed = new Random().nextLong();
+            } else if (typeof seed === "string") {
+                let h = 0;
+                for (let i = 0; i < seed.length; i++) {
+                    h = 31 * h + seed.charCodeAt(i);
+                }
+                seed = Long.fromNumber(h);
             }
             this.minecraft.loadWorld(new World(this.minecraft, seed));
         }));

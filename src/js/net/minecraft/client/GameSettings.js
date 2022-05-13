@@ -9,6 +9,7 @@ export default class GameSettings {
         this.viewBobbing = true;
         this.ambientOcclusion = true;
         this.sensitivity = 100;
+        this.viewDistance = 4;
     }
 
     load() {

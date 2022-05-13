@@ -10,7 +10,6 @@ import * as THREE from "../../../../../../libraries/three.module.js";
 
 export default class WorldRenderer {
 
-    static RENDER_DISTANCE = 4;
     static THIRD_PERSON_DISTANCE = 4;
 
     constructor(minecraft, window) {
@@ -47,6 +46,8 @@ export default class WorldRenderer {
 
         this.prevFogBrightness = 0;
         this.fogBrightness = 0;
+
+        this.flushRebuild = false;
 
         this.initialize();
     }
@@ -148,6 +149,17 @@ export default class WorldRenderer {
     }
 
     onTick() {
+        // Rebuild 2 chunk sections each tick
+        for (let i = 0; i < 2; i++) {
+            if (this.chunkSectionUpdateQueue.length !== 0) {
+                let chunkSection = this.chunkSectionUpdateQueue.shift();
+                if (chunkSection != null) {
+                    // Rebuild chunk
+                    chunkSection.rebuild(this);
+                }
+            }
+        }
+
         this.prevFogBrightness = this.fogBrightness;
         this.prevEquippedProgress = this.equippedProgress;
 
@@ -174,7 +186,7 @@ export default class WorldRenderer {
 
         // Update fog brightness
         let brightnessAtPosition = this.minecraft.world.getLightBrightnessForEntity(player);
-        let renderDistance = WorldRenderer.RENDER_DISTANCE / 32.0;
+        let renderDistance = this.minecraft.settings.viewDistance / 32.0;
         let fogBrightness = brightnessAtPosition * (1.0 - renderDistance) + renderDistance;
         this.fogBrightness += (fogBrightness - this.fogBrightness) * 0.1;
     }
@@ -482,8 +494,8 @@ export default class WorldRenderer {
         } else {
             let world = this.minecraft.world;
 
-            let viewDistance = WorldRenderer.RENDER_DISTANCE * ChunkSection.SIZE;
-            let viewFactor = 1.0 - Math.pow(0.25 + 0.75 * WorldRenderer.RENDER_DISTANCE / 32.0, 0.25);
+            let viewDistance = this.minecraft.settings.viewDistance * ChunkSection.SIZE;
+            let viewFactor = 1.0 - Math.pow(0.25 + 0.75 * this.minecraft.settings.viewDistance / 32.0, 0.25);
 
             let angle = world.getCelestialAngle(partialTicks);
 
@@ -538,7 +550,7 @@ export default class WorldRenderer {
 
     renderChunks(cameraChunkX, cameraChunkZ) {
         let world = this.minecraft.world;
-        let renderDistance = WorldRenderer.RENDER_DISTANCE;
+        let renderDistance = this.minecraft.settings.viewDistance;
 
         // Update chunks
         for (let [index, chunk] of world.chunks) {
@@ -602,13 +614,17 @@ export default class WorldRenderer {
             return distance2 - distance1;
         });
 
-        // Rebuild 8 chunk sections each frame
-        for (let i = 0; i < 8; i++) {
-            if (this.chunkSectionUpdateQueue.length !== 0) {
-                let chunkSection = this.chunkSectionUpdateQueue.shift();
-                if (chunkSection != null) {
-                    // Rebuild chunk
-                    chunkSection.rebuild(this);
+        // Flush by rebuilding 8 chunk sections
+        if(this.flushRebuild) {
+            this.flushRebuild = false;
+
+            for (let i = 0; i < 8; i++) {
+                if (this.chunkSectionUpdateQueue.length !== 0) {
+                    let chunkSection = this.chunkSectionUpdateQueue.shift();
+                    if (chunkSection != null) {
+                        // Rebuild chunk
+                        chunkSection.rebuild(this);
+                    }
                 }
             }
         }

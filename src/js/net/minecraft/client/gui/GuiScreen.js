@@ -6,6 +6,7 @@ export default class GuiScreen extends Gui {
         super();
 
         this.buttonList = [];
+        this.previousScreen = null;
     }
 
     setup(minecraft, width, height) {
@@ -43,7 +44,7 @@ export default class GuiScreen extends Gui {
 
     keyTyped(key, character) {
         if (key === "Escape") {
-            this.minecraft.displayScreen(null);
+            this.minecraft.displayScreen(this.previousScreen);
             return true;
         }
 

@@ -18,7 +18,7 @@ import * as THREE from "../../../../../libraries/three.module.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.0.0"
+    static VERSION = "1.0.1"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
 
     /**
@@ -88,6 +88,7 @@ export default class Minecraft {
             this.worldRenderer.reset();
             this.itemRenderer.reset();
 
+            this.world.chunks.clear();
             this.world = null;
             this.player = null;
             this.loadingScreen = null;
@@ -232,7 +233,7 @@ export default class Minecraft {
             let cameraChunkX = Math.floor(this.player.x) >> 4;
             let cameraChunkZ = Math.floor(this.player.z) >> 4;
 
-            let renderDistance = WorldRenderer.RENDER_DISTANCE;
+            let renderDistance = this.settings.viewDistance;
             let requiredChunks = Math.pow(renderDistance * 2 - 1, 2);
             let loadedChunks = this.world.chunks.size;
 
@@ -354,6 +355,9 @@ export default class Minecraft {
                     }
                 }
             }
+
+            // Rebuild multiple chunk sections
+            this.worldRenderer.flushRebuild = true;
         }
     }
 

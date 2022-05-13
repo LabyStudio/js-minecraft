@@ -35,7 +35,7 @@ export default class GuiControls extends GuiScreen {
             settings.togglePerspective = key;
         }));
 
-        this.buttonList.push(new GuiButton("Done", this.width / 2 - 100, y + 110, 200, 20, () => {
+        this.buttonList.push(new GuiButton("Done", this.width / 2 - 100, y + 130, 200, 20, () => {
             this.minecraft.displayScreen(this.previousScreen);
         }));
     }
