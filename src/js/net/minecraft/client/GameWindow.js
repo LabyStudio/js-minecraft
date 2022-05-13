@@ -18,6 +18,11 @@ export default class GameWindow {
         // Get canvas wrapper
         this.wrapper = document.getElementById(this.canvasWrapperId);
 
+        // Remove all children of wrapper
+        while (this.wrapper.firstChild) {
+            this.wrapper.removeChild(this.wrapper.firstChild);
+        }
+
         // Create world renderer
         this.canvas = document.createElement('canvas');
         this.wrapper.appendChild(this.canvas);
