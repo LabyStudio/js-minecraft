@@ -48,5 +48,10 @@ class Start {
     }
 }
 
-// Launch game
-new Start().launch("canvas-container");
+// Listen on history back
+window.addEventListener('pageshow', function (event) {
+    // Launch game
+    if (!window.app || !window.app.running) {
+        new Start().launch("canvas-container");
+    }
+});

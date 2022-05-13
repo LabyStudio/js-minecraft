@@ -47,7 +47,7 @@ export default class ScreenRenderer {
     }
 
     reset() {
-        this.stack2d.clearRect(0, 0, this.window.width, this.window.height);
+        this.stack2d.clearRect(0, 0, this.window.canvas2d.width, this.window.canvas2d.height);
     }
 
 }

@@ -127,8 +127,6 @@ export default class Minecraft {
             if (this.running) {
                 this.requestNextFrame();
                 this.onLoop();
-            } else {
-                this.window.close();
             }
         });
     }
@@ -372,10 +370,14 @@ export default class Minecraft {
     }
 
     stop() {
+        if (this.currentScreen !== null) {
+            this.currentScreen.onClose();
+        }
         this.running = false;
         this.worldRenderer.reset();
         this.itemRenderer.reset();
         this.screenRenderer.reset();
+        this.window.close();
     }
 
     getThreeTexture(id) {
