@@ -46,6 +46,20 @@ export default class GuiMainMenu extends GuiScreen {
         let x = this.width / 2 - logoWidth / 2;
         let y = 30;
 
+        let rotationX = Math.sin((this.panoramaTimer + partialTicks) / 400.0) * 25.0 + 20.0;
+        let rotationY = -(this.panoramaTimer + partialTicks) * 0.1;
+
+        // Draw panorama
+        this.camera.aspect = this.width / this.height;
+        this.camera.rotation.x = -MathHelper.toRadians(rotationX + 180);
+        this.camera.rotation.y = -MathHelper.toRadians(rotationY - 180);
+        this.camera.updateProjectionMatrix();
+        this.minecraft.worldRenderer.webRenderer.render(this.scene, this.camera);
+
+        // Draw panorama overlay
+        this.drawGradientRect(stack, 0, 0, this.width, this.height, 'rgba(255,255,255,0.5)', 'rgb(255,255,255,0)');
+        this.drawGradientRect(stack, 0, 0, this.width, this.height, 'rgb(0,0,0,0)', 'rgb(0,0,0,0.5)');
+
         // Draw logo
         this.drawLogo(stack, x, y);
 
@@ -61,15 +75,6 @@ export default class GuiMainMenu extends GuiScreen {
 
         // Draw splash text
         this.drawSplash(stack);
-
-        let rotationX = Math.sin((this.panoramaTimer + partialTicks) / 400.0) * 25.0 + 20.0;
-        let rotationY = -(this.panoramaTimer + partialTicks) * 0.1;
-
-        this.camera.aspect = this.width / this.height;
-        this.camera.rotation.x = -MathHelper.toRadians(rotationX + 180);
-        this.camera.rotation.y = -MathHelper.toRadians(rotationY - 180);
-        this.camera.updateProjectionMatrix();
-        this.minecraft.worldRenderer.webRenderer.render(this.scene, this.camera);
     }
 
     updateScreen() {

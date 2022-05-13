@@ -36,6 +36,14 @@ export default class Gui {
         stack.restore();
     }
 
+    drawGradientRect(stack, left, top, right, bottom, color1, color2) {
+        let gradient = stack.createLinearGradient(left + (right - left) / 2, top, left + (right - left) / 2, bottom - top);
+        gradient.addColorStop(0, color1);
+        gradient.addColorStop(1, color2);
+        stack.fillStyle = gradient;
+        stack.fillRect(left, top, right - left, bottom - top);
+    }
+
     drawTexture(stack, texture, x, y, width, height, alpha = 1.0) {
         Gui.drawSprite(stack, texture, 0, 0, 256, 256, x, y, width, height, alpha);
     }
