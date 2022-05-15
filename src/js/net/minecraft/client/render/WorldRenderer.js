@@ -117,6 +117,9 @@ export default class WorldRenderer {
         // Render target block
         this.renderBlockHitBox(player, partialTicks);
 
+        // Render particles
+        this.minecraft.particleRenderer.renderParticles(player, partialTicks);
+
         // Hide all entities and make them visible during rendering
         for (let entity of this.minecraft.world.entities) {
             entity.renderer.group.visible = false;
@@ -615,7 +618,7 @@ export default class WorldRenderer {
         });
 
         // Flush by rebuilding 8 chunk sections
-        if(this.flushRebuild) {
+        if (this.flushRebuild) {
             this.flushRebuild = false;
 
             for (let i = 0; i < 8; i++) {

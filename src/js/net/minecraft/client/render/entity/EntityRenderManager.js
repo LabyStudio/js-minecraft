@@ -15,6 +15,9 @@ export default class EntityRenderManager {
     }
 
     createEntityRendererByEntity(entity) {
+        if (!(entity.constructor.name in this.renderers)) {
+            return null;
+        }
         return new this.renderers[entity.constructor.name].prototype.constructor(this.worldRenderer);
     }
 }

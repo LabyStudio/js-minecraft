@@ -26,6 +26,10 @@ export default class BlockGrass extends Block {
         return world.minecraft.grassColorizer.getColor(temperature, humidity);
     }
 
+    getParticleTextureFace() {
+        return EnumBlockFace.NORTH;
+    }
+
     getTextureForFace(face) {
         switch (face) {
             case EnumBlockFace.TOP:

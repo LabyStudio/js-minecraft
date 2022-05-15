@@ -31,6 +31,10 @@ export default class Block {
         return BlockRenderType.BLOCK;
     }
 
+    getParticleTextureFace() {
+        return EnumBlockFace.TOP;
+    }
+
     getTextureForFace(face) {
         return this.textureSlotId;
     }
@@ -50,6 +54,10 @@ export default class Block {
 
     getColor(world, x, y, z, face) {
         return 0xffffff;
+    }
+
+    getParticleColor(world, x, y, z) {
+        return this.getColor(world, x, y, z, this.getParticleTextureFace());
     }
 
     getLightValue() {

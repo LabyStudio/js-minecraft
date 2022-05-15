@@ -1,6 +1,5 @@
 import Inventory from "../inventory/Inventory.js";
 import EntityLiving from "./EntityLiving.js";
-import BoundingBox from "../../util/BoundingBox.js";
 import Block from "../world/block/Block.js";
 import MathHelper from "../../util/MathHelper.js";
 import Keyboard from "../../util/Keyboard.js";
@@ -44,33 +43,14 @@ export default class PlayerEntity extends EntityLiving {
         this.cameraPitch = 0;
         this.prevCameraYaw = 0;
         this.prevCameraPitch = 0;
+
+        this.width = 0.6;
+        this.height = 1.8;
     }
 
     respawn() {
         let spawn = this.world.getSpawn();
         this.setPosition(spawn.x, spawn.y, spawn.z);
-    }
-
-    setPosition(x, y, z) {
-        let width = 0.3;
-        let height = 0.9;
-        this.boundingBox = new BoundingBox(
-            x - width,
-            y - height,
-            z - width,
-            x + width,
-            y + height,
-            z + width
-        );
-
-        this.motionX = 0;
-        this.motionY = 0;
-        this.motionZ = 0;
-
-        // Update position
-        this.x = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
-        this.y = this.boundingBox.minY;
-        this.z = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
     }
 
     turn(motionX, motionY) {
@@ -364,95 +344,6 @@ export default class PlayerEntity extends EntityLiving {
 
         this.jumping = jumping;
         this.sneaking = sneaking;
-    }
-
-    moveCollide(targetX, targetY, targetZ) {
-        // Target position
-        let originalTargetX = targetX;
-        let originalTargetY = targetY;
-        let originalTargetZ = targetZ;
-
-        if (this.onGround && this.sneaking) {
-            for (; targetX !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(targetX, -this.stepHeight, 0.0)).length === 0; originalTargetX = targetX) {
-                if (targetX < 0.05 && targetX >= -0.05) {
-                    targetX = 0.0;
-                } else if (targetX > 0.0) {
-                    targetX -= 0.05;
-                } else {
-                    targetX += 0.05;
-                }
-            }
-
-            for (; targetZ !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(0.0, -this.stepHeight, targetZ)).length === 0; originalTargetZ = targetZ) {
-                if (targetZ < 0.05 && targetZ >= -0.05) {
-                    targetZ = 0.0;
-                } else if (targetZ > 0.0) {
-                    targetZ -= 0.05;
-                } else {
-                    targetZ += 0.05;
-                }
-            }
-
-            for (; targetX !== 0.0 && targetZ !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(targetX, -this.stepHeight, targetZ)).length === 0; originalTargetZ = targetZ) {
-                if (targetX < 0.05 && targetX >= -0.05) {
-                    targetX = 0.0;
-                } else if (targetX > 0.0) {
-                    targetX -= 0.05;
-                } else {
-                    targetX += 0.05;
-                }
-
-                originalTargetX = targetX;
-
-                if (targetZ < 0.05 && targetZ >= -0.05) {
-                    targetZ = 0.0;
-                } else if (targetZ > 0.0) {
-                    targetZ -= 0.05;
-                } else {
-                    targetZ += 0.05;
-                }
-            }
-        }
-
-        // Get level tiles as bounding boxes
-        let boundingBoxList = this.world.getCollisionBoxes(this.boundingBox.expand(targetX, targetY, targetZ));
-
-        // Move bounding box
-        for (let aABB in boundingBoxList) {
-            targetY = boundingBoxList[aABB].clipYCollide(this.boundingBox, targetY);
-        }
-        this.boundingBox.move(0.0, targetY, 0.0);
-
-        for (let aABB in boundingBoxList) {
-            targetX = boundingBoxList[aABB].clipXCollide(this.boundingBox, targetX);
-        }
-        this.boundingBox.move(targetX, 0.0, 0.0);
-
-        for (let aABB in boundingBoxList) {
-            targetZ = boundingBoxList[aABB].clipZCollide(this.boundingBox, targetZ);
-        }
-        this.boundingBox.move(0.0, 0.0, targetZ);
-
-        this.onGround = originalTargetY !== targetY && originalTargetY < 0.0;
-
-        // Stop motion on collision
-        if (originalTargetX !== targetX) {
-            this.motionX = 0.0;
-        }
-        if (originalTargetY !== targetY) {
-            this.motionY = 0.0;
-        }
-        if (originalTargetZ !== targetZ) {
-            this.motionZ = 0.0;
-        }
-
-        // Update position
-        this.x = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
-        this.y = this.boundingBox.minY;
-        this.z = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
-
-        // Horizontal collision?
-        return originalTargetX !== targetX || originalTargetZ !== targetZ;
     }
 
     getEyeHeight() {

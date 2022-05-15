@@ -31,6 +31,7 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
     - Arm swing animation
     - Walking animation
     - Crouch animation
+    - Block break particles
 - World
     - 16x16x16 Chunks
     - Block type, data, sky & block lightning

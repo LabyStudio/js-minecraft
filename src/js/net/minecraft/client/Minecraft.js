@@ -15,10 +15,11 @@ import GrassColorizer from "./render/GrassColorizer.js";
 import GuiMainMenu from "./gui/screens/GuiMainMenu.js";
 import GuiLoadingScreen from "./gui/screens/GuiLoadingScreen.js";
 import * as THREE from "../../../../../libraries/three.module.js";
+import ParticleRenderer from "./render/particle/ParticleRenderer.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.0.1"
+    static VERSION = "1.0.2"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
 
     /**
@@ -64,6 +65,8 @@ export default class Minecraft {
 
         // Grass colorizer
         this.grassColorizer = new GrassColorizer(this);
+
+        this.particleRenderer = new ParticleRenderer(this);
 
         // Update window size
         this.window.updateWindowSize();
@@ -219,6 +222,9 @@ export default class Minecraft {
 
             // Tick the player
             this.player.onUpdate();
+
+            // Tick particle renderer
+            this.particleRenderer.onTick();
         }
 
         // Tick the screen
@@ -292,6 +298,9 @@ export default class Minecraft {
                             1.0,
                             1.0
                         );
+
+                        // Spawn particle
+                        this.particleRenderer.spawnBlockBreakParticle(this.world, hitResult.x, hitResult.y, hitResult.z);
 
                         // Destroy block
                         this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
