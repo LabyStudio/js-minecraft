@@ -1,9 +1,11 @@
 export default class GameSettings {
 
     constructor() {
-        this.crouching = 'ShiftLeft';
-        this.sprinting = 'ControlLeft';
-        this.togglePerspective = 'F5';
+        this.keyCrouching = 'ShiftLeft';
+        this.keySprinting = 'ControlLeft';
+        this.keyTogglePerspective = 'F5';
+        this.keyOpenChat = 'KeyT';
+
         this.thirdPersonView = 0;
         this.fov = 70;
         this.viewBobbing = true;

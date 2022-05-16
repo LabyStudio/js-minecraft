@@ -23,6 +23,10 @@ export default class ChunkSection {
         this.boundingBox.max.z = z * ChunkSection.SIZE + ChunkSection.SIZE;
 
         this.group = new THREE.Object3D();
+        this.group.position.x = this.x * ChunkSection.SIZE;
+        this.group.position.y = this.y * ChunkSection.SIZE;
+        this.group.position.z = this.z * ChunkSection.SIZE;
+        this.group.updateMatrix();
         this.group.matrixAutoUpdate = false;
         this.isModified = true;
 

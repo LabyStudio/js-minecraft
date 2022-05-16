@@ -1,5 +1,6 @@
-import Gui from "./Gui.js";
-import Block from "../world/block/Block.js";
+import Gui from "../Gui.js";
+import Block from "../../world/block/Block.js";
+import ChatOverlay from "./ChatOverlay.js";
 
 export default class IngameOverlay extends Gui {
 
@@ -7,6 +8,8 @@ export default class IngameOverlay extends Gui {
         super();
         this.minecraft = minecraft;
         this.window = window;
+
+        this.chatOverlay = new ChatOverlay(minecraft);
 
         this.textureCrosshair = minecraft.resources["gui/icons.png"];
         this.textureHotbar = minecraft.resources["gui/gui.png"];
@@ -20,6 +23,9 @@ export default class IngameOverlay extends Gui {
 
         // Render hotbar
         this.renderHotbar(stack, this.window.width / 2 - 91, this.window.height - 22);
+
+        // Render chat
+        this.chatOverlay.render(stack, mouseX, mouseY, partialTicks);
 
         let world = this.minecraft.world;
         let player = this.minecraft.player;
@@ -36,6 +42,10 @@ export default class IngameOverlay extends Gui {
         // Debug
         this.drawString(stack, fps + " fps," + " " + lightUpdates + " light updates," + " " + chunkUpdates + " chunk updates", 1, 1);
         this.drawString(stack, x + ", " + y + ", " + z + " (" + (x >> 4) + ", " + (y >> 4) + ", " + (z >> 4) + ")", 1, 1 + 9);
+    }
+
+    onTick() {
+        this.chatOverlay.onTick();
     }
 
     renderCrosshair(stack, x, y) {

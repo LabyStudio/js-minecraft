@@ -23,16 +23,20 @@ export default class GuiControls extends GuiScreen {
             return name + ": " + value + "%";
         }));
 
-        this.buttonList.push(new GuiKeyButton("Crouch", settings.crouching, this.width / 2 - 100, y + 24, 200, 20, key => {
-            settings.crouching = key;
+        this.buttonList.push(new GuiKeyButton("Crouch", settings.keyCrouching, this.width / 2 - 100, y + 24, 200, 20, key => {
+            settings.keyCrouching = key;
         }));
 
-        this.buttonList.push(new GuiKeyButton("Sprint", settings.sprinting, this.width / 2 - 100, y + 24 * 2, 200, 20, key => {
-            settings.sprinting = key;
+        this.buttonList.push(new GuiKeyButton("Sprint", settings.keySprinting, this.width / 2 - 100, y + 24 * 2, 200, 20, key => {
+            settings.keySprinting = key;
         }));
 
-        this.buttonList.push(new GuiKeyButton("Toggle Perspective", settings.togglePerspective, this.width / 2 - 100, y + 24 * 3, 200, 20, key => {
-            settings.togglePerspective = key;
+        this.buttonList.push(new GuiKeyButton("Toggle Perspective", settings.keyTogglePerspective, this.width / 2 - 100, y + 24 * 3, 200, 20, key => {
+            settings.keyTogglePerspective = key;
+        }));
+
+        this.buttonList.push(new GuiKeyButton("Open Chat", settings.keyOpenChat, this.width / 2 - 100, y + 24 * 4, 200, 20, key => {
+            settings.keyOpenChat = key;
         }));
 
         this.buttonList.push(new GuiButton("Done", this.width / 2 - 100, y + 130, 200, 20, () => {

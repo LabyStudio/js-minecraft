@@ -4,7 +4,7 @@ import GameWindow from "./GameWindow.js";
 import WorldRenderer from "./render/WorldRenderer.js";
 import ScreenRenderer from "./render/gui/ScreenRenderer.js";
 import ItemRenderer from "./render/gui/ItemRenderer.js";
-import IngameOverlay from "./gui/IngameOverlay.js";
+import IngameOverlay from "./gui/overlay/IngameOverlay.js";
 import PlayerEntity from "./entity/PlayerEntity.js";
 import SoundManager from "./sound/SoundManager.js";
 import Block from "./world/block/Block.js";
@@ -16,10 +16,12 @@ import GuiMainMenu from "./gui/screens/GuiMainMenu.js";
 import GuiLoadingScreen from "./gui/screens/GuiLoadingScreen.js";
 import * as THREE from "../../../../../libraries/three.module.js";
 import ParticleRenderer from "./render/particle/ParticleRenderer.js";
+import GuiChat from "./gui/screens/GuiChat.js";
+import CommandHandler from "./command/CommandHandler.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.0.2"
+    static VERSION = "1.0.3"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
 
     /**
@@ -51,6 +53,9 @@ export default class Minecraft {
 
         // Create current screen and overlay
         this.ingameOverlay = new IngameOverlay(this, this.window);
+
+        // Command handler
+        this.commandHandler = new CommandHandler(this);
 
         this.frames = 0;
         this.lastTime = Date.now();
@@ -123,6 +128,10 @@ export default class Minecraft {
 
     isInGame() {
         return this.world !== null && this.worldRenderer !== null && this.player !== null;
+    }
+
+    addMessageToChat(message) {
+        this.ingameOverlay.chatOverlay.addMessage(message);
     }
 
     requestNextFrame() {
@@ -225,6 +234,9 @@ export default class Minecraft {
 
             // Tick particle renderer
             this.particleRenderer.onTick();
+
+            // Tick overlay
+            this.ingameOverlay.onTick();
         }
 
         // Tick the screen
@@ -269,9 +281,13 @@ export default class Minecraft {
             }
         }
 
-        if (button === this.settings.togglePerspective) {
+        if (button === this.settings.keyTogglePerspective) {
             this.settings.thirdPersonView = (this.settings.thirdPersonView + 1) % 3;
             this.settings.save();
+        }
+
+        if (button === this.settings.keyOpenChat) {
+            this.displayScreen(new GuiChat());
         }
     }
 

@@ -304,32 +304,32 @@ export default class PlayerEntity extends EntityLiving {
         let sneaking = false;
 
         if (this.minecraft.hasInGameFocus()) {
-            if (Keyboard.isKeyDown("KeyR")) { // R
+            if (Keyboard.isKeyDown("KeyR")) {
                 // this.respawn();
             }
-            if (Keyboard.isKeyDown("KeyW")) { // W
+            if (Keyboard.isKeyDown("KeyW")) {
                 moveForward++;
             }
-            if (Keyboard.isKeyDown("KeyS")) { // S
+            if (Keyboard.isKeyDown("KeyS")) {
                 moveForward--;
             }
-            if (Keyboard.isKeyDown("KeyA")) { // A
+            if (Keyboard.isKeyDown("KeyA")) {
                 moveStrafe++;
             }
-            if (Keyboard.isKeyDown("KeyD")) { // D
+            if (Keyboard.isKeyDown("KeyD")) {
                 moveStrafe--;
             }
-            if (Keyboard.isKeyDown("Space")) { // Space
+            if (Keyboard.isKeyDown("Space")) {
                 jumping = true;
             }
-            if (Keyboard.isKeyDown(this.minecraft.settings.sprinting)) {
+            if (Keyboard.isKeyDown(this.minecraft.settings.keySprinting)) {
                 if (this.moveForward > 0 && !this.sneaking && !this.sprinting && this.motionX !== 0 && this.motionZ !== 0) {
                     this.sprinting = true;
 
                     this.updateFOVModifier();
                 }
             }
-            if (Keyboard.isKeyDown(this.minecraft.settings.crouching)) { // Q
+            if (Keyboard.isKeyDown(this.minecraft.settings.keyCrouching)) {
                 sneaking = true;
             }
 
