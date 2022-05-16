@@ -56,6 +56,7 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
       - InGame Menu
       - Options Screen
       - Controls Screen
+      - Chat Input Screen
     - Widgets
       - Button
       - KeyBinding
@@ -66,6 +67,11 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
       - Cross-hair
       - Font rendering
       - Hot-Bar
+      - Chat
+- Commands
+    - /help
+    - /time
+    - /tp
 </details>
 <hr>
 
