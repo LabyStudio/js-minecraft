@@ -161,7 +161,7 @@ export default class BlockRenderer {
                     let block = typeId === 0 ? null : Block.getById(typeId);
 
                     // Does it contain air?
-                    if (block === null || !block.isSolid()) {
+                    if (block === null || block.isTranslucent()) {
                         // Sum up the light levels
                         totalLightLevel += world.getTotalLightAt(x + offsetX, y + offsetY, z + offsetZ);
                         totalBlocks++;
@@ -402,6 +402,6 @@ export default class BlockRenderer {
         maxV += offset;
 
         // Render item
-        this.addFace(null, EnumBlockFace.NORTH, false, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
+        this.addFace(null, EnumBlockFace.NORTH, false, 0, 0, 0, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV);
     }
 }

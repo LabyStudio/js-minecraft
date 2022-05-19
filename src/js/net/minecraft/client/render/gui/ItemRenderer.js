@@ -7,13 +7,14 @@ export default class ItemRenderer {
         this.window = window;
 
         this.items = [];
+        this.zIndex = 0;
+
+        this.scheduledDirty = [];
     }
 
     initialize() {
         // Create item camera
-        this.camera = new THREE.OrthographicCamera(0, 0, 0, 0, 0, 300);
-        this.camera.near = 0;
-        this.camera.far = 15;
+        this.camera = new THREE.OrthographicCamera(0, 0, 0, 0, -15, 15);
         this.camera.rotation.order = 'ZYX';
         this.camera.up = new THREE.Vector3(0, 1, 0);
 
@@ -50,33 +51,43 @@ export default class ItemRenderer {
         this.webRenderer.render(this.scene, this.camera);
     }
 
-    renderItemInGui(renderId, block, x, y) {
-        let meta = this.items[renderId];
+    prepareRender(groupId) {
+        if (this.scheduledDirty.includes(groupId)) {
+            this.scheduledDirty.splice(this.scheduledDirty.indexOf(groupId), 1);
+            this.destroy(groupId);
+        }
+    }
+
+    renderItemInGui(groupId, renderId, block, x, y, brightness = 1) {
+        let pairId = groupId + ':' + renderId;
+        let meta = this.items[pairId];
         if (typeof meta === "undefined") {
             let meta = {};
 
-            // To make the items darker
-            let paused = this.minecraft.isPaused();
-
             // Render item
             let group = new THREE.Group();
-            this.minecraft.worldRenderer.blockRenderer.renderGuiBlock(group, block, x, y, 10, paused ? 0.5 : 1);
+            this.minecraft.worldRenderer.blockRenderer.renderGuiBlock(group, block, x, y, 10, brightness);
+            group.position.z = this.zIndex;
+            group.updateMatrix();
             this.scene.add(group);
 
             // Create meta
+            meta.renderId = renderId;
+            meta.groupId = groupId;
             meta.group = group;
+            meta.brightness = brightness;
             meta.typeId = block.getId();
             meta.x = x;
             meta.y = y;
             meta.dirty = false;
-            this.items[renderId] = meta;
+            this.items[pairId] = meta;
         } else {
             // Check if rendered item has changed
-            if (meta.dirty || meta.typeId !== block.getId() || meta.x !== x || meta.y !== y) {
+            if (meta.dirty || meta.typeId !== block.getId() || meta.x !== x || meta.y !== y || meta.brightness !== brightness) {
                 // Rebuild item
                 this.scene.remove(meta.group);
-                delete this.items[renderId];
-                this.renderItemInGui(renderId, block, x, y);
+                delete this.items[pairId];
+                this.renderItemInGui(groupId, renderId, block, x, y, brightness);
             }
         }
     }
@@ -94,5 +105,28 @@ export default class ItemRenderer {
         }
         this.items = [];
         this.webRenderer.clear();
+    }
+
+    scheduleDirty(groupId) {
+        if (this.scheduledDirty.includes(groupId)) {
+            return;
+        }
+        this.scheduledDirty.push(groupId);
+    }
+
+    destroy(groupId, renderId = null) {
+        let hit = false;
+
+        for (let i in this.items) {
+            if (this.items[i].groupId === groupId && (renderId === null || this.items[i].renderId === renderId)) {
+                this.scene.remove(this.items[i].group);
+                delete this.items[i];
+                hit = true;
+            }
+        }
+
+        if (hit) {
+            this.webRenderer.clear();
+        }
     }
 }

@@ -31,6 +31,10 @@ export default class BlockTorch extends Block {
         return false;
     }
 
+    isTranslucent() {
+        return true;
+    }
+
     getRenderType() {
         return BlockRenderType.TORCH;
     }

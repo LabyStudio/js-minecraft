@@ -57,6 +57,7 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
       - Options Screen
       - Controls Screen
       - Chat Input Screen
+      - Creative Inventory Screen
     - Widgets
       - Button
       - KeyBinding

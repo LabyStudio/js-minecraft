@@ -18,10 +18,11 @@ import * as THREE from "../../../../../libraries/three.module.js";
 import ParticleRenderer from "./render/particle/ParticleRenderer.js";
 import GuiChat from "./gui/screens/GuiChat.js";
 import CommandHandler from "./command/CommandHandler.js";
+import GuiContainerCreative from "./gui/screens/container/GuiContainerCreative.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.0.3"
+    static VERSION = "1.0.4"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
 
     /**
@@ -113,6 +114,7 @@ export default class Minecraft {
 
             // Create player
             this.player = new PlayerEntity(this, this.world);
+            this.player.username = "Player" + Math.floor(Math.random() * 100);
             this.world.addEntity(this.player);
 
             // Load spawn chunks and respawn player
@@ -199,7 +201,7 @@ export default class Minecraft {
         }
 
         // Close previous screen
-        if (!(this.currentScreen === null)) {
+        if (this.currentScreen !== null) {
             this.currentScreen.onClose();
         }
 
@@ -275,19 +277,32 @@ export default class Minecraft {
     }
 
     onKeyPressed(button) {
+        // Select slot
         for (let i = 1; i <= 9; i++) {
             if (button === 'Digit' + i) {
                 this.player.inventory.selectedSlotIndex = i - 1;
             }
         }
 
+        // Toggle perspective
         if (button === this.settings.keyTogglePerspective) {
             this.settings.thirdPersonView = (this.settings.thirdPersonView + 1) % 3;
             this.settings.save();
         }
 
+        // Open chat
         if (button === this.settings.keyOpenChat) {
             this.displayScreen(new GuiChat());
+        }
+
+        // Toggle debug overlay
+        if (button === "F3") {
+            this.settings.debugOverlay = !this.settings.debugOverlay;
+        }
+
+        // Open inventory
+        if (button === this.settings.keyOpenInventory) {
+            this.displayScreen(new GuiContainerCreative(this.player));
         }
     }
 
@@ -331,6 +346,16 @@ export default class Minecraft {
                 if (hitResult != null) {
                     let typeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
                     if (typeId !== 0) {
+                        // Switch to slot if item is already in hotbar
+                        for (const item of this.player.inventory.items) {
+                            const index = this.player.inventory.items.indexOf(item);
+                            if (item === typeId && index <= 8) {
+                                this.player.inventory.selectedSlotIndex = index;
+                                return;
+                            }
+                        }
+
+                        // Set item in hotbar
                         this.player.inventory.setItemInSelectedSlot(typeId);
                     }
                 }

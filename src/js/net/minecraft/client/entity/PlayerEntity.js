@@ -1,10 +1,10 @@
-import Inventory from "../inventory/Inventory.js";
 import EntityLiving from "./EntityLiving.js";
 import Block from "../world/block/Block.js";
 import MathHelper from "../../util/MathHelper.js";
 import Keyboard from "../../util/Keyboard.js";
 import Vector3 from "../../util/Vector3.js";
 import {BlockRegistry} from "../world/block/BlockRegistry.js";
+import InventoryPlayer from "../inventory/inventory/InventoryPlayer.js";
 
 export default class PlayerEntity extends EntityLiving {
 
@@ -13,7 +13,8 @@ export default class PlayerEntity extends EntityLiving {
     constructor(minecraft, world) {
         super(minecraft, world);
 
-        this.inventory = new Inventory();
+        this.inventory = new InventoryPlayer();
+        this.username = "Player";
 
         this.collision = false;
 

@@ -9,6 +9,11 @@ export default class BlockLeave extends Block {
         this.sound = Block.sounds.grass;
     }
 
+    // TODO fix transparency of leaves
+    /*isTranslucent() {
+        return true;
+    }*/
+
     getColor(world, x, y, z, face) {
         // Inventory items have a default color
         if (world === null) {
@@ -19,6 +24,12 @@ export default class BlockLeave extends Block {
         let humidity = world.getHumidity(x, y, z);
         return world.minecraft.grassColorizer.getColor(temperature, humidity);
     }
+
+    // TODO fix transparency of leaves
+    /*shouldRenderFace(world, x, y, z, face) {
+        let typeId = world.getBlockAtFace(x, y, z, face);
+        return typeId === 0 || typeId === this.id;
+    }*/
 
     getOpacity() {
         return 0.3;

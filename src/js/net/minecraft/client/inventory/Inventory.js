@@ -1,37 +1,15 @@
 export default class Inventory {
 
-    constructor() {
-        this.selectedSlotIndex = 0;
-        this.items = [];
-
-        // Default items in inventory
-        this.items[0] = 1;
-        this.items[1] = 2;
-        this.items[2] = 3;
-        this.items[3] = 5;
-        this.items[4] = 17;
-        this.items[5] = 18;
-        this.items[6] = 12;
-        this.items[7] = 50;
+    constructor(name) {
+        this.name = name;
     }
 
-    setItemInSelectedSlot(typeId) {
-        this.items[this.selectedSlotIndex] = typeId;
+    getItemInSlot(index) {
+
     }
 
-    getItemInSelectedSlot() {
-        return this.getItemInSlot(this.selectedSlotIndex);
+    setItem(index, typeId) {
+
     }
 
-    shiftSelectedSlot(offset) {
-        if (this.selectedSlotIndex + offset < 0) {
-            this.selectedSlotIndex = 9 + (this.selectedSlotIndex + offset);
-        } else {
-            this.selectedSlotIndex = (this.selectedSlotIndex + offset) % 9;
-        }
-    }
-
-    getItemInSlot(slot) {
-        return this.items.hasOwnProperty(slot) ? this.items[slot] : 0;
-    }
 }

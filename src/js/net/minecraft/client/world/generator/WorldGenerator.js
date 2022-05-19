@@ -205,8 +205,8 @@ export default class WorldGenerator extends Generator {
                 // For the entire height of the chunk
                 for (let y = 127; y >= 0; y--) {
                     // Set bedrock on floor level
-                    if (y <= (this.random.nextInt(6)) - 1) {
-                        primer.set(x, y, z, BlockRegistry.STONE.getId()); // TODO add bedrock block
+                    if (y <= (this.random.nextInt(6)) - 1 || y === 0) {
+                        primer.set(x, y, z, BlockRegistry.BEDROCK.getId());
                         continue;
                     }
 
@@ -238,7 +238,7 @@ export default class WorldGenerator extends Generator {
                             // Add gravel patches
                             if (gravelPatchNoise) {
                                 topLayerTypeId = 0;
-                                innerLayerTypeId = BlockRegistry.STONE.getId(); // TODO add gravel block
+                                innerLayerTypeId = BlockRegistry.GRAVEL.getId();
                             }
 
                             // Add sand patches

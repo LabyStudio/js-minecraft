@@ -1,6 +1,7 @@
 import Gui from "../Gui.js";
 import Block from "../../world/block/Block.js";
 import ChatOverlay from "./ChatOverlay.js";
+import Minecraft from "../../Minecraft.js";
 
 export default class IngameOverlay extends Gui {
 
@@ -40,8 +41,12 @@ export default class IngameOverlay extends Gui {
         let lightLevel = world.getTotalLightAt(x, y, z);
 
         // Debug
-        this.drawString(stack, fps + " fps," + " " + lightUpdates + " light updates," + " " + chunkUpdates + " chunk updates", 1, 1);
-        this.drawString(stack, x + ", " + y + ", " + z + " (" + (x >> 4) + ", " + (y >> 4) + ", " + (z >> 4) + ")", 1, 1 + 9);
+        if (this.minecraft.settings.debugOverlay) {
+            this.drawString(stack, "js-minecraft " + Minecraft.VERSION, 1, 1);
+            this.drawString(stack, fps + " fps," + " " + lightUpdates + " light updates," + " " + chunkUpdates + " chunk updates", 1, 1 + 9 * 1);
+            this.drawString(stack, x + ", " + y + ", " + z + " (" + (x >> 4) + ", " + (y >> 4) + ", " + (z >> 4) + ")", 1, 1 + 9 * 2);
+            this.drawString(stack, "Light: " + lightLevel, 1, 1 + 9 * 3);
+        }
     }
 
     onTick() {
@@ -65,13 +70,17 @@ export default class IngameOverlay extends Gui {
             24, 24
         )
 
+        // To make the items darker
+        let brightness = this.minecraft.isPaused() ? 0.5 : 1; // TODO find a better solution
+
+        this.minecraft.itemRenderer.prepareRender("hotbar");
+
         // Render items
         for (let i = 0; i < 9; i++) {
             let typeId = this.minecraft.player.inventory.getItemInSlot(i);
             if (typeId !== 0) {
-                let renderId = "hotbar" + i;
                 let block = Block.getById(typeId);
-                this.minecraft.itemRenderer.renderItemInGui(renderId, block, Math.floor(x + i * 20 + 11), y + 11);
+                this.minecraft.itemRenderer.renderItemInGui("hotbar", i, block, Math.floor(x + i * 20 + 11), y + 11, brightness);
             }
         }
     }

@@ -5,6 +5,7 @@ export default class GameSettings {
         this.keySprinting = 'ControlLeft';
         this.keyTogglePerspective = 'F5';
         this.keyOpenChat = 'KeyT';
+        this.keyOpenInventory = 'KeyE';
 
         this.thirdPersonView = 0;
         this.fov = 70;
@@ -12,6 +13,7 @@ export default class GameSettings {
         this.ambientOcclusion = true;
         this.sensitivity = 100;
         this.viewDistance = 4;
+        this.debugOverlay = false;
     }
 
     load() {

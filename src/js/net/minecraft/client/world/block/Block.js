@@ -49,7 +49,7 @@ export default class Block {
 
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || !Block.getById(typeId).isSolid();
+        return typeId === 0 || Block.getById(typeId).isTranslucent();
     }
 
     getColor(world, x, y, z, face) {

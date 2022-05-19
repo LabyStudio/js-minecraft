@@ -34,7 +34,7 @@ export default class BlockWater extends Block {
 
     getBoundingBox(world, x, y, z) {
         let box = this.boundingBox.clone();
-        if (world.getBlockAt(x, y + 1, z) !== this.id) {
+        if (world !== null && world.getBlockAt(x, y + 1, z) !== this.id) {
             box.maxY = 1.0 - 0.12;
         }
         return box;

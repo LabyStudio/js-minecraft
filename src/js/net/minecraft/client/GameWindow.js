@@ -35,6 +35,10 @@ export default class GameWindow {
         this.canvasItems = document.createElement('canvas');
         this.wrapper.appendChild(this.canvasItems);
 
+        this.canvas.addEventListener("webglcontextlost", function (event) {
+            event.preventDefault();
+        }, false);
+
         let mouseDownInterval = null;
 
         // Request focus
@@ -48,13 +52,16 @@ export default class GameWindow {
 
         // Focus listener
         document.addEventListener('pointerlockchange', _ => this.onFocusChanged(), false);
+        document.addEventListener('pointerlockerror', e => {
+            e.preventDefault()
+        }, false);
 
         // Mouse motion
         document.addEventListener('mousemove', event => {
             this.onMouseMove(event);
 
             // Handle mouse move on screen
-            if (!(minecraft.currentScreen === null)) {
+            if (minecraft.currentScreen !== null) {
                 minecraft.currentScreen.mouseDragged(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
             }
         }, false);
@@ -62,7 +69,7 @@ export default class GameWindow {
         // Mouse release
         document.addEventListener('mouseup', event => {
             // Handle mouse release on screen
-            if (!(minecraft.currentScreen === null)) {
+            if (minecraft.currentScreen !== null) {
                 minecraft.currentScreen.mouseReleased(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
             }
 
@@ -71,7 +78,7 @@ export default class GameWindow {
 
         // Losing focus event
         this.canvas.addEventListener("mouseout", () => {
-            if (minecraft.currentScreen === null) {
+            if (minecraft.currentScreen === null && !this.actualMouseLocked) {
                 minecraft.displayScreen(new GuiIngameMenu());
             }
 
@@ -102,19 +109,22 @@ export default class GameWindow {
             }
 
             // Handle mouse click on screen
-            if (!(minecraft.currentScreen === null)) {
+            if (minecraft.currentScreen !== null) {
                 minecraft.currentScreen.mouseClicked(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
             }
         }, false);
 
         // Mouse scroll
-        document.addEventListener('wheel', (event) => {
+        this.wrapper.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
             let delta = Math.sign(event.deltaY);
             minecraft.onMouseScroll(delta);
         }, false);
 
         // Keyboard interaction with screen
-        window.addEventListener('keydown', (event) => {
+        window.addEventListener('keydown', event => {
             if (event.code === "F11") {
                 return; // Toggle fullscreen
             }
@@ -122,7 +132,7 @@ export default class GameWindow {
             // Prevent key
             event.preventDefault();
 
-            if (!(minecraft.currentScreen === null)) {
+            if (minecraft.currentScreen !== null) {
                 // Handle key type on screen
                 minecraft.currentScreen.keyTyped(event.code, event.key);
             } else if (event.code === 'Escape') {
@@ -137,7 +147,7 @@ export default class GameWindow {
             // Prevent key
             event.preventDefault();
 
-            if (!(minecraft.currentScreen === null)) {
+            if (minecraft.currentScreen !== null) {
                 // Handle key release on screen
                 minecraft.currentScreen.keyReleased(event.code);
             }
