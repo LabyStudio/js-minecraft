@@ -1,5 +1,7 @@
 export default class ScreenRenderer {
 
+    static UPSCALE = 3;
+
     constructor(minecraft, window) {
         this.minecraft = minecraft;
         this.window = window;
@@ -9,8 +11,8 @@ export default class ScreenRenderer {
         this.resolution = this.minecraft.isInGame() ? 1 : this.minecraft.window.scaleFactor; // Increase resolution for the splash text
 
         // Update camera size
-        this.window.canvas2d.width = this.window.width * this.resolution;
-        this.window.canvas2d.height = this.window.height * this.resolution;
+        this.window.canvas2d.width = this.window.width * ScreenRenderer.UPSCALE;
+        this.window.canvas2d.height = this.window.height * ScreenRenderer.UPSCALE;
 
         // Get context stack of 2d canvas
         this.stack2d = this.window.canvas2d.getContext('2d');
@@ -24,7 +26,7 @@ export default class ScreenRenderer {
         let mouseY = this.minecraft.window.mouseY;
 
         this.stack2d.save();
-        this.stack2d.scale(this.resolution, this.resolution, this.resolution);
+        this.stack2d.scale(ScreenRenderer.UPSCALE, ScreenRenderer.UPSCALE, ScreenRenderer.UPSCALE);
 
         // Reset 2d canvas
         this.stack2d.clearRect(0, 0, this.window.width, this.window.height);

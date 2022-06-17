@@ -24,7 +24,7 @@ import UUID from "../util/UUID.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.1.0"
+    static VERSION = "1.1.1"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 758;
 
