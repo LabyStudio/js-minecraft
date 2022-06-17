@@ -19,11 +19,20 @@ import ParticleRenderer from "./render/particle/ParticleRenderer.js";
 import GuiChat from "./gui/screens/GuiChat.js";
 import CommandHandler from "./command/CommandHandler.js";
 import GuiContainerCreative from "./gui/screens/container/GuiContainerCreative.js";
+import GameProfile from "../util/GameProfile.js";
+import UUID from "../util/UUID.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.0.4"
+    static VERSION = "1.1.0"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
+    static PROTOCOL_VERSION = 758;
+
+    // TODO Add to settings
+    static PROXY = {
+        "address": "localhost",
+        "port": 30023
+    };
 
     /**
      * Create Minecraft instance and render it on a canvas
@@ -37,6 +46,9 @@ export default class Minecraft {
         this.player = null;
 
         this.fps = 0;
+
+        let username = "Player" + Math.floor(Math.random() * 100);
+        this.profile = new GameProfile(username, UUID.randomUUID());
 
         // Tick timer
         this.timer = new Timer(20);
@@ -114,7 +126,7 @@ export default class Minecraft {
 
             // Create player
             this.player = new PlayerEntity(this, this.world);
-            this.player.username = "Player" + Math.floor(Math.random() * 100);
+            this.player.username = this.profile.username;
             this.world.addEntity(this.player);
 
             // Load spawn chunks and respawn player
@@ -198,6 +210,11 @@ export default class Minecraft {
         if (typeof screen === "undefined") {
             console.error("Tried to display an undefined screen");
             return;
+        }
+
+        // Fallback screen
+        if (screen === null && !this.isInGame()) {
+            screen = new GuiMainMenu();
         }
 
         // Close previous screen

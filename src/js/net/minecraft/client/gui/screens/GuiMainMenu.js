@@ -6,6 +6,7 @@ import {BackSide} from "../../../../../../../libraries/three.module.js";
 import MathHelper from "../../../util/MathHelper.js";
 import Minecraft from "../../Minecraft.js";
 import GuiCreateWorld from "./GuiCreateWorld.js";
+import GuiDirectConnect from "./GuiDirectConnect.js";
 
 export default class GuiMainMenu extends GuiScreen {
 
@@ -26,8 +27,8 @@ export default class GuiMainMenu extends GuiScreen {
             this.minecraft.displayScreen(new GuiCreateWorld(this));
         }));
         this.buttonList.push(new GuiButton("Multiplayer", this.width / 2 - 100, y + 24, 200, 20, () => {
-
-        }).setEnabled(false));
+            this.minecraft.displayScreen(new GuiDirectConnect(this));
+        }));
         this.buttonList.push(new GuiButton("Minecraft Realms", this.width / 2 - 100, y + 24 * 2, 200, 20, () => {
 
         }).setEnabled(false));

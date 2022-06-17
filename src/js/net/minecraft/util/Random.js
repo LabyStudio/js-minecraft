@@ -15,6 +15,19 @@ export default class Random {
         this.setSeed(seed);
     }
 
+    nextBytes(bytes, length) {
+        let i = 0;
+        while (i < length) {
+            let rnd = this.nextInt();
+            let n = Math.min(length - i, 32 / 8);
+
+            while (n-- > 0) {
+                bytes[i++] = rnd & 0xff;
+                rnd >>= 8;
+            }
+        }
+    }
+
     nextFloat() {
         return this.next(24).toNumber() / (1 << 24);
     }
