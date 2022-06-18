@@ -87,7 +87,7 @@ export default class NetworkManager {
         wrapper.write(array);
         let chunk = wrapper.getArray().buffer;
 
-        // Decrypt chunk
+        // Encrypt chunk
         if (this.isEncrypted) {
             chunk = this.encryption.encrypt(new Uint8Array(chunk));
         }

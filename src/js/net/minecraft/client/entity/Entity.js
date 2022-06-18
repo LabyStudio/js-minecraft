@@ -195,4 +195,12 @@ export default class Entity {
         this.isDead = true;
     }
 
+    isMoving() {
+        return this.motionX !== 0.0
+            || this.motionY !== 0.0 && !this.onGround
+            || this.motionZ !== 0.0
+            || this.rotationYaw !== this.prevRotationYaw
+            || this.rotationPitch !== this.prevRotationPitch;
+    }
+
 }

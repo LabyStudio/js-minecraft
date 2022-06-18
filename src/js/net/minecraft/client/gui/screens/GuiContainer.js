@@ -76,7 +76,7 @@ export default class GuiContainer extends GuiScreen {
     keyTyped(key, character) {
         // Swap to slot
         for (let i = 1; i <= 9; i++) {
-            if (key === 'Digit' + i) {
+            if (key === 'Digit' + i && this.hoverSlot !== null) {
                 this.container.swapWithHotbar(this.hoverSlot, this.minecraft.player.inventory, i - 1);
             }
         }

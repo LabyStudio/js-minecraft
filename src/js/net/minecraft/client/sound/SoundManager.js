@@ -7,7 +7,7 @@ export default class SoundManager {
         this.audioLoader = new THREE.AudioLoader();
         this.audioListener = null;
 
-        this.soundPool = [];
+        this.soundPool = {};
     }
 
     create(worldRenderer) {
@@ -70,7 +70,7 @@ export default class SoundManager {
         } else if (pool.length > 0) {
             // Play random sound in pool
             let sound = pool[Math.floor(Math.random() * pool.length)];
-            if (typeof volume === "undefined") {
+            if (typeof volume === "undefined" || typeof sound === "undefined") {
                 return;
             }
 

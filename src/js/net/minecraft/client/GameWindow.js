@@ -1,22 +1,48 @@
+import Minecraft from "./Minecraft.js";
+import FocusStateType from "../util/FocusStateType.js";
 import GuiIngameMenu from "./gui/screens/GuiIngameMenu.js";
 import Keyboard from "../util/Keyboard.js";
-import Minecraft from "./Minecraft.js";
+import GuiLoadingScreen from "./gui/screens/GuiLoadingScreen.js";
 
 export default class GameWindow {
 
     constructor(minecraft, canvasWrapperId) {
         this.minecraft = minecraft;
-        this.canvasWrapperId = canvasWrapperId;
+
+        this.width = 0;
+        this.height = 0;
+
+        this.mouseX = 0;
+        this.mouseY = 0;
 
         this.mouseMotionX = 0;
         this.mouseMotionY = 0;
-        this.mouseLocked = false;
-        this.actualMouseLocked = false;
 
-        this.isMobile = this.detectTouchDevice();
+        this.mouseInsideWindow = false;
 
+        this.mouseDownInterval = null;
+        this.focusState = FocusStateType.EXITED;
+        this.lastIngameSwitchTime = 0;
+
+        this.mobileDevice = this.detectTouchDevice();
+
+        // Initialize canvas elements
+        this.initializeElements(canvasWrapperId);
+
+        // Register listeners
+        if (this.mobileDevice) {
+            this.registerMobileListeners();
+        } else {
+            this.registerDesktopListeners();
+        }
+
+        // Create keyboard
+        Keyboard.create();
+    }
+
+    initializeElements(canvasWrapperId) {
         // Get canvas wrapper
-        this.wrapper = document.getElementById(this.canvasWrapperId);
+        this.wrapper = document.getElementById(canvasWrapperId);
 
         // Remove all children of wrapper
         while (this.wrapper.firstChild) {
@@ -29,143 +55,193 @@ export default class GameWindow {
 
         // Create screen renderer
         this.canvas2d = document.createElement('canvas');
+        this.canvas2d.debugCanvas = document.createElement('canvas');
         this.wrapper.appendChild(this.canvas2d);
 
         // Create screen item renderer
         this.canvasItems = document.createElement('canvas');
         this.wrapper.appendChild(this.canvasItems);
+    }
 
-        this.canvas.addEventListener("webglcontextlost", function (event) {
-            event.preventDefault();
-        }, false);
-
-        let mouseDownInterval = null;
-
-        // Request focus
-        document.onclick = () => {
-            if (this.minecraft.currentScreen === null) {
-                this.requestFocus();
-            }
-        }
-
-        window.addEventListener('resize', _ => this.updateWindowSize(), false);
-
-        // Focus listener
-        document.addEventListener('pointerlockchange', _ => this.onFocusChanged(), false);
-        document.addEventListener('pointerlockerror', e => {
-            e.preventDefault()
-        }, false);
-
-        // Mouse motion
-        document.addEventListener('mousemove', event => {
-            this.onMouseMove(event);
-
-            // Handle mouse move on screen
-            if (minecraft.currentScreen !== null) {
-                minecraft.currentScreen.mouseDragged(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
-            }
-        }, false);
-
-        // Mouse release
-        document.addEventListener('mouseup', event => {
-            // Handle mouse release on screen
-            if (minecraft.currentScreen !== null) {
-                minecraft.currentScreen.mouseReleased(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
-            }
-
-            clearInterval(mouseDownInterval);
-        }, false);
-
-        // Losing focus event
-        this.canvas.addEventListener("mouseout", () => {
-            if (minecraft.currentScreen === null && !this.actualMouseLocked) {
-                minecraft.displayScreen(new GuiIngameMenu());
-            }
-
-            clearInterval(mouseDownInterval);
+    registerDesktopListeners() {
+        this.registerListener(window, 'resize', event => {
+            this.updateWindowSize();
         });
+        this.registerListener(document, 'mousedown', event => {
+            // In-Game mouse click
+            this.minecraft.onMouseClicked(event.button);
 
-        // Right click
-        document.addEventListener('contextmenu', event => {
-            event.preventDefault();
-        });
-
-        // Mouse buttons
-        document.addEventListener('mousedown', event => {
-            event.preventDefault();
-
-            // Create sound engine (It has to be created after user interaction)
-            if (!minecraft.soundManager.isCreated()) {
-                minecraft.soundManager.create(minecraft.worldRenderer);
+            // Start interval to repeat the mouse event
+            if (this.mouseDownInterval !== null) {
+                clearInterval(this.mouseDownInterval);
             }
-
-            // Handle in-game mouse click
-            if (!this.isMobile) {
-                minecraft.onMouseClicked(event.button);
-
-                // Start interval to repeat the mouse event
-                clearInterval(mouseDownInterval);
-                mouseDownInterval = setInterval(() => minecraft.onMouseClicked(event.button), 250);
-            }
+            this.mouseDownInterval = setInterval(_ => this.minecraft.onMouseClicked(event.button), 250);
 
             // Handle mouse click on screen
-            if (minecraft.currentScreen !== null) {
-                minecraft.currentScreen.mouseClicked(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
+            let currentScreen = this.minecraft.currentScreen;
+            if (currentScreen !== null) {
+                currentScreen.mouseClicked(
+                    event.x / this.scaleFactor,
+                    event.y / this.scaleFactor,
+                    event.code
+                );
             }
-        }, false);
 
-        // Mouse scroll
-        this.wrapper.addEventListener('wheel', (event) => {
-            event.preventDefault();
+            // Fix cursor lock state
+            this.requestCursorUpdate();
+
+            // Request lock on click
+            if (this.minecraft.currentScreen === null && this.focusState === FocusStateType.EXITED) {
+                this.updateFocusState(FocusStateType.REQUEST_LOCK);
+            }
+
+            this.initialSoundEngine();
+        });
+        this.registerListener(document, 'mousemove', event => {
+            this.mouseX = event.clientX / this.scaleFactor;
+            this.mouseY = event.clientY / this.scaleFactor;
+
+            this.mouseMotionX = event.movementX;
+            this.mouseMotionY = -event.movementY;
+
+            // Handle mouse move on screen
+            let currentScreen = this.minecraft.currentScreen;
+            if (currentScreen !== null) {
+                currentScreen.mouseDragged(event.x / this.scaleFactor, event.y / this.scaleFactor, event.code);
+            }
+
+            this.requestCursorUpdate();
+        });
+        this.registerListener(document, 'mouseup', event => {
+            // Handle mouse release on screen
+            let currentScreen = this.minecraft.currentScreen;
+            if (currentScreen !== null) {
+                currentScreen.mouseReleased(
+                    event.x / this.scaleFactor,
+                    event.y / this.scaleFactor,
+                    event.code
+                );
+            }
+
+            if (this.mouseDownInterval !== null) {
+                clearInterval(this.mouseDownInterval);
+            }
+        });
+        this.registerListener(document, 'pointerlockchange', event => {
+            let intentState = this.focusState.getIntent(); // Get target state we want to switch into
+            let isCursorLocked = this.isCursorLockedToCanvas(); // Get current state of the canvas lock
+            let isLockIntent = intentState === FocusStateType.LOCKED; // Check if we want to lock the cursor
+
+            let lastSwitchDuration = Date.now() - this.lastIngameSwitchTime;
+            if (this.focusState === FocusStateType.LOCKED && !isCursorLocked && lastSwitchDuration < 200) {
+                // If the user exists the inventory by using the escape key, the cursor unlocks from the canvas,
+                // so we have to prevent that by switching immediately to the request state
+                this.focusState = FocusStateType.REQUEST_LOCK;
+            } else {
+                if (intentState === null) {
+                    // The state changed unintentionally, so we have to choose a new state from the current canvas lock
+                    this.updateFocusState(isCursorLocked ? FocusStateType.LOCKED : FocusStateType.EXITED);
+                } else if (isCursorLocked === isLockIntent) {
+                    // Check if the canvas completed the lock operation like intended and change the state to its final state
+                    this.updateFocusState(intentState);
+                }
+            }
+        });
+        this.registerListener(this.wrapper, 'mouseover', event => {
+            // Enable keyboard util handling
+            Keyboard.setEnabled(true);
+            this.mouseInsideWindow = true;
+
+            // Update cursor lock
+            this.requestCursorUpdate();
+        });
+        this.registerListener(this.wrapper, 'mouseleave', event => {
+            // Disable keyboard util handling
+            Keyboard.setEnabled(false);
+            this.mouseInsideWindow = false;
+
+            // Update cursor lock
+            this.requestCursorUpdate();
+        });
+        this.registerListener(document, 'mouseout', event => {
+            this.requestCursorUpdate();
+        });
+        this.registerListener(document, 'mouseenter', event => {
+            this.requestCursorUpdate();
+        });
+        this.registerListener(window, 'keydown', event => {
+            // Prevent browser functions except fullscreen
+            if (event.key !== 'F11') {
+                event.preventDefault();
+            }
+
+            // Ignore key input if mouse is not inside window
+            if (!this.mouseInsideWindow) {
+                return;
+            }
+
+            // Handle escape press if focus is still in requesting state
+            if (event.key === 'Escape' && this.minecraft.currentScreen === null) {
+                this.updateFocusState(FocusStateType.REQUEST_EXIT);
+                return;
+            }
+
+            let currentScreen = this.minecraft.currentScreen;
+            if (currentScreen === null) {
+                // Handle in-game key press
+                this.minecraft.onKeyPressed(event.code);
+            } else {
+                // Handle key type on screen
+                currentScreen.keyTyped(event.code, event.key);
+            }
+
+            this.requestCursorUpdate();
+        }, false);
+        this.registerListener(window, 'keyup', event => {
+            // Handle key release on screen
+            let currentScreen = this.minecraft.currentScreen;
+            if (currentScreen !== null) {
+                currentScreen.keyReleased(event.code);
+            }
+        });
+        this.registerListener(document, 'contextmenu');
+        this.registerListener(this.wrapper, 'wheel', event => {
             event.stopPropagation();
 
+            // Handle mouse scroll
             let delta = Math.sign(event.deltaY);
-            minecraft.onMouseScroll(delta);
-        }, false);
-
-        // Keyboard interaction with screen
-        window.addEventListener('keydown', event => {
-            if (event.code === "F11") {
-                return; // Toggle fullscreen
-            }
-
-            // Prevent key
-            event.preventDefault();
-
-            if (minecraft.currentScreen !== null) {
-                // Handle key type on screen
-                minecraft.currentScreen.keyTyped(event.code, event.key);
-            } else if (event.code === 'Escape') {
-                minecraft.displayScreen(new GuiIngameMenu());
-            } else {
-                minecraft.onKeyPressed(event.code);
-            }
+            this.minecraft.onMouseScroll(delta);
         });
+    }
 
-        // Keyboard interaction with screen
-        window.addEventListener('keyup', (event) => {
-            // Prevent key
-            event.preventDefault();
+    registerMobileListeners() {
+        let touchStartTime = 0;
+        let prevTouched = false;
 
-            if (minecraft.currentScreen !== null) {
-                // Handle key release on screen
-                minecraft.currentScreen.keyReleased(event.code);
-            }
+        this.registerListener(window, 'resize', event => {
+            this.updateWindowSize();
         });
-
-        // Touch interaction
-        let touchStart;
-        window.addEventListener('touchstart', (event) => {
+        this.registerListener(document, 'touchstart', event => {
             for (let i = 0; i < event.touches.length; i++) {
                 let touch = event.touches[i];
-
                 let x = touch.pageX;
                 let y = touch.pageY;
 
+                // Handle mouse click on screen
+                let currentScreen = this.minecraft.currentScreen;
+                if (currentScreen !== null) {
+                    currentScreen.mouseClicked(
+                        x / this.scaleFactor,
+                        y / this.scaleFactor,
+                        0
+                    );
+                }
+
                 let isRightHand = x > this.wrapper.offsetWidth / 2;
 
+                // Handle player movement
                 if (isRightHand) {
-                    touchStart = Date.now();
+                    touchStartTime = Date.now();
                 } else {
                     let tileSize = this.wrapper.offsetWidth / 8;
 
@@ -201,48 +277,61 @@ export default class GameWindow {
                     }
                 }
             }
-
-            // Create sound engine (It has to be created after user interaction)
-            if (!minecraft.soundManager.isCreated()) {
-                minecraft.soundManager.create(minecraft.worldRenderer);
-            }
-        });
-
-        // Touch movement
-        let prevTouch;
-        window.addEventListener('touchmove', (event) => {
+        }, false);
+        this.registerListener(document, 'touchmove', event => {
             for (let i = 0; i < event.touches.length; i++) {
                 let touch = event.touches[i];
-
                 let x = touch.pageX;
                 let y = touch.pageY;
+
+                // Handle mouse move on screen
+                let currentScreen = this.minecraft.currentScreen;
+                if (currentScreen !== null) {
+                    currentScreen.mouseDragged(
+                        x / this.scaleFactor,
+                        y / this.scaleFactor,
+                        0
+                    );
+                }
 
                 // Right hand
                 let isRightHand = x > this.wrapper.offsetWidth / 2;
 
+                // Handle player movement
                 if (isRightHand) {
-                    // Player movement
-                    if (prevTouch) {
-                        this.mouseMotionX = (x - prevTouch.pageX) * 10;
-                        this.mouseMotionY = -(y - prevTouch.pageY) * 10;
+                    if (prevTouched) {
+                        this.mouseMotionX = (x - prevTouched.pageX) * 10;
+                        this.mouseMotionY = -(y - prevTouched.pageY) * 10;
                     }
-
-                    prevTouch = touch;
+                    prevTouched = touch;
+                    touchStartTime = Date.now();
                 }
             }
-        });
-        window.addEventListener('touchend', (event) => {
+        }, false);
+        this.registerListener(document, 'touchend', event => {
             // Break block
-            if (!prevTouch && touchStart && (Date.now() - touchStart) < 1000) {
-                minecraft.onMouseClicked(2);
+            if (!prevTouched && touchStartTime !== 0 && (Date.now() - touchStartTime) < 1000) {
+                this.minecraft.onMouseClicked(2);
             }
 
-            prevTouch = null;
-            touchStart = null;
+            prevTouched = false;
+            touchStartTime = 0;
 
-            // Stop pressing keys
+            // Handle touches
             for (let i = 0; i < event.changedTouches.length; i++) {
                 let touch = event.changedTouches[i];
+                let x = touch.pageX;
+                let y = touch.pageY;
+
+                // Handle mouse release on screen
+                let currentScreen = this.minecraft.currentScreen;
+                if (currentScreen !== null) {
+                    currentScreen.mouseReleased(
+                        x / this.scaleFactor,
+                        y / this.scaleFactor,
+                        0
+                    );
+                }
 
                 // Left hand
                 let isLeftHand = touch.pageX < this.wrapper.offsetWidth / 2;
@@ -253,41 +342,18 @@ export default class GameWindow {
                     break;
                 }
             }
-        });
+
+            this.initialSoundEngine();
+        }, false);
+        this.registerListener(document, 'contextmenu');
 
         // Break block listener
-        if (this.isMobile) {
-            setInterval(() => {
-                if (touchStart && (Date.now() - touchStart) > 1000) {
-                    touchStart = Date.now();
-                    minecraft.onMouseClicked(0);
-                }
-            }, 200);
-        }
-
-        // Create keyboard
-        Keyboard.create();
-    }
-
-    requestFocus() {
-        if (this.isMobile) {
-            document.body.requestFullscreen();
-        } else {
-            window.focus();
-            this.canvas.requestPointerLock();
-            document.body.style.cursor = 'none';
-        }
-
-        this.mouseLocked = true;
-    }
-
-    exitFocus() {
-        if (this.isMobile) {
-            return;
-        }
-
-        document.exitPointerLock();
-        document.body.style.cursor = 'default';
+        setInterval(() => {
+            if (touchStartTime !== 0 && (Date.now() - touchStartTime) > 250) {
+                touchStartTime = Date.now();
+                this.minecraft.onMouseClicked(0);
+            }
+        }, 200);
     }
 
     updateWindowSize() {
@@ -313,11 +379,15 @@ export default class GameWindow {
         this.canvas2d.style.width = wrapperWidth + "px";
         this.canvas2d.style.height = wrapperHeight + "px";
 
+        let debugCanvas = this.canvas2d["debugCanvas"];
+        debugCanvas.width = this.canvas2d.width;
+        debugCanvas.height = this.canvas2d.height;
+
         // Reinitialize gui
         this.minecraft.screenRenderer.initialize();
 
         // Reinitialize current screen
-        if (!(this.minecraft.currentScreen === null)) {
+        if (this.minecraft.currentScreen !== null) {
             this.minecraft.currentScreen.setup(this.minecraft, this.width, this.height);
         }
     }
@@ -332,29 +402,63 @@ export default class GameWindow {
         }
 
         this.scaleFactor = scale;
-        this.width = wrapperWidth / scale;
-        this.height = wrapperHeight / scale;
+        this.width = Math.ceil(wrapperWidth / scale);
+        this.height = Math.ceil(wrapperHeight / scale);
     }
 
-    onFocusChanged() {
-        this.actualMouseLocked = document.pointerLockElement === this.canvas;
+    isCursorLockedToCanvas() {
+        // The actual state of the browser cursor lock
+        return document.pointerLockElement === this.canvas;
     }
 
-    onMouseMove(event) {
-        this.mouseX = event.clientX / this.scaleFactor;
-        this.mouseY = event.clientY / this.scaleFactor;
+    isLocked() {
+        // The actual definition for the game if the cursor is locked or not
+        return this.focusState.isLock() && this.minecraft.currentScreen === null;
+    }
 
-        if (document.pointerLockElement !== this.canvas) {
-            this.mouseLocked = false;
-
-            if (this.minecraft.currentScreen === null) {
-                this.requestFocus();
-            }
+    updateFocusState(state) {
+        if (state.getIntent() === this.focusState || state === this.focusState) {
+            return;
         }
 
-        if (this.actualMouseLocked || this.mouseLocked) {
-            this.mouseMotionX = event.movementX;
-            this.mouseMotionY = -event.movementY;
+        let prevLock = this.focusState.isLock();
+        let nextLock = state.isLock();
+
+        // Update state
+        this.focusState = state;
+
+        // Update cursor visibility
+        document.body.style.cursor = nextLock ? 'none' : 'default';
+
+        // Request lock state
+        this.requestCursorUpdate();
+
+        // Open menu on exit
+        if (prevLock !== nextLock) {
+            let currentScreen = this.minecraft.currentScreen;
+
+            // Open in-game menu
+            if (currentScreen === null && !nextLock) {
+                this.minecraft.displayScreen(new GuiIngameMenu());
+            }
+
+            // Close current screen
+            if (!(currentScreen instanceof GuiLoadingScreen) && nextLock) {
+                this.minecraft.displayScreen(null);
+                this.lastIngameSwitchTime = Date.now();
+            }
+        }
+    }
+
+    requestCursorUpdate() {
+        // Check if the current state doesn't match the canvas lock
+        if (this.mouseInsideWindow && this.focusState.isLock() !== this.isCursorLockedToCanvas()) {
+            // Request cursor lock depending on the state
+            if (this.focusState.isLock()) {
+                this.canvas.requestPointerLock();
+            } else {
+                document.exitPointerLock();
+            }
         }
     }
 
@@ -367,8 +471,30 @@ export default class GameWindow {
         return false;
     }
 
-    close() {
-        this.openUrl(Minecraft.URL_GITHUB);
+    getMemoryLimit() {
+        return this.getMemoryValue("jsHeapSizeLimit", 1);
+    }
+
+    getMemoryAllocated() {
+        return this.getMemoryValue("totalJSHeapSize", 0);
+    }
+
+    getMemoryUsed() {
+        return this.getMemoryValue("usedJSHeapSize", 0);
+    }
+
+    getMemoryValue(key, fallbackValue = 0) {
+        let performance = window.performance || window.msPerformance || window.webkitPerformance || window.mozPerformance;
+        if (performance && performance.memory && performance.memory[key]) {
+            return performance.memory[key];
+        }
+        return fallbackValue;
+    }
+
+    getGPUName() {
+        let gl = this.canvas.getContext("webgl2");
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
     }
 
     openUrl(url, newTab) {
@@ -379,8 +505,46 @@ export default class GameWindow {
         }
     }
 
+    close() {
+        this.openUrl(Minecraft.URL_GITHUB);
+    }
+
     async getClipboardText() {
         return navigator.clipboard.readText();
     }
 
+    isMobileDevice() {
+        return this.mobileDevice;
+    }
+
+    pullMouseMotionX() {
+        let value = this.mouseMotionX;
+        this.mouseMotionX = 0;
+        return value;
+    }
+
+    pullMouseMotionY() {
+        let value = this.mouseMotionY;
+        this.mouseMotionY = 0;
+        return value;
+    }
+
+    initialSoundEngine() {
+        // Create sound engine (It has to be created after user interaction)
+        if (!this.minecraft.soundManager.isCreated()) {
+            this.minecraft.soundManager.create(this.minecraft.worldRenderer);
+        }
+    }
+
+    registerListener(parent, event, listener = null, preventDefaults = true) {
+        parent.addEventListener(event, event => {
+            if (preventDefaults) {
+                event.preventDefault();
+            }
+
+            if (listener !== null) {
+                listener(event);
+            }
+        });
+    }
 }

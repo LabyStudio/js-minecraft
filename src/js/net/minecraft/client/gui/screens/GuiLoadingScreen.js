@@ -48,7 +48,7 @@ export default class GuiLoadingScreen extends GuiScreen {
     }
 
     setProgress(progress) {
-        if (progress < this.progress) {
+        if (progress < this.progress || progress > 1) {
             return;
         }
         this.progress = progress;

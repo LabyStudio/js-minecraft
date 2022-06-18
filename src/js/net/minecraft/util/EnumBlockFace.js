@@ -17,6 +17,10 @@ export default class EnumBlockFace {
         return this.isXAxis() ? 0.6 : this.isYAxis() ? 1.0 : 0.8;
     }
 
+    isPositive() {
+        return this.x > 0 || this.y > 0 || this.z > 0;
+    }
+
     isXAxis() {
         return this.x !== 0;
     }
@@ -56,6 +60,25 @@ export default class EnumBlockFace {
 
     equals(other) {
         return this.x === other.x && this.y === other.y && this.z === other.z;
+    }
+
+    getName() {
+        switch (this) {
+            case EnumBlockFace.TOP:
+                return "top";
+            case EnumBlockFace.BOTTOM:
+                return "bottom";
+            case EnumBlockFace.NORTH:
+                return "north";
+            case EnumBlockFace.EAST:
+                return "east";
+            case EnumBlockFace.SOUTH:
+                return "south";
+            case EnumBlockFace.WEST:
+                return "west";
+            default:
+                return "unknown";
+        }
     }
 
     static values() {

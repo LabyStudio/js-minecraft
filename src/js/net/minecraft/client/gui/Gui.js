@@ -16,8 +16,8 @@ export default class Gui {
         this.minecraft.fontRenderer.drawString(stack, string, x - this.getStringWidth(stack, string) / 2, y, color);
     }
 
-    drawRightString(stack, string, x, y, color = -1) {
-        this.minecraft.fontRenderer.drawString(stack, string, x - this.getStringWidth(stack, string), y, color);
+    drawRightString(stack, string, x, y, color = -1, shadow = true) {
+        this.minecraft.fontRenderer.drawString(stack, string, x - this.getStringWidth(stack, string), y, color, shadow);
     }
 
     drawString(stack, string, x, y, color = -1, shadow = true) {

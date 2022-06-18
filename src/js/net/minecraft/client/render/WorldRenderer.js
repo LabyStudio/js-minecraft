@@ -49,6 +49,8 @@ export default class WorldRenderer {
 
         this.flushRebuild = false;
 
+        this.lastHitResult = null;
+
         this.initialize();
     }
 
@@ -763,6 +765,8 @@ export default class WorldRenderer {
                 );
             }
         }
+
+        this.lastHitResult = hitResult;
     }
 
     translate(stack, x, y, z) {

@@ -21,10 +21,11 @@ import CommandHandler from "./command/CommandHandler.js";
 import GuiContainerCreative from "./gui/screens/container/GuiContainerCreative.js";
 import GameProfile from "../util/GameProfile.js";
 import UUID from "../util/UUID.js";
+import FocusStateType from "../util/FocusStateType.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.1.1"
+    static VERSION = "1.1.2"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 758;
 
@@ -46,6 +47,7 @@ export default class Minecraft {
         this.player = null;
 
         this.fps = 0;
+        this.maxFps = 0;
 
         let username = "Player" + Math.floor(Math.random() * 100);
         this.profile = new GameProfile(username, UUID.randomUUID());
@@ -137,7 +139,7 @@ export default class Minecraft {
     }
 
     hasInGameFocus() {
-        return this.window.mouseLocked && this.currentScreen === null;
+        return this.window.isLocked() && this.currentScreen === null;
     }
 
     isInGame() {
@@ -167,7 +169,7 @@ export default class Minecraft {
         }
 
         // Render the game
-        this.onRender(this.timer.partialTicks);
+        this.onRender(this.isPaused() ? 0 : this.timer.partialTicks);
 
         // Increase rendered frame
         this.frames++;
@@ -175,6 +177,7 @@ export default class Minecraft {
         // Loop if a second passed
         while (Date.now() >= this.lastTime + 1000) {
             this.fps = this.frames;
+            this.maxFps = Math.max(this.maxFps, this.fps);
             this.lastTime += 1000;
             this.frames = 0;
         }
@@ -184,10 +187,9 @@ export default class Minecraft {
         if (this.isInGame()) {
             // Player rotation
             if (!this.isPaused()) {
-                this.player.turn(this.window.mouseMotionX, this.window.mouseMotionY);
-
-                this.window.mouseMotionX = 0;
-                this.window.mouseMotionY = 0;
+                let deltaX = this.window.pullMouseMotionX();
+                let deltaY = this.window.pullMouseMotionY();
+                this.player.turn(deltaX, deltaY);
             }
 
             // Update lights
@@ -196,7 +198,7 @@ export default class Minecraft {
             }
 
             // Render the game
-            if (this.hasInGameFocus()) {
+            if (this.isInGame() && !this.isPaused()) {
                 this.worldRenderer.render(partialTicks);
             }
         }
@@ -207,6 +209,10 @@ export default class Minecraft {
     }
 
     displayScreen(screen) {
+        if (screen === this.currentScreen) {
+            return;
+        }
+
         if (typeof screen === "undefined") {
             console.error("Tried to display an undefined screen");
             return;
@@ -230,9 +236,9 @@ export default class Minecraft {
 
         // Initialize new screen
         if (screen === null) {
-            this.window.requestFocus();
+            this.window.updateFocusState(FocusStateType.REQUEST_LOCK);
         } else {
-            this.window.exitFocus();
+            this.window.updateFocusState(FocusStateType.REQUEST_EXIT);
             screen.setup(this, this.window.width, this.window.height);
         }
 
@@ -242,6 +248,9 @@ export default class Minecraft {
 
     onTick() {
         if (this.isInGame() && !this.isPaused()) {
+            // Tick overlay
+            this.ingameOverlay.onTick();
+
             // Tick world
             this.world.onTick();
 
@@ -253,9 +262,6 @@ export default class Minecraft {
 
             // Tick particle renderer
             this.particleRenderer.onTick();
-
-            // Tick overlay
-            this.ingameOverlay.onTick();
         }
 
         // Tick the screen
@@ -315,6 +321,7 @@ export default class Minecraft {
         // Toggle debug overlay
         if (button === "F3") {
             this.settings.debugOverlay = !this.settings.debugOverlay;
+            this.settings.save();
         }
 
         // Open inventory
@@ -324,7 +331,7 @@ export default class Minecraft {
     }
 
     onMouseClicked(button) {
-        if (this.window.mouseLocked) {
+        if (this.window.isLocked()) {
             let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
 
             // Destroy block

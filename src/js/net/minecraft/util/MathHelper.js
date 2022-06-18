@@ -99,4 +99,5 @@ export default class MathHelper {
         let h = c && ((v === r) ? (g - b) / c : ((v === g) ? 2 + (b - r) / c : 4 + (r - g) / c));
         return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
     }
+
 }
