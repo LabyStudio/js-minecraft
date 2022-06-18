@@ -46,16 +46,18 @@ export default class IngameOverlay extends Gui {
         // Render debug overlay on tick
         if (this.minecraft.settings.debugOverlay) {
             let stack = this.window.canvasDebug.getContext('2d');
-            let fastUpdate = this.minecraft.player.isMoving() && this.minecraft.fps > 30;
 
             // Render debug overlay each tick if the player is moving
-            if (this.ticksRendered % (fastUpdate ? 2 : 20) === 0) {
+            if (this.ticksRendered % 10 === 0) {
                 // Clear debug canvas
                 stack.clearRect(0, 0, this.window.width, this.window.height);
 
                 // Render debug information
                 this.renderLeftDebugOverlay(stack);
                 this.renderRightDebugOverlay(stack);
+            } else if (this.minecraft.player.isMoving()) {
+                // Render debug information
+                this.renderLeftDebugOverlay(stack, [5, 6, 7, 8]);
             }
 
             this.ticksRendered++;
@@ -94,7 +96,7 @@ export default class IngameOverlay extends Gui {
         }
     }
 
-    renderLeftDebugOverlay(stack) {
+    renderLeftDebugOverlay(stack, filters = []) {
         let world = this.minecraft.world;
         let player = this.minecraft.player;
         let worldRenderer = this.minecraft.worldRenderer;
@@ -196,8 +198,18 @@ export default class IngameOverlay extends Gui {
 
         // Draw lines
         for (let i = 0; i < lines.length; i++) {
-            if (lines[i].length === 0) {
+            if (lines[i].length === 0 || filters.length !== 0 && !filters.includes(i)) {
                 continue;
+            }
+
+            // Clear the line
+            if (filters.length !== 0) {
+                stack.clearRect(
+                    1,
+                    1 + FontRenderer.FONT_HEIGHT * i,
+                    this.getStringWidth(stack, lines[i]) + 1,
+                    FontRenderer.FONT_HEIGHT
+                );
             }
 
             // Draw background
