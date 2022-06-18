@@ -375,8 +375,10 @@ export default class GameWindow {
         this.canvas.style.width = wrapperWidth + "px";
         this.canvas.style.height = wrapperHeight + "px";
 
-        this.canvasDebug.width = this.canvas.width;
-        this.canvasDebug.height = this.canvas.height;
+        if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
+            this.canvasDebug.width = this.canvas.width;
+            this.canvasDebug.height = this.canvas.height;
+        }
 
         // Reinitialize gui
         this.minecraft.screenRenderer.initialize();
@@ -389,6 +391,7 @@ export default class GameWindow {
         // Render first frame
         if (this.minecraft.isInGame()) {
             this.minecraft.worldRenderer.render(0);
+            this.minecraft.onRender(0)
         }
     }
 

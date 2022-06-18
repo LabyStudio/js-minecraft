@@ -25,7 +25,7 @@ import FocusStateType from "../util/FocusStateType.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.1.3"
+    static VERSION = "1.1.4"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 758;
 

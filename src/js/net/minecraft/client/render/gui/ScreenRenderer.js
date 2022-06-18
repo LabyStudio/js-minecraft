@@ -3,16 +3,14 @@ export default class ScreenRenderer {
     constructor(minecraft, window) {
         this.minecraft = minecraft;
         this.window = window;
-
-        this.upscale = window.isMobileDevice() ? 1 : 4;
     }
 
     initialize() {
-        this.resolution = this.minecraft.isInGame() ? 1 : this.minecraft.window.scaleFactor; // Increase resolution for the splash text
+        let scale = this.getLimitedScaleFactor();
 
         // Update camera size
-        this.window.canvas.width = this.window.width * this.upscale;
-        this.window.canvas.height = this.window.height * this.upscale;
+        this.window.canvas.width = this.window.width * scale;
+        this.window.canvas.height = this.window.height * scale;
 
         // Get context stack of 2d canvas
         this.stack2d = this.window.canvas.getContext('2d');
@@ -22,6 +20,8 @@ export default class ScreenRenderer {
     }
 
     render(partialTicks) {
+        let scale = this.getLimitedScaleFactor();
+
         let mouseX = this.minecraft.window.mouseX;
         let mouseY = this.minecraft.window.mouseY;
 
@@ -29,13 +29,13 @@ export default class ScreenRenderer {
 
         // Draw world to canvas
         if (this.minecraft.isInGame()) {
-            this.stack2d.drawImage(this.window.canvasWorld, 0, 0, this.window.width * this.upscale, this.window.height * this.upscale);
+            this.stack2d.drawImage(this.window.canvasWorld, 0, 0, this.window.width * scale, this.window.height * scale);
         } else {
             this.reset();
         }
 
         // Scale GUI
-        this.stack2d.scale(this.upscale, this.upscale, this.upscale);
+        this.stack2d.scale(scale, scale, scale);
 
         try {
             // Render in-game overlay
@@ -52,7 +52,8 @@ export default class ScreenRenderer {
         }
 
         // Scale GUI back
-        this.stack2d.scale(1 / this.upscale, 1 / this.upscale, 1 / this.upscale);
+        let actualScale = this.window.scaleFactor;
+        this.stack2d.scale(1 / actualScale, 1 / actualScale, 1 / actualScale);
 
         // Render items
         this.stack2d.drawImage(this.window.canvasItems, 0, 0);
@@ -62,6 +63,10 @@ export default class ScreenRenderer {
 
     reset() {
         this.stack2d.clearRect(0, 0, this.window.canvas.width, this.window.canvas.height);
+    }
+
+    getLimitedScaleFactor() {
+        return Math.min(this.window.scaleFactor, 4);
     }
 
 }
