@@ -25,7 +25,7 @@ import FocusStateType from "../util/FocusStateType.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.1.2"
+    static VERSION = "1.1.3"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 758;
 
@@ -161,7 +161,13 @@ export default class Minecraft {
 
     onLoop() {
         // Update the timer
-        this.timer.advanceTime();
+        if (this.isPaused() && this.isInGame()) {
+            let prevPartialTicks = this.timer.partialTicks;
+            this.timer.advanceTime();
+            this.timer.partialTicks = prevPartialTicks;
+        } else {
+            this.timer.advanceTime();
+        }
 
         // Call the tick to reach updates 20 per seconds
         for (let i = 0; i < this.timer.ticks; i++) {
@@ -169,7 +175,7 @@ export default class Minecraft {
         }
 
         // Render the game
-        this.onRender(this.isPaused() ? 0 : this.timer.partialTicks);
+        this.onRender(this.timer.partialTicks);
 
         // Increase rendered frame
         this.frames++;
@@ -203,9 +209,11 @@ export default class Minecraft {
             }
         }
 
+        // Render items in GUI
+        this.itemRenderer.render(partialTicks);
+
         // Render current screen
         this.screenRenderer.render(partialTicks);
-        this.itemRenderer.render(partialTicks);
     }
 
     displayScreen(screen) {

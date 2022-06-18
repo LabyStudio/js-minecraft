@@ -48,6 +48,7 @@ export default class ItemRenderer {
         this.camera.updateProjectionMatrix();
 
         // Render scene
+        this.webRenderer.clear();
         this.webRenderer.render(this.scene, this.camera);
     }
 
@@ -115,18 +116,11 @@ export default class ItemRenderer {
     }
 
     destroy(groupId, renderId = null) {
-        let hit = false;
-
         for (let i in this.items) {
             if (this.items[i].groupId === groupId && (renderId === null || this.items[i].renderId === renderId)) {
                 this.scene.remove(this.items[i].group);
                 delete this.items[i];
-                hit = true;
             }
-        }
-
-        if (hit) {
-            this.webRenderer.clear();
         }
     }
 }

@@ -77,7 +77,7 @@ export default class WorldRenderer {
 
         // Create web renderer
         this.webRenderer = new THREE.WebGLRenderer({
-            canvas: this.window.canvas,
+            canvas: this.window.canvasWorld,
             antialias: false,
             alpha: true
         });

@@ -36,7 +36,7 @@ export default class IngameOverlay extends Gui {
 
         // Render debug canvas on stack
         if (this.minecraft.settings.debugOverlay) {
-            stack.drawImage(this.window.canvas2d.debugCanvas, 0, 0);
+            stack.drawImage(this.window.canvasDebug, 0, 0);
         }
     }
 
@@ -45,11 +45,11 @@ export default class IngameOverlay extends Gui {
 
         // Render debug overlay on tick
         if (this.minecraft.settings.debugOverlay) {
-            let stack = this.window.canvas2d.debugCanvas.getContext('2d');
-            let moving = this.minecraft.player.isMoving();
+            let stack = this.window.canvasDebug.getContext('2d');
+            let fastUpdate = this.minecraft.player.isMoving() && this.minecraft.fps > 30;
 
             // Render debug overlay each tick if the player is moving
-            if (this.ticksRendered % (moving ? 1 : 20) === 0) {
+            if (this.ticksRendered % (fastUpdate ? 2 : 20) === 0) {
                 // Clear debug canvas
                 stack.clearRect(0, 0, this.window.width, this.window.height);
 

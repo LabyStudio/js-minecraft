@@ -55,6 +55,7 @@ export default class GuiMainMenu extends GuiScreen {
         this.camera.rotation.x = -MathHelper.toRadians(rotationX + 180);
         this.camera.rotation.y = -MathHelper.toRadians(rotationY - 180);
         this.camera.updateProjectionMatrix();
+        this.minecraft.worldRenderer.webRenderer.clear();
         this.minecraft.worldRenderer.webRenderer.render(this.scene, this.camera);
 
         // Draw panorama overlay
@@ -159,15 +160,17 @@ export default class GuiMainMenu extends GuiScreen {
         this.camera.rotation.order = 'ZYX';
 
         // Apply blur
-        let style = this.minecraft.window.canvas2d.style;
+        let style = this.minecraft.window.canvas.style;
         style.backdropFilter = "blur(10px)";
         style.webkitBackdropFilter = "blur(10px)";
+        this.minecraft.window.wrapper.insertBefore(this.minecraft.window.canvasWorld, this.minecraft.window.canvas);
     }
 
     onClose() {
         // Remove blur
-        let style = this.minecraft.window.canvas2d.style;
+        let style = this.minecraft.window.canvas.style;
         style.backdropFilter = "";
         style.webkitBackdropFilter = "";
+        this.minecraft.window.wrapper.removeChild(this.minecraft.window.canvasWorld);
     }
 }

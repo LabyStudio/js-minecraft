@@ -4,18 +4,18 @@ export default class ScreenRenderer {
         this.minecraft = minecraft;
         this.window = window;
 
-        this.upscale = window.isMobileDevice() ? 1 : 3;
+        this.upscale = window.isMobileDevice() ? 1 : 4;
     }
 
     initialize() {
         this.resolution = this.minecraft.isInGame() ? 1 : this.minecraft.window.scaleFactor; // Increase resolution for the splash text
 
         // Update camera size
-        this.window.canvas2d.width = this.window.width * this.upscale;
-        this.window.canvas2d.height = this.window.height * this.upscale;
+        this.window.canvas.width = this.window.width * this.upscale;
+        this.window.canvas.height = this.window.height * this.upscale;
 
         // Get context stack of 2d canvas
-        this.stack2d = this.window.canvas2d.getContext('2d');
+        this.stack2d = this.window.canvas.getContext('2d');
         this.stack2d.webkitImageSmoothingEnabled = false;
         this.stack2d.mozImageSmoothingEnabled = false;
         this.stack2d.imageSmoothingEnabled = false;
@@ -26,10 +26,16 @@ export default class ScreenRenderer {
         let mouseY = this.minecraft.window.mouseY;
 
         this.stack2d.save();
-        this.stack2d.scale(this.upscale, this.upscale, this.upscale);
 
-        // Reset 2d canvas
-        this.stack2d.clearRect(0, 0, this.window.width, this.window.height);
+        // Draw world to canvas
+        if (this.minecraft.isInGame()) {
+            this.stack2d.drawImage(this.window.canvasWorld, 0, 0, this.window.width * this.upscale, this.window.height * this.upscale);
+        } else {
+            this.reset();
+        }
+
+        // Scale GUI
+        this.stack2d.scale(this.upscale, this.upscale, this.upscale);
 
         try {
             // Render in-game overlay
@@ -45,11 +51,17 @@ export default class ScreenRenderer {
             console.error(e);
         }
 
+        // Scale GUI back
+        this.stack2d.scale(1 / this.upscale, 1 / this.upscale, 1 / this.upscale);
+
+        // Render items
+        this.stack2d.drawImage(this.window.canvasItems, 0, 0);
+
         this.stack2d.restore();
     }
 
     reset() {
-        this.stack2d.clearRect(0, 0, this.window.canvas2d.width, this.window.canvas2d.height);
+        this.stack2d.clearRect(0, 0, this.window.canvas.width, this.window.canvas.height);
     }
 
 }

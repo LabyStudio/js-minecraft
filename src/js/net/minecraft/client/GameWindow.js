@@ -49,18 +49,14 @@ export default class GameWindow {
             this.wrapper.removeChild(this.wrapper.firstChild);
         }
 
-        // Create world renderer
+        // Create render layers
+        this.canvasWorld = document.createElement('canvas');
+        this.canvasDebug = document.createElement('canvas');
+        this.canvasItems = document.createElement('canvas');
+
+        // Create canvas renderer
         this.canvas = document.createElement('canvas');
         this.wrapper.appendChild(this.canvas);
-
-        // Create screen renderer
-        this.canvas2d = document.createElement('canvas');
-        this.canvas2d.debugCanvas = document.createElement('canvas');
-        this.wrapper.appendChild(this.canvas2d);
-
-        // Create screen item renderer
-        this.canvasItems = document.createElement('canvas');
-        this.wrapper.appendChild(this.canvasItems);
     }
 
     registerDesktopListeners() {
@@ -376,12 +372,11 @@ export default class GameWindow {
         itemRenderer.webRenderer.setSize(wrapperWidth, wrapperHeight);
 
         // Update canvas 2d size
-        this.canvas2d.style.width = wrapperWidth + "px";
-        this.canvas2d.style.height = wrapperHeight + "px";
+        this.canvas.style.width = wrapperWidth + "px";
+        this.canvas.style.height = wrapperHeight + "px";
 
-        let debugCanvas = this.canvas2d["debugCanvas"];
-        debugCanvas.width = this.canvas2d.width;
-        debugCanvas.height = this.canvas2d.height;
+        this.canvasDebug.width = this.canvas.width;
+        this.canvasDebug.height = this.canvas.height;
 
         // Reinitialize gui
         this.minecraft.screenRenderer.initialize();
@@ -389,6 +384,11 @@ export default class GameWindow {
         // Reinitialize current screen
         if (this.minecraft.currentScreen !== null) {
             this.minecraft.currentScreen.setup(this.minecraft, this.width, this.height);
+        }
+
+        // Render first frame
+        if (this.minecraft.isInGame()) {
+            this.minecraft.worldRenderer.render(0);
         }
     }
 
@@ -492,7 +492,7 @@ export default class GameWindow {
     }
 
     getGPUName() {
-        let gl = this.canvas.getContext("webgl2");
+        let gl = this.canvasWorld.getContext("webgl2");
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
     }
