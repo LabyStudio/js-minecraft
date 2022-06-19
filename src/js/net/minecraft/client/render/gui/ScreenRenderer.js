@@ -49,6 +49,7 @@ export default class ScreenRenderer {
             }
         } catch (e) {
             console.error(e);
+            console.log(e.stack);
         }
 
         // Scale GUI back

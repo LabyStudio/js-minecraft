@@ -52,6 +52,7 @@ export default class GameWindow {
         // Create render layers
         this.canvasWorld = document.createElement('canvas');
         this.canvasDebug = document.createElement('canvas');
+        this.canvasPlayerList = document.createElement('canvas');
         this.canvasItems = document.createElement('canvas');
 
         // Create canvas renderer
@@ -378,6 +379,11 @@ export default class GameWindow {
         if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
             this.canvasDebug.width = this.canvas.width;
             this.canvasDebug.height = this.canvas.height;
+        }
+
+        if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
+            this.canvasPlayerList.width = this.canvas.width;
+            this.canvasPlayerList.height = this.canvas.height;
         }
 
         // Reinitialize gui

@@ -1,5 +1,7 @@
 import Long from "../../../../../../../libraries/long.js";
 import BlockPosition from "../../../util/BlockPosition.js";
+import UUID from "../../../util/UUID.js";
+import {format} from "../../../../../../../libraries/chat.js";
 
 export default class ByteBuf {
 
@@ -211,6 +213,19 @@ export default class ByteBuf {
 
     readBlockPosition() {
         return BlockPosition.fromLong(this.readLong());
+    }
+
+    readUUID() {
+        return new UUID(this.readLong(), this.readLong());
+    }
+
+    writeUUID(uuid) {
+        this.writeLong(uuid.getMostSignificantBits());
+        this.writeLong(uuid.getLeastSignificantBits());
+    }
+
+    readTextComponent() {
+        return format(JSON.parse(this.readString(32767)));
     }
 
     readableBytes() {

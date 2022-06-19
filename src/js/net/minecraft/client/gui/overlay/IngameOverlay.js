@@ -6,6 +6,8 @@ import EnumBlockFace from "../../../util/EnumBlockFace.js";
 import MathHelper from "../../../util/MathHelper.js";
 import FontRenderer from "../../render/gui/FontRenderer.js";
 import EnumSkyBlock from "../../../util/EnumSkyBlock.js";
+import PlayerListOverlay from "./PlayerListOverlay.js";
+import Keyboard from "../../../util/Keyboard.js";
 
 export default class IngameOverlay extends Gui {
 
@@ -15,6 +17,7 @@ export default class IngameOverlay extends Gui {
         this.window = window;
 
         this.chatOverlay = new ChatOverlay(minecraft);
+        this.playerListOverlay = new PlayerListOverlay(minecraft, this);
 
         this.textureCrosshair = minecraft.resources["gui/icons.png"];
         this.textureHotbar = minecraft.resources["gui/gui.png"];
@@ -37,6 +40,11 @@ export default class IngameOverlay extends Gui {
         // Render debug canvas on stack
         if (this.minecraft.settings.debugOverlay) {
             stack.drawImage(this.window.canvasDebug, 0, 0);
+        }
+
+        // Render player list
+        if (Keyboard.isKeyDown(this.minecraft.settings.keyPlayerList) && !this.minecraft.isSingleplayer()) {
+            this.playerListOverlay.renderPlayerList(stack, this.window.width);
         }
     }
 
@@ -224,6 +232,7 @@ export default class IngameOverlay extends Gui {
             // Draw line
             this.drawString(stack, lines[i], 2, 2 + FontRenderer.FONT_HEIGHT * i, 0xffe0e0e0, false);
         }
+
     }
 
     renderRightDebugOverlay(stack) {

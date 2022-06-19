@@ -16,6 +16,14 @@ export default class UUID {
             UUID.digits(this.leastSigBits, 12));
     }
 
+    getMostSignificantBits() {
+        return this.mostSigBits;
+    }
+
+    getLeastSignificantBits() {
+        return this.leastSigBits;
+    }
+
     static randomUUID() {
         let random = new Random();
 

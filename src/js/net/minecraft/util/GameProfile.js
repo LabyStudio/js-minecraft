@@ -1,8 +1,8 @@
 export default class GameProfile {
 
-    constructor(username, uuid) {
-        this.username = username;
+    constructor(uuid, username) {
         this.uuid = uuid;
+        this.username = username;
     }
 
     getCompactUUID() {

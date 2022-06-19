@@ -51,7 +51,7 @@ export default class Minecraft {
         this.maxFps = 0;
 
         let username = "Player" + Math.floor(Math.random() * 100);
-        let profile = new GameProfile(username, UUID.randomUUID());
+        let profile = new GameProfile(UUID.randomUUID(), username);
         this.session = new Session(profile, "");
 
         // Tick timer

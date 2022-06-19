@@ -6,6 +6,7 @@ export default class GameSettings {
         this.keyTogglePerspective = 'F5';
         this.keyOpenChat = 'KeyT';
         this.keyOpenInventory = 'KeyE';
+        this.keyPlayerList = 'Tab';
 
         this.thirdPersonView = 0;
         this.fov = 70;

@@ -1,5 +1,4 @@
 import Packet from "../../../Packet.js";
-import {format} from "../../../../../../../../../libraries/chat.js";
 
 export default class ServerChatPacket extends Packet {
 
@@ -11,7 +10,7 @@ export default class ServerChatPacket extends Packet {
     }
 
     read(buffer) {
-        this.message = format(JSON.parse(buffer.readString(32767)));
+        this.message = buffer.readTextComponent();
         this.type = buffer.readByte();
     }
 

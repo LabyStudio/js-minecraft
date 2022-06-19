@@ -13,6 +13,8 @@ export default class NetworkPlayHandler extends PacketHandler {
         this.minecraft = networkManager.minecraft;
         this.networkManager = networkManager;
         this.profile = profile;
+
+        this.playerInfoMap = new Map();
     }
 
     handleKeepAlive(packet) {
@@ -29,6 +31,46 @@ export default class NetworkPlayHandler extends PacketHandler {
         if (packet.getType() !== 2) {
             this.minecraft.ingameOverlay.chatOverlay.addMessage(packet.getMessage());
         }
+    }
+
+    handleServerPlayerListEntry(packet) {
+        for (let entry of packet.getPlayers()) {
+            let uuid = entry.profile.getId().toString();
+
+            if (packet.getAction() === 4) { // REMOVE_PLAYER
+                this.playerInfoMap.delete(uuid);
+            } else {
+                if (packet.getAction() === 0) { // ADD_PLAYER
+                    this.playerInfoMap.set(uuid, entry);
+                }
+
+                let playerInfo = this.playerInfoMap.get(uuid);
+                if (playerInfo !== null && typeof playerInfo !== "undefined") {
+                    switch (packet.getAction()) {
+                        case 0: // ADD_PLAYER
+                            playerInfo.gameType = entry.gameType;
+                            playerInfo.ping = entry.ping;
+                            break;
+                        case 1: // UPDATE_GAMEMODE
+                            playerInfo.gameType = entry.gameType;
+                            break;
+                        case 2: // UPDATE_LATENCY
+                            playerInfo.ping = entry.ping;
+                            break;
+                        case 3: // UPDATE_DISPLAY_NAME
+                            playerInfo.displayName = entry.displayName;
+                            break;
+                    }
+                }
+            }
+        }
+
+        this.minecraft.ingameOverlay.playerListOverlay.setDirty();
+    }
+
+    handleServerPlayerListData(packet) {
+        this.minecraft.ingameOverlay.playerListOverlay.setHeader(packet.getHeader());
+        this.minecraft.ingameOverlay.playerListOverlay.setFooter(packet.getFooter());
     }
 
     handleServerPlayerPositionRotation(packet) {
@@ -115,6 +157,10 @@ export default class NetworkPlayHandler extends PacketHandler {
 
     getNetworkManager() {
         return this.networkManager;
+    }
+
+    getPlayerInfoMap() {
+        return this.playerInfoMap;
     }
 
     sendPacket(packet) {
