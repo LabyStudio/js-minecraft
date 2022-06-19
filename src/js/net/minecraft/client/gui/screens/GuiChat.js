@@ -47,7 +47,7 @@ export default class GuiChat extends GuiScreen {
             if (message.startsWith("/")) {
                 this.minecraft.commandHandler.handleMessage(message.substring(1));
             } else {
-                this.minecraft.addMessageToChat("<" + this.minecraft.player.username + "> " + message);
+                this.minecraft.playerController.sendChatMessage(message);
             }
             return;
         }

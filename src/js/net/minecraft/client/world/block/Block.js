@@ -49,7 +49,12 @@ export default class Block {
 
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || Block.getById(typeId).isTranslucent();
+        if (typeId === 0) {
+            return true;
+        }
+
+        let block = Block.getById(typeId);
+        return block === null || block.isTranslucent();
     }
 
     getColor(world, x, y, z, face) {
@@ -208,7 +213,8 @@ export default class Block {
     }
 
     static getById(typeId) {
-        return Block.blocks.get(typeId);
+        let block = Block.blocks.get(typeId);
+        return typeof block === "undefined" ? null : block;
     }
 }
 

@@ -4,14 +4,6 @@ export default class PacketHandler {
 
     }
 
-    handleStatusResponse(packet) {
-
-    }
-
-    handleEncryptionRequest(packet) {
-
-    }
-
     onDisconnect() {
 
     }

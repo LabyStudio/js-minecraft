@@ -13,8 +13,6 @@ export default class WorldGenerator extends Generator {
     constructor(world, seed) {
         super(world, seed);
 
-        this.seaLevel = 64;
-
         this.caveGenerator = new CaveGenerator(world, seed);
 
         this.terrainGenerator4 = new NoiseGeneratorOctaves(this.random, 16);

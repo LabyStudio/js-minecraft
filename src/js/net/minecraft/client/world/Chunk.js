@@ -300,6 +300,34 @@ export default class Chunk {
         return true;
     }
 
+    fillChunk(data, size, fullChunk) {
+        let i = 0;
+        for (let layer = 0; layer < Chunk.SECTION_AMOUNT; layer++) {
+            if ((size & 1 << layer) !== 0) {
+                let section = this.getSection(layer);
+
+                for (let k = 0; k < ChunkSection.SIZE * ChunkSection.SIZE * ChunkSection.SIZE; k++) {
+                    let x = k & 15;
+                    let z = (k >> 4) & 15;
+                    let y = (k >> 8) & 15;
+
+                    let value = (((data[i] & 0xFF) | (data[i + 1] & 0xFF) << 8));
+                    let typeId = value >> 4;
+                    let meta = value & 0xF; // TODO handle meta of block
+
+                    // TODO support more blocks
+                    if (typeId !== 0 && Block.getById(typeId) === null) {
+                        typeId = 1;
+                    }
+
+                    section.setBlockAt(x, y, z, typeId);
+
+                    i += 2;
+                }
+            }
+        }
+    }
+
     getBlockID(x, y, z) {
         return this.getBlockAt(x, y, z);
     }
@@ -317,7 +345,7 @@ export default class Chunk {
     }
 
     rebuild(renderer) {
-        for (let y = 0; y < this.sections.length; y++) {
+        for (let y = 0; y < Chunk.SECTION_AMOUNT; y++) {
             this.sections[y].rebuild(renderer);
         }
     }
@@ -331,7 +359,7 @@ export default class Chunk {
     }
 
     setModifiedAllSections() {
-        for (let y = 0; y < this.sections.length; y++) {
+        for (let y = 0; y < Chunk.SECTION_AMOUNT; y++) {
             this.sections[y].isModified = true;
         }
     }

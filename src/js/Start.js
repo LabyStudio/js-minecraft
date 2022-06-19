@@ -1,4 +1,5 @@
 import Minecraft from './net/minecraft/client/Minecraft.js';
+import * as aesjs from '../../libraries/aes.js';
 
 class Start {
 
@@ -61,3 +62,7 @@ window.addEventListener('pageshow', function (event) {
         new Start().launch("canvas-container");
     }
 });
+
+export function require(module) {
+    return window[module];
+}

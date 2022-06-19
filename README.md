@@ -75,12 +75,20 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
       - Debug
 - Multiplayer
     - Networking
-      - Sub-Protocols
-        - Handshake
-        - Status
-        - Login
       - RSA Encryption
       - AES Encryption
+      - Compression
+      - Splitting
+      - Sub-Protocols
+          - Handshake
+          - Status
+          - Login
+          - Play
+    - Packets
+      - Chunk Packets
+      - Movement Packets
+      - Block Update Packets
+      - Chat Packets
 - Commands
     - /help
     - /time

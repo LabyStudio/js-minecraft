@@ -558,7 +558,7 @@ export default class WorldRenderer {
         let renderDistance = this.minecraft.settings.viewDistance;
 
         // Update chunks
-        for (let [index, chunk] of world.chunks) {
+        for (let [index, chunk] of world.getChunkProvider().getChunks()) {
             let distanceX = Math.abs(cameraChunkX - chunk.x);
             let distanceZ = Math.abs(cameraChunkZ - chunk.z);
 
@@ -599,7 +599,7 @@ export default class WorldRenderer {
 
                     // TODO Implement chunk unloading
                     //let index = chunk.x + (chunk.z << 16);
-                    //world.chunks.delete(index);
+                    //world.getChunkProvider().getChunks().delete(index);
                     //world.group.remove(chunk.group);
                 }
             }
@@ -637,7 +637,7 @@ export default class WorldRenderer {
 
     rebuildAll() {
         let world = this.minecraft.world;
-        for (let [index, chunk] of world.chunks) {
+        for (let [index, chunk] of world.getChunkProvider().getChunks()) {
             chunk.setModifiedAllSections();
         }
     }

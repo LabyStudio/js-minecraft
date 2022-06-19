@@ -7,6 +7,8 @@ export default class Generator {
         this.world = world;
         this.seed = seed;
         this.random = new Random(seed);
+
+        this.seaLevel = 64;
     }
 
     generateInChunk(chunkX, chunkZ, primer) {
@@ -34,5 +36,13 @@ export default class Generator {
     setChunkSeed(chunkX, chunkZ) {
         let {seedX, seedZ} = this.generateSeedOffset();
         this.setSeedOffset(chunkX, chunkZ, seedX, seedZ);
+    }
+
+    getSeed() {
+        return this.seed;
+    }
+
+    getSeaLevel() {
+        return this.seaLevel;
     }
 }

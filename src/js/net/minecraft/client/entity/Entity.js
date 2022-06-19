@@ -8,8 +8,7 @@ export default class Entity {
         this.minecraft = minecraft;
         this.world = world;
         this.random = new Random();
-
-        this.renderer = this.minecraft.worldRenderer.entityRenderManager.createEntityRendererByEntity(this);
+        this.renderer = null;
 
         this.x = 0;
         this.y = 0;
@@ -46,6 +45,13 @@ export default class Entity {
 
         this.boundingBox = new BoundingBox();
         this.setPosition(this.x, this.y, this.z);
+    }
+
+    initRenderer() {
+        this.renderer = this.minecraft.worldRenderer.entityRenderManager.createEntityRendererByEntity(this);
+        if (this.renderer === null) {
+            throw new Error("No entity renderer for entity " + this.constructor.name + " found!");
+        }
     }
 
     setPosition(x, y, z) {

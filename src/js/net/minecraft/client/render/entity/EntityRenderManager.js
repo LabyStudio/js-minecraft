@@ -1,5 +1,6 @@
 import PlayerRenderer from "./entity/PlayerRenderer.js";
 import PlayerEntity from "../../entity/PlayerEntity.js";
+import PlayerEntityMultiplayer from "../../entity/PlayerEntityMultiplayer.js";
 
 export default class EntityRenderManager {
 
@@ -8,6 +9,7 @@ export default class EntityRenderManager {
 
         this.renderers = [];
         this.push(PlayerEntity, PlayerRenderer);
+        this.push(PlayerEntityMultiplayer, PlayerRenderer);
     }
 
     push(entityType, entityRenderer) {
@@ -18,6 +20,6 @@ export default class EntityRenderManager {
         if (!(entity.constructor.name in this.renderers)) {
             return null;
         }
-        return new this.renderers[entity.constructor.name].prototype.constructor(this.worldRenderer);
+        return new this.renderers[entity.constructor.name]["prototype"]["constructor"](this.worldRenderer);
     }
 }

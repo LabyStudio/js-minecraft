@@ -13,6 +13,7 @@ import BlockBedrock from "./type/BlockBedrock.js";
 import BlockGlass from "./type/BlockGlass.js";
 import SoundGlass from "./sound/SoundGlass.js";
 import BlockGravel from "./type/BlockGravel.js";
+import BlockCobblestone from "./type/BlockCobblestone.js";
 
 export class BlockRegistry {
 
@@ -30,6 +31,7 @@ export class BlockRegistry {
         BlockRegistry.STONE = new BlockStone(1, 0);
         BlockRegistry.GRASS = new BlockGrass(2, 1);
         BlockRegistry.DIRT = new BlockDirt(3, 2);
+        BlockRegistry.COBBLE_STONE = new BlockCobblestone(4, 14);
         BlockRegistry.WOOD = new BlockWood(5, 10);
         BlockRegistry.BEDROCK = new BlockBedrock(7, 11);
         BlockRegistry.GRAVEL = new BlockGravel(13, 13);

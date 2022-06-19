@@ -1,3 +1,6 @@
+import Long from "../../../../../../../libraries/long.js";
+import BlockPosition from "../../../util/BlockPosition.js";
+
 export default class ByteBuf {
 
     static SEGMENT_BITS = 0x7F;
@@ -24,7 +27,12 @@ export default class ByteBuf {
         return this.array;
     }
 
-    readByte() {
+    getSlicedArray(length = this.array.length - this.pos) {
+        return this.array.slice(this.pos, this.pos + length);
+    }
+
+    readByte(pos = this.pos) {
+        this.pos = pos;
         return this.array[this.pos++];
     }
 
@@ -40,32 +48,42 @@ export default class ByteBuf {
     }
 
     readLong() {
-        return this.array[this.pos++] << 56
-            | this.array[this.pos++] << 48
-            | this.array[this.pos++] << 40
-            | this.array[this.pos++] << 32
-            | this.array[this.pos++] << 24
-            | this.array[this.pos++] << 16
-            | this.array[this.pos++] << 8
-            | this.array[this.pos++];
+        return Long.fromNumber(this.array[this.pos++]).shiftLeft(56)
+            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(48))
+            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(40))
+            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(32))
+            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(24))
+            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(16))
+            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(8))
+            .or(Long.fromNumber(this.array[this.pos++]));
     }
 
     readFloat() {
-        return this.readInt() / (1 << 24);
+        return new Float32Array(new Uint32Array([this.readInt(), 0, 0, 0, 0, 0, 0, 0]).buffer)[0];
     }
 
     readDouble() {
-        return this.readLong() / (1 << 53);
+        let lng = this.readLong();
+        return new Float64Array(new Uint32Array([lng.low >>> 0, lng.high >>> 0, 0, 0, 0, 0, 0, 0]).buffer)[0];
     }
 
-    readString() {
+    readBoolean() {
+        return this.readByte() !== 0;
+    }
+
+    readString(maxLength) {
         let len = this.readVarInt();
+        if (len > maxLength * 4) {
+            throw new Error("Trying to read string longer than max length  (" + len + " > " + (maxLength * 4) + ")");
+        }
+
         let array = new Uint8Array(len);
         this.read(array, len);
         return new TextDecoder().decode(array);
     }
 
-    writeByte(value) {
+    writeByte(value, pos = this.pos) {
+        this.pos = pos;
         this.extendIfNeeded(1);
         this.array[this.pos++] = value;
     }
@@ -86,28 +104,34 @@ export default class ByteBuf {
 
     writeLong(value) {
         this.extendIfNeeded(8);
-        this.array[this.pos++] = value >> 56;
-        this.array[this.pos++] = value >> 48;
-        this.array[this.pos++] = value >> 40;
-        this.array[this.pos++] = value >> 32;
-        this.array[this.pos++] = value >> 24;
-        this.array[this.pos++] = value >> 16;
-        this.array[this.pos++] = value >> 8;
-        this.array[this.pos++] = value;
+        this.array[this.pos++] = value.shiftRightUnsigned(56).toInt() & 0xFF;
+        this.array[this.pos++] = value.shiftRightUnsigned(48).toInt() & 0xFF;
+        this.array[this.pos++] = value.shiftRightUnsigned(40).toInt() & 0xFF;
+        this.array[this.pos++] = value.shiftRightUnsigned(32).toInt() & 0xFF;
+        this.array[this.pos++] = value.shiftRightUnsigned(24).toInt() & 0xFF;
+        this.array[this.pos++] = value.shiftRightUnsigned(16).toInt() & 0xFF;
+        this.array[this.pos++] = value.shiftRightUnsigned(8).toInt() & 0xFF;
+        this.array[this.pos++] = value.toInt() & 0xFF;
     }
 
     writeFloat(value) {
-        this.writeInt(value * (1 << 24));
+        let buffer = new Uint32Array(new Float32Array([value, 0, 0, 0, 0, 0, 0, 0]).buffer);
+        this.writeInt(buffer[0]);
     }
 
     writeDouble(value) {
-        this.writeLong(value * (1 << 53));
+        let buffer = new Uint32Array(new Float64Array([value, 0, 0, 0, 0, 0, 0, 0]).buffer);
+        this.writeLong(Long.fromBits(buffer[0], buffer[1]));
     }
 
     writeString(value) {
         let array = new TextEncoder().encode(value);
         this.writeVarInt(array.length);
         this.write(array);
+    }
+
+    writeBoolean(value) {
+        this.writeByte(value ? 1 : 0);
     }
 
     writeVarInt(value) {
@@ -129,6 +153,10 @@ export default class ByteBuf {
         for (let i = 0; i < array.length; i++) {
             this.array[this.pos++] = array[i];
         }
+    }
+
+    skipBytes(length) {
+        this.pos += length;
     }
 
     extendIfNeeded(bytes) {
@@ -168,5 +196,23 @@ export default class ByteBuf {
     writeByteArray(array) {
         this.writeVarInt(array.length);
         this.write(array);
+    }
+
+    writeBlockPosition(blockPosition) {
+        this.writeLong(blockPosition.toLong());
+    }
+
+    readBlockPosition() {
+        return BlockPosition.fromLong(this.readLong());
+    }
+
+    readableBytes() {
+        return this.array.length - this.pos;
+    }
+
+    toString() {
+        return Array.from(this.array, byte => {
+            return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+        }).join('');
     }
 }

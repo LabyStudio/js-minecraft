@@ -157,158 +157,74 @@ export function flatten(component) {
 }
 
 /** Converts a `StringComponent` to plain text and can format it using ANSI codes. */
-export function formatString(component, useAnsiCodes = false) {
-    let text = flatten(component).map((c) => {
-        if (!useAnsiCodes)
-            return c.text;
+export function formatString(component) {
+    return flatten(component).map((c) => {
         let codes = colorToAnsiCode(c.color);
         if (c.bold)
-            codes += "\x1b[1m";
+            codes += "\u00a7l";
         if (c.italic)
-            codes += "\x1b[3m";
+            codes += "\u00a7o";
         if (c.underlined)
-            codes += "\x1b[4m";
+            codes += "\u00a7n";
         if (c.strikethrough)
-            codes += "\x1b[9m";
-        return codes ? codes + c.text + "\x1b[0m" : c.text;
+            codes += "\u00a7m";
+        return codes ? codes + c.text + "\u00a7r" : c.text;
     }).join("");
-    if (!useAnsiCodes)
-        return text;
-    const resetCodes = new Set();
-    text = text.split(/ยง(.)/).map((t, i) => {
-        if (i % 2 === 0)
-            return t;
-        else
-            switch (t) {
-                case "l":
-                    resetCodes.add("\x1b[22m");
-                    return "\x1b[1m";
-                case "m":
-                    resetCodes.add("\x1b[29m");
-                    return "\x1b[9m";
-                case "n":
-                    resetCodes.add("\x1b[24m");
-                    return "\x1b[4m";
-                case "o":
-                    resetCodes.add("\x1b[23m");
-                    return "\x1b[3m";
-                case "r":
-                    resetCodes.clear();
-                    return "\x1b[0m";
-                case "k":
-                    t = "";
-                    break;
-                case "0":
-                    t = "\x1b[38;2;0;0;0m";
-                    break;
-                case "1":
-                    t = "\x1b[38;2;0;0;170m";
-                    break;
-                case "2":
-                    t = "\x1b[38;2;0;170;0m";
-                    break;
-                case "3":
-                    t = "\x1b[38;2;0;170;170m";
-                    break;
-                case "4":
-                    t = "\x1b[38;2;170;0;0m";
-                    break;
-                case "5":
-                    t = "\x1b[38;2;170;0;170m";
-                    break;
-                case "6":
-                    t = "\x1b[38;2;255;170;0m";
-                    break;
-                case "7":
-                    t = "\x1b[38;2;170;170;170m";
-                    break;
-                case "8":
-                    t = "\x1b[38;2;85;85;85m";
-                    break;
-                case "9":
-                    t = "\x1b[38;2;85;85;255m";
-                    break;
-                case "a":
-                    t = "\x1b[38;2;85;255;85m";
-                    break;
-                case "b":
-                    t = "\x1b[38;2;85;255;255m";
-                    break;
-                case "c":
-                    t = "\x1b[38;2;255;85;85m";
-                    break;
-                case "d":
-                    t = "\x1b[38;2;255;85;255m";
-                    break;
-                case "e":
-                    t = "\x1b[38;2;255;255;85m";
-                    break;
-                case "f":
-                    t = "\x1b[38;2;255;255;255m";
-                    break;
-            }
-        return t + [...resetCodes.values()].join("");
-    }).join("");
-    const index = text.lastIndexOf("\x1b[");
-    if (index === -1)
-        return text;
-    const code = text.slice(index + 2).match(/(.+)m/)[1];
-    return code === "0" ? text : text + "\x1b[0m";
 }
 
 function colorToAnsiCode(color) {
     let code = "";
     switch (color) {
         case "black":
-            code += "0;0;0";
+            code += "0";
             break;
         case "dark_blue":
-            code += "0;0;170";
+            code += "1";
             break;
         case "dark_green":
-            code += "0;170;0";
+            code += "2";
             break;
         case "dark_aqua":
-            code += "0;170;170";
+            code += "3";
             break;
         case "dark_red":
-            code += "170;0;0";
+            code += "4";
             break;
         case "dark_purple":
-            code += "170;0;170";
+            code += "5";
             break;
         case "gold":
-            code += "255;170;0";
+            code += "6";
             break;
         case "gray":
-            code += "170;170;170";
+            code += "7";
             break;
         case "dark_gray":
-            code += "85;85;85";
+            code += "8";
             break;
         case "blue":
-            code += "85;85;255";
+            code += "9";
             break;
         case "green":
-            code += "85;255;85";
+            code += "a";
             break;
         case "aqua":
-            code += "85;255;255";
+            code += "b";
             break;
         case "red":
-            code += "255;85;85";
+            code += "c";
             break;
         case "light_purple":
-            code += "255;85;255";
+            code += "d";
             break;
         case "yellow":
-            code += "255;255;85";
+            code += "e";
             break;
         case "white":
-            code += "255;255;255";
+            code += "f";
             break;
     }
-    return code && "\x1b[38;2;" + code + "m";
+    return code && "\u00a7" + code;
 }
 
 function flattenArray(array) {

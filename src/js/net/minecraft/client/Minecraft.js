@@ -5,7 +5,6 @@ import WorldRenderer from "./render/WorldRenderer.js";
 import ScreenRenderer from "./render/gui/ScreenRenderer.js";
 import ItemRenderer from "./render/gui/ItemRenderer.js";
 import IngameOverlay from "./gui/overlay/IngameOverlay.js";
-import PlayerEntity from "./entity/PlayerEntity.js";
 import SoundManager from "./sound/SoundManager.js";
 import Block from "./world/block/Block.js";
 import BoundingBox from "../util/BoundingBox.js";
@@ -22,12 +21,14 @@ import GuiContainerCreative from "./gui/screens/container/GuiContainerCreative.j
 import GameProfile from "../util/GameProfile.js";
 import UUID from "../util/UUID.js";
 import FocusStateType from "../util/FocusStateType.js";
+import Session from "../util/Session.js";
+import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
 
 export default class Minecraft {
 
-    static VERSION = "1.1.4"
+    static VERSION = "1.1.5"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
-    static PROTOCOL_VERSION = 758;
+    static PROTOCOL_VERSION = 47; //758;
 
     // TODO Add to settings
     static PROXY = {
@@ -45,12 +46,13 @@ export default class Minecraft {
         this.loadingScreen = null;
         this.world = null;
         this.player = null;
-
+        this.playerController = null;
         this.fps = 0;
         this.maxFps = 0;
 
         let username = "Player" + Math.floor(Math.random() * 100);
-        this.profile = new GameProfile(username, UUID.randomUUID());
+        let profile = new GameProfile(username, UUID.randomUUID());
+        this.session = new Session(profile, "");
 
         // Tick timer
         this.timer = new Timer(20);
@@ -111,7 +113,14 @@ export default class Minecraft {
             this.worldRenderer.reset();
             this.itemRenderer.reset();
 
-            this.world.chunks.clear();
+            // Disconnect from server
+            if (this.playerController instanceof PlayerControllerMultiplayer) {
+                let networkHandler = this.playerController.getNetworkHandler();
+                networkHandler.getNetworkManager().close();
+            }
+            this.playerController = null;
+
+            this.world.getChunkProvider().getChunks().clear();
             this.world = null;
             this.player = null;
             this.loadingScreen = null;
@@ -127,12 +136,11 @@ export default class Minecraft {
             this.worldRenderer.scene.add(this.world.group);
 
             // Create player
-            this.player = new PlayerEntity(this, this.world);
-            this.player.username = this.profile.username;
+            this.player = this.playerController.createPlayer(this.world);
+            this.player.username = this.session.getProfile().getUsername();
             this.world.addEntity(this.player);
 
             // Load spawn chunks and respawn player
-            this.world.findSpawn();
             this.world.loadSpawnChunks();
             this.player.respawn();
         }
@@ -192,7 +200,7 @@ export default class Minecraft {
     onRender(partialTicks) {
         if (this.isInGame()) {
             // Player rotation
-            if (!this.isPaused()) {
+            if (this.hasInGameFocus()) {
                 let deltaX = this.window.pullMouseMotionX();
                 let deltaY = this.window.pullMouseMotionY();
                 this.player.turn(deltaX, deltaY);
@@ -283,8 +291,8 @@ export default class Minecraft {
             let cameraChunkZ = Math.floor(this.player.z) >> 4;
 
             let renderDistance = this.settings.viewDistance;
-            let requiredChunks = Math.pow(renderDistance * 2 - 1, 2);
-            let loadedChunks = this.world.chunks.size;
+            let requiredChunks = this.isSingleplayer() ? Math.pow(renderDistance * 2 - 1, 2) : 1;
+            let loadedChunks = this.world.getChunkProvider().getChunks().size;
 
             // Load chunks and count
             setTimeout(() => {
@@ -448,7 +456,19 @@ export default class Minecraft {
     }
 
     isPaused() {
-        return !this.hasInGameFocus() && this.loadingScreen === null;
+        return !this.hasInGameFocus() && this.loadingScreen === null && this.isSingleplayer();
+    }
+
+    setSession(session) {
+        this.session = session;
+    }
+
+    getSession() {
+        return this.session;
+    }
+
+    isSingleplayer() {
+        return this.isInGame() && !(this.playerController instanceof PlayerControllerMultiplayer);
     }
 
     stop() {

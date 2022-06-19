@@ -4,6 +4,8 @@ import World from "../../world/World.js";
 import GuiTextField from "../widgets/GuiTextField.js";
 import Random from "../../../util/Random.js";
 import Long from "../../../../../../../libraries/long.js";
+import ChunkProviderGenerate from "../../world/provider/ChunkProviderGenerate.js";
+import PlayerController from "../../network/controller/PlayerController.js";
 
 export default class GuiCreateWorld extends GuiScreen {
 
@@ -33,7 +35,14 @@ export default class GuiCreateWorld extends GuiScreen {
                 }
                 seed = Long.fromNumber(h);
             }
-            this.minecraft.loadWorld(new World(this.minecraft, seed));
+
+            // Load world
+            let world = new World(this.minecraft);
+            world.setChunkProvider(new ChunkProviderGenerate(world, seed));
+            world.getChunkProvider().findSpawn();
+
+            this.minecraft.playerController = new PlayerController(this.minecraft);
+            this.minecraft.loadWorld(world);
         }));
         this.buttonList.push(new GuiButton("Cancel", this.width / 2 + 5, y + 110, 150, 20, () => {
             this.minecraft.displayScreen(this.previousScreen);

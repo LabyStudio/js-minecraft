@@ -5,4 +5,16 @@ export default class GameProfile {
         this.uuid = uuid;
     }
 
+    getCompactUUID() {
+        return this.uuid.toString().replace(/-/g, "");
+    }
+
+    getId() {
+        return this.uuid;
+    }
+
+    getUsername() {
+        return this.username;
+    }
+
 }

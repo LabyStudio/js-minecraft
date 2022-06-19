@@ -13,7 +13,7 @@ export default class HandshakePacket extends Packet {
         buffer.writeVarInt(this.version); // Protocol version
         buffer.writeString("localhost"); // Server address
         buffer.writeShort(25565); // Server port
-        buffer.writeVarInt(this.nextState); // Next state
+        buffer.writeVarInt(this.nextState.getId()); // Next state
     }
 
     read(buffer) {

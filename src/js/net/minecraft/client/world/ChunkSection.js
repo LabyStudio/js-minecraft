@@ -66,7 +66,7 @@ export default class ChunkSection {
                             let absoluteZ = this.z * ChunkSection.SIZE + z;
 
                             let block = Block.getById(typeId);
-                            if (block.isTranslucent() !== isTranslucentRenderPhase) {
+                            if (block === null || block.isTranslucent() !== isTranslucentRenderPhase) {
                                 continue;
                             }
 

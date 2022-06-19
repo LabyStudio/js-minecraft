@@ -43,7 +43,7 @@ export default class MetadataChunkBlock {
                     let newLevel = 0;
                     let typeId = world.getBlockAt(x, y, z);
                     let block = Block.getById(typeId);
-                    let opacity = typeId === 0 ? 0 : Math.round(block.getOpacity() * 255);
+                    let opacity = block === null || typeId === 0 ? 0 : Math.round(block.getOpacity() * 255);
 
                     if (opacity === 0) {
                         opacity = 1;

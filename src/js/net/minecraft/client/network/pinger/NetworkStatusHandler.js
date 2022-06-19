@@ -1,4 +1,4 @@
-import PacketHandler from "../PacketHandler.js";
+import PacketHandler from "../handler/PacketHandler.js";
 import GuiDisconnected from "../../gui/screens/GuiDisconnected.js";
 
 export default class NetworkStatusHandler extends PacketHandler {

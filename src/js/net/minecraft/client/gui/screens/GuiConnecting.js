@@ -34,7 +34,7 @@ export default class GuiConnecting extends GuiScreen {
 
         // Send Minecraft protocol handshake
         this.networkManager.sendPacket(new HandshakePacket(Minecraft.PROTOCOL_VERSION, ProtocolState.LOGIN));
-        this.networkManager.sendPacket(new LoginStartPacket(this.minecraft.profile.username));
+        this.networkManager.sendPacket(new LoginStartPacket(this.minecraft.getSession().getProfile().getUsername()));
     }
 
     init() {
@@ -66,7 +66,7 @@ export default class GuiConnecting extends GuiScreen {
     onClose() {
         super.onClose();
 
-        if (this.networkManager !== null) {
+        if (this.networkManager !== null && this.networkManager.getState() !== ProtocolState.PLAY) {
             this.networkManager.close();
         }
     }

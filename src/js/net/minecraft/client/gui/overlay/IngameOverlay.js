@@ -129,7 +129,7 @@ export default class IngameOverlay extends Gui {
 
         let visibleChunks = 0;
         let loadedChunks = 0;
-        for (let [index, chunk] of world.chunks) {
+        for (let [index, chunk] of world.getChunkProvider().getChunks()) {
             for (let y in chunk.sections) {
                 let chunkSection = chunk.sections[y];
                 if (chunkSection.group.visible) {

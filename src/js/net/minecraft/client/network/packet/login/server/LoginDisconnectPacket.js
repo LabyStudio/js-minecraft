@@ -14,7 +14,7 @@ export default class LoginDisconnectPacket extends Packet {
     }
 
     read(buffer) {
-        this.message = format(JSON.parse(buffer.readString()));
+        this.message = format(JSON.parse(buffer.readString(32767)));
     }
 
     handle(handler) {

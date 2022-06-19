@@ -1,7 +1,6 @@
 import Random from "../../../util/Random.js";
 import ByteBuf from "./ByteBuf.js";
-import {bigIntToBytes, bytesToBigInt, modPow} from "../../../../../../../libraries/modpow.js";
-import {parseAsn1} from "../../../../../../../libraries/asn1.js";
+import {require} from "../../../../../Start.js";
 
 export default class CryptManager {
 
@@ -13,11 +12,12 @@ export default class CryptManager {
 
     static encryptRSA(publicKey, data) {
         // Parse asn1 public key
-        let asn1 = parseAsn1(new Uint8Array(publicKey))
+        let asn1 = require("ASN1").parse(new Uint8Array(publicKey))
+        let bigintModArith = require("bigint-mod-arith");
 
-        // Extract n an e of the public key
-        let n = bytesToBigInt(asn1.children[1].children[0].children[0].value);
-        let e = bytesToBigInt(asn1.children[1].children[0].children[1].value);
+        // Extract n and e of the public key
+        let n = bigintModArith.bytesToBigInt(asn1.children[1].children[0].children[0].value);
+        let e = bigintModArith.bytesToBigInt(asn1.children[1].children[0].children[1].value);
 
         // Check length of public key
         let length = (n.toString(2).length + 7) >> 3;
@@ -44,13 +44,13 @@ export default class CryptManager {
         let reversed = buffer.getArray().reverse();
 
         // Convert to bigint
-        let bigInt = bytesToBigInt(reversed);
+        let bigInt = bigintModArith.bytesToBigInt(reversed);
 
         // Encrypt
-        bigInt = modPow(bigInt, e, n);
+        bigInt = bigintModArith.modPow(bigInt, e, n);
 
         // Convert to bytes
-        return bigIntToBytes(bigInt);
+        return bigintModArith.bigIntToBytes(bigInt);
     }
 
 }

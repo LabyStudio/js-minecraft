@@ -1,5 +1,4 @@
 import ChunkSection from "./ChunkSection.js";
-import WorldGenerator from "./generator/WorldGenerator.js";
 import MathHelper from "../../util/MathHelper.js";
 import BoundingBox from "../../util/BoundingBox.js";
 import EnumSkyBlock from "../../util/EnumSkyBlock.js";
@@ -9,13 +8,12 @@ import Vector3 from "../../util/Vector3.js";
 import Vector4 from "../../util/Vector4.js";
 import MetadataChunkBlock from "../../util/MetadataChunkBlock.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
-import Random from "../../util/Random.js";
 
 export default class World {
 
     static TOTAL_HEIGHT = ChunkSection.SIZE * 8 - 1; // ChunkSection.SIZE * 16 - 1;
 
-    constructor(minecraft, seed) {
+    constructor(minecraft) {
         this.minecraft = minecraft;
 
         this.entities = [];
@@ -23,13 +21,11 @@ export default class World {
         this.group = new THREE.Object3D();
         this.group.matrixAutoUpdate = false;
 
-        this.chunks = new Map();
         this.lightUpdateQueue = [];
+        this.chunkProvider = null;
 
         this.time = 0;
         this.spawn = new Vector3(0, 0, 0);
-
-        this.setSeed(seed);
 
         // Update lights async
         let scope = this;
@@ -42,14 +38,8 @@ export default class World {
         }, 0);
     }
 
-    setSeed(seed) {
-        this.seed = seed;
-        this.generator = new WorldGenerator(this, seed);
-        this.random = new Random(seed);
-    }
-
-    getSeed() {
-        return this.seed;
+    setChunkProvider(chunkProvider) {
+        this.chunkProvider = chunkProvider;
     }
 
     onTick() {
@@ -67,44 +57,7 @@ export default class World {
     }
 
     getChunkAt(x, z) {
-        let index = x + (z << 16);
-        let chunk = this.chunks.get(index);
-        if (typeof chunk === 'undefined') {
-            // Generate new chunk
-            chunk = this.generator.newChunk(this, x, z);
-
-            // Register and mark as loaded
-            chunk.loaded = true;
-            this.chunks.set(index, chunk);
-
-            // Populate the chunk
-            if (!chunk.isTerrainPopulated && this.chunkExists(x + 1, z + 1) && this.chunkExists(x, z + 1) && this.chunkExists(x + 1, z)) {
-                this.populate(x, z);
-            }
-            if (this.chunkExists(x - 1, z) && !this.getChunkAt(x - 1, z).isTerrainPopulated && this.chunkExists(x - 1, z + 1) && this.chunkExists(x, z + 1) && this.chunkExists(x - 1, z)) {
-                this.populate(x - 1, z);
-            }
-            if (this.chunkExists(x, z - 1) && !this.getChunkAt(x, z - 1).isTerrainPopulated && this.chunkExists(x + 1, z - 1) && this.chunkExists(x, z - 1) && this.chunkExists(x + 1, z)) {
-                this.populate(x, z - 1);
-            }
-            if (this.chunkExists(x - 1, z - 1) && !this.getChunkAt(x - 1, z - 1).isTerrainPopulated && this.chunkExists(x - 1, z - 1) && this.chunkExists(x, z - 1) && this.chunkExists(x - 1, z)) {
-                this.populate(x - 1, z - 1);
-            }
-
-            // Register in three.js
-            this.group.add(chunk.group);
-        }
-        return chunk;
-    }
-
-    populate(x, z) {
-        let chunk = this.getChunkAt(x, z);
-        if (!chunk.isTerrainPopulated) {
-            chunk.isTerrainPopulated = true;
-
-            // Populate chunk
-            this.generator.populateChunk(chunk.x, chunk.z);
-        }
+        return this.chunkProvider.getChunkAt(x, z);
     }
 
     getChunkAtBlock(x, y, z) {
@@ -207,9 +160,7 @@ export default class World {
     }
 
     chunkExists(chunkX, chunkZ) {
-        let index = chunkX + (chunkZ << 16);
-        let chunk = this.chunks.get(index);
-        return typeof chunk !== 'undefined';
+        return this.chunkProvider !== null && this.chunkProvider.chunkExists(chunkX, chunkZ);
     }
 
     neighborLightPropagationChanged(sourceType, x, y, z, level) {
@@ -302,7 +253,12 @@ export default class World {
 
     isSolidBlockAt(x, y, z) {
         let typeId = this.getBlockAt(x, y, z);
-        return typeId !== 0 && Block.getById(typeId).isSolid();
+        if (typeId === 0) {
+            return false;
+        }
+
+        let block = Block.getById(typeId);
+        return block !== null && block.isSolid();
     }
 
     isTranslucentBlockAt(x, y, z) {
@@ -604,6 +560,7 @@ export default class World {
 
     addEntity(entity) {
         this.entities.push(entity);
+        entity.initRenderer();
         this.group.add(entity.renderer.group);
     }
 
@@ -631,25 +588,6 @@ export default class World {
         this.spawn = new Vector3(x, y + 8, z);
     }
 
-    findSpawn() {
-        if (this.spawn.y <= 0) {
-            this.spawn.y = 64;
-        }
-
-        while (this.getBlockAboveSeaLevel(this.spawn.x, this.spawn.z) === 0) {
-            this.spawn.x += this.random.nextInt(8) - this.random.nextInt(8);
-            this.spawn.z += this.random.nextInt(8) - this.random.nextInt(8);
-        }
-    }
-
-    getBlockAboveSeaLevel(x, z) {
-        let y = this.generator.seaLevel;
-        while (this.getBlockAt(x, y + 1, z) !== 0) {
-            y++;
-        }
-        return this.getBlockAt(x, y, z);
-    }
-
     loadSpawnChunks() {
         let viewDistance = this.minecraft.settings.viewDistance;
         for (let x = -viewDistance; x <= viewDistance; x++) {
@@ -658,6 +596,10 @@ export default class World {
             }
         }
         this.spawn.y = this.getHeightAt(this.spawn.x, this.spawn.z) + 8;
+    }
+
+    getChunkProvider() {
+        return this.chunkProvider;
     }
 
 }
