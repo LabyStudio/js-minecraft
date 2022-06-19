@@ -17,10 +17,14 @@ export default class ServerMultiChunkDataPacket extends Packet {
         for (let i = 0; i < amount; i++) {
             let x = buffer.readInt();
             let y = buffer.readInt();
-            let dataSize = buffer.readShort() & 65535;
-            let data = buffer.readByteArray();
+            let mask = buffer.readShort() & 65535;
+            let length = ServerChunkDataPacket._calculateLength(ServerMultiChunkDataPacket._bitCount(mask), this.overworld, true);
+            this.chunkData.push(new ServerChunkDataPacket(x, y, mask, new Uint8Array(length)));
+        }
 
-            this.chunkData.push(new ServerChunkDataPacket(x, y, dataSize, data));
+        for (let i = 0; i < amount; i++) {
+            let data = this.chunkData[i].getData();
+            buffer.read(data, data.length);
         }
     }
 
@@ -34,5 +38,14 @@ export default class ServerMultiChunkDataPacket extends Packet {
 
     isOverworld() {
         return this.overworld;
+    }
+
+    static _bitCount(bits) {
+        bits = bits - ((bits >>> 1) & 0x55555555);
+        bits = (bits & 0x33333333) + ((bits >>> 2) & 0x33333333);
+        bits = (bits + (bits >>> 4)) & 0x0f0f0f0f;
+        bits = bits + (bits >>> 8);
+        bits = bits + (bits >>> 16);
+        return bits & 0x3f;
     }
 }

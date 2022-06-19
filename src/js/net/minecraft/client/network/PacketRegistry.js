@@ -20,6 +20,8 @@ import ServerChunkDataPacket from "./packet/play/server/ServerChunkDataPacket.js
 import ServerMultiChunkDataPacket from "./packet/play/server/ServerMultiChunkDataPacket.js";
 import ServerBlockChangePacket from "./packet/play/server/ServerBlockChangePacket.js";
 import ServerChatPacket from "./packet/play/server/ServerChatPacket.js";
+import ServerDisconnectPacket from "./packet/play/server/ServerDisconnectPacket.js";
+import ServerPlayerPositionRotationPacket from "./packet/play/server/ServerPlayerPositionRotationPacket.js";
 
 export default class PacketRegistry {
 
@@ -47,9 +49,11 @@ export default class PacketRegistry {
         this.registerServer(ProtocolState.PLAY, 0x00, ServerKeepAlivePacket);
         this.registerServer(ProtocolState.PLAY, 0x01, ServerJoinGamePacket);
         this.registerServer(ProtocolState.PLAY, 0x02, ServerChatPacket);
+        this.registerServer(ProtocolState.PLAY, 0x08, ServerPlayerPositionRotationPacket);
         this.registerServer(ProtocolState.PLAY, 0x21, ServerChunkDataPacket);
         this.registerServer(ProtocolState.PLAY, 0x23, ServerBlockChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x26, ServerMultiChunkDataPacket);
+        this.registerServer(ProtocolState.PLAY, 0x40, ServerDisconnectPacket);
 
         this.registerClient(ProtocolState.PLAY, 0x00, ClientKeepAlivePacket);
         this.registerClient(ProtocolState.PLAY, 0x01, ClientChatPacket);

@@ -26,7 +26,7 @@ import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMu
 
 export default class Minecraft {
 
-    static VERSION = "1.1.5"
+    static VERSION = "1.1.6"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 47; //758;
 
@@ -116,14 +116,18 @@ export default class Minecraft {
             // Disconnect from server
             if (this.playerController instanceof PlayerControllerMultiplayer) {
                 let networkHandler = this.playerController.getNetworkHandler();
-                networkHandler.getNetworkManager().close();
+                if (networkHandler.getNetworkManager().isConnected()) {
+                    networkHandler.getNetworkManager().close();
+                }
             }
             this.playerController = null;
 
-            this.world.getChunkProvider().getChunks().clear();
-            this.world = null;
-            this.player = null;
-            this.loadingScreen = null;
+            if (this.world !== null) {
+                this.world.getChunkProvider().getChunks().clear();
+                this.world = null;
+                this.player = null;
+                this.loadingScreen = null;
+            }
             this.displayScreen(new GuiMainMenu());
         } else {
             // Display loading screen

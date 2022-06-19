@@ -11,6 +11,11 @@ export default class PlayerController {
     }
 
     sendChatMessage(message) {
-        this.minecraft.addMessageToChat("<" + this.minecraft.player.username + "> " + message);
+        // Handle message
+        if (message.startsWith("/")) {
+            this.minecraft.commandHandler.handleMessage(message.substring(1));
+        } else {
+            this.minecraft.addMessageToChat("<" + this.minecraft.player.username + "> " + message);
+        }
     }
 }

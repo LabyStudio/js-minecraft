@@ -42,13 +42,7 @@ export default class GuiChat extends GuiScreen {
 
             // Add message to sent history
             this.minecraft.ingameOverlay.chatOverlay.addMessageToSentHistory(message);
-
-            // Handle message
-            if (message.startsWith("/")) {
-                this.minecraft.commandHandler.handleMessage(message.substring(1));
-            } else {
-                this.minecraft.playerController.sendChatMessage(message);
-            }
+            this.minecraft.playerController.sendChatMessage(message);
             return;
         }
 

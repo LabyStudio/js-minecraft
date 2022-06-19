@@ -11,9 +11,7 @@ export default class ServerChatPacket extends Packet {
     }
 
     read(buffer) {
-        this.message = format(JSON.parse(buffer.readString(32767)), {
-            useAnsiCodes: true
-        });
+        this.message = format(JSON.parse(buffer.readString(32767)));
         this.type = buffer.readByte();
     }
 

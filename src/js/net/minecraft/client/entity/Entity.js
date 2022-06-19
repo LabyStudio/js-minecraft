@@ -80,6 +80,11 @@ export default class Entity {
         this.prevZ = this.z;
     }
 
+    setRotation(yaw, pitch) {
+        this.rotationYaw = yaw;
+        this.rotationPitch = pitch;
+    }
+
     onUpdate() {
         this.onEntityUpdate();
     }

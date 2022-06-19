@@ -21,6 +21,8 @@ export default class NetworkManager {
 
         this.pako = require("pako");
         this.compressionThreshold = 0;
+
+        this.carryBuffer = [];
     }
 
     setNetworkHandler(networkHandler) {
@@ -138,9 +140,15 @@ export default class NetworkManager {
             }
 
             // Packet Sizer
-            let bufferIn = new ByteBuf(new Int8Array(data));
+
+            let bufferIn = new ByteBuf(new Int8Array([]));
+            bufferIn.write(this.carryBuffer);
+            bufferIn.write(data);
+            bufferIn.setPosition(0);
+            this.carryBuffer = [];
             while (bufferIn.readableBytes() > 0) {
                 let three = [0, 0, 0];
+                let start = bufferIn.getPosition();
                 for (let i = 0; i < three.length; i++) {
                     three[i] = bufferIn.readByte();
                     if (three[i] >= 0) {
@@ -150,7 +158,9 @@ export default class NetworkManager {
                         }
 
                         if (bufferIn.readableBytes() < length) {
-                            break;
+                            bufferIn.setPosition(start);
+                            this.carryBuffer = bufferIn.getSlicedArray();
+                            return;
                         } else {
                             this.handlePacket(new ByteBuf(bufferIn.getSlicedArray(length)));
                             bufferIn.skipBytes(length);
@@ -161,6 +171,7 @@ export default class NetworkManager {
             }
         } catch (e) {
             console.error(e);
+            console.log(e.stack);
         }
     }
 
@@ -213,7 +224,7 @@ export default class NetworkManager {
 
     _onClose(event) {
         if (this.connected) {
-            this.networkHandler.onDisconnect("Disconnected from server");
+            this.networkHandler.onDisconnect();
         }
 
         this.connected = false;
@@ -222,6 +233,11 @@ export default class NetworkManager {
     close() {
         this.connected = false;
         this.socket.close();
+        this.networkHandler.onDisconnect();
+    }
+
+    isConnected() {
+        return this.connected;
     }
 
     flushPacketQueue() {

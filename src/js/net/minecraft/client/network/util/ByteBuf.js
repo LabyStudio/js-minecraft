@@ -36,30 +36,35 @@ export default class ByteBuf {
         return this.array[this.pos++];
     }
 
+    readUnsignedByte(pos = this.pos) {
+        return this.readByte(pos) & 0xFF;
+    }
+
     readShort() {
         return this.array[this.pos++] << 8 | this.array[this.pos++];
     }
 
     readInt() {
-        return this.array[this.pos++] << 24
-            | this.array[this.pos++] << 16
-            | this.array[this.pos++] << 8
-            | this.array[this.pos++];
+        return this.readUnsignedByte() << 24
+            | this.readUnsignedByte() << 16
+            | this.readUnsignedByte() << 8
+            | this.readUnsignedByte();
     }
 
     readLong() {
-        return Long.fromNumber(this.array[this.pos++]).shiftLeft(56)
-            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(48))
-            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(40))
-            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(32))
-            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(24))
-            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(16))
-            .or(Long.fromNumber(this.array[this.pos++]).shiftLeft(8))
-            .or(Long.fromNumber(this.array[this.pos++]));
+        return Long.fromNumber(this.readUnsignedByte()).shiftLeft(56)
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(48))
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(40))
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(32))
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(24))
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(16))
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(8))
+            .or(Long.fromNumber(this.readUnsignedByte()).shiftLeft(0));
     }
 
     readFloat() {
-        return new Float32Array(new Uint32Array([this.readInt(), 0, 0, 0, 0, 0, 0, 0]).buffer)[0];
+        let num = this.readInt();
+        return new Float32Array(new Uint32Array([num, 0, 0, 0, 0, 0, 0, 0]).buffer)[0];
     }
 
     readDouble() {
@@ -161,7 +166,9 @@ export default class ByteBuf {
 
     extendIfNeeded(bytes) {
         if (this.pos + bytes > this.array.length) {
-            let newArray = new Uint8Array(this.array.length + bytes);
+            let length = this.array.length + bytes;
+
+            let newArray = this.array instanceof Uint8Array ? new Uint8Array(length) : new Int8Array(length);
             newArray.set(this.array);
             this.array = newArray;
         }

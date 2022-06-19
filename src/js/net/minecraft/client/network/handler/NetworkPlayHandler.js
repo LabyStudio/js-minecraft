@@ -3,6 +3,7 @@ import GuiDisconnected from "../../gui/screens/GuiDisconnected.js";
 import WorldClient from "../../world/WorldClient.js";
 import ClientKeepAlivePacket from "../packet/play/client/ClientKeepAlivePacket.js";
 import PlayerControllerMultiplayer from "../controller/PlayerControllerMultiplayer.js";
+import ClientPlayerPositionRotationPacket from "../packet/play/client/ClientPlayerPositionRotationPacket.js";
 
 export default class NetworkPlayHandler extends PacketHandler {
 
@@ -25,14 +26,57 @@ export default class NetworkPlayHandler extends PacketHandler {
     }
 
     handleServerChat(packet) {
-        this.minecraft.ingameOverlay.chatOverlay.addMessage(packet.getMessage());
+        if (packet.getType() !== 2) {
+            this.minecraft.ingameOverlay.chatOverlay.addMessage(packet.getMessage());
+        }
+    }
+
+    handleServerPlayerPositionRotation(packet) {
+        let player = this.minecraft.player;
+
+        let x = packet.getX();
+        let y = packet.getY();
+        let z = packet.getZ();
+        let yaw = packet.getYaw();
+        let pitch = packet.getPitch();
+
+        if (packet.hasFlag(0x01)) {
+            x += player.x;
+        } else {
+            player.motionX = 0;
+        }
+
+        if (packet.hasFlag(0x02)) {
+            y += player.y;
+        } else {
+            player.motionY = 0;
+        }
+
+        if (packet.hasFlag(0x04)) {
+            z += player.z;
+        } else {
+            player.motionZ = 0;
+        }
+
+        if (packet.hasFlag(0x08)) {
+            yaw += player.rotationYaw;
+        }
+
+        if (packet.hasFlag(0x10)) {
+            pitch += player.rotationPitch;
+        }
+
+        player.setPosition(x, y, z);
+        player.setRotation(yaw, pitch);
+
+        this.networkManager.sendPacket(new ClientPlayerPositionRotationPacket(player.x, player.y, player.z, player.rotationYaw, player.rotationPitch, player.onGround));
     }
 
     handleChunkData(packet) {
         let provider = this.minecraft.world.getChunkProvider();
 
         if (packet.isFullChunk()) {
-            if (packet.getDataSize() === 0) {
+            if (packet.getMask() === 0) {
                 provider.unloadChunk(packet.getX(), packet.getZ());
                 return;
             }
@@ -41,7 +85,7 @@ export default class NetworkPlayHandler extends PacketHandler {
         }
 
         let chunk = this.minecraft.world.getChunkAt(packet.getX(), packet.getZ());
-        chunk.fillChunk(packet.getData(), packet.getDataSize(), packet.isFullChunk());
+        chunk.fillChunk(packet.getData(), packet.getMask(), packet.isFullChunk());
     }
 
     handleMultiChunkData(packet) {
@@ -59,10 +103,14 @@ export default class NetworkPlayHandler extends PacketHandler {
         this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(), typeId);
     }
 
+    handleDisconnect(packet) {
+        this.minecraft.loadWorld(null);
+        this.minecraft.displayScreen(new GuiDisconnected(packet.getReason()));
+    }
+
     onDisconnect() {
-        if (this.minecraft.isInGame()) {
-            this.minecraft.displayScreen(new GuiDisconnected("Disconnected from server"));
-        }
+        this.minecraft.loadWorld(null);
+        this.minecraft.displayScreen(new GuiDisconnected("Disconnected from server"));
     }
 
     getNetworkManager() {

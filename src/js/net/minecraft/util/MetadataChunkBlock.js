@@ -56,7 +56,7 @@ export default class MetadataChunkBlock {
                             level = 15;
                         }
                     } else if (this.type === EnumSkyBlock.BLOCK) {
-                        level = typeId === 0 ? 0 : block.getLightValue();
+                        level = typeId === 0 || block === null ? 0 : block.getLightValue();
                     }
 
                     if (opacity >= 15 && level === 0) {

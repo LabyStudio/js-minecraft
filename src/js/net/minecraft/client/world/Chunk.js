@@ -252,6 +252,10 @@ export default class Chunk {
     }
 
     setBlockAt(x, y, z, typeId, data = 0) {
+        if (y < 0 || y >= World.TOTAL_HEIGHT) {
+            return;
+        }
+
         let section = this.getSection(y >> 4);
         let yInSection = y & 15;
 
@@ -274,7 +278,7 @@ export default class Chunk {
 
         // Update height map
         let block = Block.getById(typeId);
-        if (typeId !== 0 && block.isSolid()) {
+        if (typeId !== 0 && block !== null && block.isSolid()) {
             if (y >= height) {
                 this.updateHeightMap(x, y + 1, z);
             }
@@ -293,17 +297,17 @@ export default class Chunk {
         this.notifyNeighbors(x, z);
 
         // Handle block abilities
-        if (typeId !== 0) {
+        if (typeId !== 0 && block !== null) {
             block.onBlockAdded(this.world, totalX, y, totalZ);
         }
 
         return true;
     }
 
-    fillChunk(data, size, fullChunk) {
+    fillChunk(data, mask, fullChunk) {
         let i = 0;
         for (let layer = 0; layer < Chunk.SECTION_AMOUNT; layer++) {
-            if ((size & 1 << layer) !== 0) {
+            if ((mask & 1 << layer) !== 0) {
                 let section = this.getSection(layer);
 
                 for (let k = 0; k < ChunkSection.SIZE * ChunkSection.SIZE * ChunkSection.SIZE; k++) {
