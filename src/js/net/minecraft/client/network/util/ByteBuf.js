@@ -2,6 +2,8 @@ import Long from "../../../../../../../libraries/long.js";
 import BlockPosition from "../../../util/BlockPosition.js";
 import UUID from "../../../util/UUID.js";
 import {format} from "../../../../../../../libraries/chat.js";
+import Vector3 from "../../../util/Vector3.js";
+import NBTIO from "../../../nbt/NBTIO.js";
 
 export default class ByteBuf {
 
@@ -226,6 +228,79 @@ export default class ByteBuf {
 
     readTextComponent() {
         return format(JSON.parse(this.readString(32767)));
+    }
+
+    readMetaData() {
+        let metaData = {};
+
+        let data = 0;
+        while ((data = this.readByte()) !== 0x7f) {
+            let typeId = (data & 0xE0) >> 5;
+            let id = data & 0x1F;
+
+            let value = null;
+            switch (typeId) {
+                case 0:
+                    value = this.readByte();
+                    break;
+                case 1:
+                    value = this.readShort();
+                    break;
+                case 2:
+                    value = this.readInt();
+                    break;
+                case 3:
+                    value = this.readFloat();
+                    break;
+                case 4:
+                    value = this.readString();
+                    break;
+                case 5:
+                    value = this.readItem();
+                    break;
+                case 6:
+                    value = new BlockPosition(this.readInt(), this.readInt(), this.readInt());
+                    break;
+                case 7:
+                    value = new Vector3(this.readFloat(), this.readFloat(), this.readFloat());
+                    break;
+                default:
+                    throw new Error("Unknown meta data type: " + typeId);
+            }
+            metaData[id] = {
+                id: id,
+                type: typeId,
+                value: value
+            };
+        }
+
+        return metaData;
+    }
+
+    readItem() {
+        let item = this.readShort();
+        if (item < 0) {
+            return null;
+        } else {
+            let a = this.readByte();
+            let b = this.readShort();
+            let c = this.readNBT();
+
+            // TODO create item
+            return item;
+        }
+    }
+
+    readNBT() {
+        let position = this.getPosition();
+
+        let tagId = this.readByte();
+        if (tagId === 0) {
+            return null;
+        } else {
+            this.setPosition(position);
+            return NBTIO.readTag(this); // TODO
+        }
     }
 
     readableBytes() {

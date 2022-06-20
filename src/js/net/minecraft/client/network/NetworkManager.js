@@ -2,6 +2,7 @@ import ByteBuf from "./util/ByteBuf.js";
 import PacketRegistry from "./PacketRegistry.js";
 import ProtocolState from "./ProtocolState.js";
 import {require} from "../../../../Start.js";
+import MissingPackets from "../../util/MissingPackets.js";
 
 export default class NetworkManager {
 
@@ -204,7 +205,7 @@ export default class NetworkManager {
         let clazz = this.registry.getServerBoundById(this.protocolState, packetId);
         if (clazz === null) {
             if (NetworkManager.DEBUG) {
-                console.log("[Network] [IN] Unknown packet id: " + packetId + " (0x" + packetId.toString(16) + ")");
+                console.log("[Network] [IN] Unknown packet id: " + packetId + " (0x" + packetId.toString(16) + ") (" + new MissingPackets().get(packetId) + ")");
             }
             return;
         } else {

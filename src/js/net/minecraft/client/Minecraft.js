@@ -26,7 +26,7 @@ import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMu
 
 export default class Minecraft {
 
-    static VERSION = "1.1.6"
+    static VERSION = "1.1.7"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 47; //758;
 
@@ -124,6 +124,7 @@ export default class Minecraft {
 
             if (this.world !== null) {
                 this.world.getChunkProvider().getChunks().clear();
+                this.world.clearEntities();
                 this.world = null;
                 this.player = null;
                 this.loadingScreen = null;
@@ -134,6 +135,14 @@ export default class Minecraft {
             this.loadingScreen = new GuiLoadingScreen();
             this.loadingScreen.setTitle("Building terrain...");
             this.displayScreen(this.loadingScreen);
+
+            // Clear previous world
+            if (this.world !== null) {
+                this.world.getChunkProvider().getChunks().clear();
+                this.world.clearEntities();
+                this.worldRenderer.reset();
+                this.itemRenderer.reset();
+            }
 
             // Create world
             this.world = world;
@@ -276,9 +285,6 @@ export default class Minecraft {
 
             // Tick renderer
             this.worldRenderer.onTick();
-
-            // Tick the player
-            this.player.onUpdate();
 
             // Tick particle renderer
             this.particleRenderer.onTick();

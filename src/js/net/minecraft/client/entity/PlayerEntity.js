@@ -10,8 +10,8 @@ export default class PlayerEntity extends EntityLiving {
 
     static name = "PlayerEntity";
 
-    constructor(minecraft, world) {
-        super(minecraft, world);
+    constructor(minecraft, world, id) {
+        super(minecraft, world, id);
 
         this.inventory = new InventoryPlayer();
         this.username = "Player";
@@ -73,73 +73,7 @@ export default class PlayerEntity extends EntityLiving {
     }
 
     onLivingUpdate() {
-        this.prevCameraYaw = this.cameraYaw;
-        this.prevCameraPitch = this.cameraPitch;
-
-        if (this.sprintToggleTimer > 0) {
-            --this.sprintToggleTimer;
-        }
-        if (this.flyToggleTimer > 0) {
-            --this.flyToggleTimer;
-        }
-
-        let prevMoveForward = this.moveForward;
-        let prevJumping = this.jumping;
-
-        this.updateKeyboardInput();
-
-        // Toggle jumping
-        if (!prevJumping && this.jumping) {
-            if (this.flyToggleTimer === 0) {
-                this.flyToggleTimer = 7;
-            } else {
-                this.flying = !this.flying;
-                this.flyToggleTimer = 0;
-
-                this.updateFOVModifier();
-            }
-        }
-
-        // Toggle sprint
-        if (prevMoveForward === 0 && this.moveForward > 0) {
-            if (this.sprintToggleTimer === 0) {
-                this.sprintToggleTimer = 7;
-            } else {
-                this.sprinting = true;
-                this.sprintToggleTimer = 0;
-
-                this.updateFOVModifier();
-            }
-        }
-
-        if (this.sprinting && (this.moveForward <= 0 || this.collision || this.sneaking)) {
-            this.sprinting = false;
-
-            this.updateFOVModifier();
-        }
-
         super.onLivingUpdate();
-
-        this.jumpMovementFactor = this.speedInAir;
-
-        if (this.sprinting) {
-            this.jumpMovementFactor = this.jumpMovementFactor + this.speedInAir * 0.3;
-        }
-
-        let speedXZ = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        let speedY = (Math.atan(-this.motionY * 0.2) * 15.0);
-
-        if (speedXZ > 0.1) {
-            speedXZ = 0.1;
-        }
-        if (!this.onGround || this.health <= 0.0) {
-            speedXZ = 0.0;
-        }
-        if (this.onGround || this.health <= 0.0) {
-            speedY = 0.0;
-        }
-        this.cameraYaw += (speedXZ - this.cameraYaw) * 0.4;
-        this.cameraPitch += (speedY - this.cameraPitch) * 0.8;
     }
 
     isInWater() {
@@ -167,7 +101,7 @@ export default class PlayerEntity extends EntityLiving {
 
     travelFlying(forward, vertical, strafe) {
         // Fly move up and down
-        if (this.sneaking) {
+        if (this.isSneaking()) {
             this.moveStrafing = strafe / 0.3;
             this.moveForward = forward / 0.3;
             this.motionY -= this.flySpeed * 3.0;
@@ -205,39 +139,41 @@ export default class PlayerEntity extends EntityLiving {
     }
 
     travel(forward, vertical, strafe) {
-        let prevSlipperiness = this.getBlockSlipperiness() * 0.91;
+        let isSlow = this.onGround && this.isSneaking();
 
         let prevX = this.x;
         let prevZ = this.z;
 
-        let isSlow = this.onGround && this.sneaking;
+        if (this === this.world.minecraft.player) {
+            let prevSlipperiness = this.getBlockSlipperiness() * 0.91;
 
-        let value = 0.16277136 / (prevSlipperiness * prevSlipperiness * prevSlipperiness);
-        let friction;
+            let value = 0.16277136 / (prevSlipperiness * prevSlipperiness * prevSlipperiness);
+            let friction;
 
-        if (this.onGround) {
-            friction = this.getAIMoveSpeed() * value;
-        } else {
-            friction = this.jumpMovementFactor;
+            if (this.onGround) {
+                friction = this.getAIMoveSpeed() * value;
+            } else {
+                friction = this.jumpMovementFactor;
+            }
+
+            this.moveRelative(forward, vertical, strafe, friction);
+
+            // Get new speed
+            let slipperiness = this.getBlockSlipperiness() * 0.91;
+
+            // Move
+            this.collision = this.moveCollide(-this.motionX, this.motionY, -this.motionZ);
+
+            // Gravity
+            if (!this.flying) {
+                this.motionY -= 0.08;
+            }
+
+            // Decrease motion
+            this.motionX *= slipperiness;
+            this.motionY *= 0.98;
+            this.motionZ *= slipperiness;
         }
-
-        this.moveRelative(forward, vertical, strafe, friction);
-
-        // Get new speed
-        let slipperiness = this.getBlockSlipperiness() * 0.91;
-
-        // Move
-        this.collision = this.moveCollide(-this.motionX, this.motionY, -this.motionZ);
-
-        // Gravity
-        if (!this.flying) {
-            this.motionY -= 0.08;
-        }
-
-        // Decrease motion
-        this.motionX *= slipperiness;
-        this.motionY *= 0.98;
-        this.motionZ *= slipperiness;
 
         // Step sound
         if (!isSlow) {
@@ -254,11 +190,13 @@ export default class PlayerEntity extends EntityLiving {
                 this.nextStepDistance = this.distanceWalked + 1;
 
                 let block = Block.getById(typeId);
-                let sound = block.getSound();
+                if (block !== null) {
+                    let sound = block.getSound();
 
-                // Play sound
-                if (!block.isLiquid()) {
-                    this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.15, sound.getPitch());
+                    // Play sound
+                    if (!block.isLiquid()) {
+                        this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.15, sound.getPitch());
+                    }
                 }
             }
         }
@@ -324,7 +262,7 @@ export default class PlayerEntity extends EntityLiving {
                 jumping = true;
             }
             if (Keyboard.isKeyDown(this.minecraft.settings.keySprinting)) {
-                if (this.moveForward > 0 && !this.sneaking && !this.sprinting && this.motionX !== 0 && this.motionZ !== 0) {
+                if (this.moveForward > 0 && !this.isSneaking() && !this.sprinting && this.motionX !== 0 && this.motionZ !== 0) {
                     this.sprinting = true;
 
                     this.updateFOVModifier();
@@ -344,11 +282,11 @@ export default class PlayerEntity extends EntityLiving {
         this.moveStrafing = moveStrafe;
 
         this.jumping = jumping;
-        this.sneaking = sneaking;
+        this.setSneaking(sneaking);
     }
 
     getEyeHeight() {
-        return this.sneaking ? 1.50 : 1.62;
+        return this.isSneaking() ? 1.50 : 1.62;
     }
 
     updateFOVModifier() {
@@ -429,4 +367,7 @@ export default class PlayerEntity extends EntityLiving {
         return this.world.rayTraceBlocks(from, to);
     }
 
+    isSprinting() {
+        return this.sprinting;
+    }
 }

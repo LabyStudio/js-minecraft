@@ -35,6 +35,7 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
 - World
     - 16x16x16 Chunks
     - Block type, data, sky & block lightning
+    - Entities
     - Minecraft Alpha Generator
       - 64 bits seed
       - Perlin terrain generation
@@ -73,12 +74,14 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
       - Hot-Bar
       - Chat
       - Debug
+      - Player list
 - Multiplayer
     - Networking
       - RSA Encryption
       - AES Encryption
       - Compression
       - Splitting
+      - NBT Serialization
       - Sub-Protocols
           - Handshake
           - Status
@@ -89,6 +92,7 @@ Click [here](https://labystudio.de/page/minecraft/) for a demo!
       - Movement Packets
       - Block Update Packets
       - Chat Packets
+      - Player Packets
 - Commands
     - /help
     - /time

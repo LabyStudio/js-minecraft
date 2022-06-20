@@ -43,6 +43,11 @@ export default class World {
     }
 
     onTick() {
+        // Tick entities
+        for (let i = 0; i < this.entities.length; i++) {
+            this.entities[i].onUpdate();
+        }
+
         // Update skylight subtracted (To make the night dark)
         let lightLevel = this.calculateSkylightSubtracted(1.0);
         if (lightLevel !== this.skylightSubtracted) {
@@ -566,8 +571,10 @@ export default class World {
 
     removeEntityById(id) {
         let entity = this.getEntityById(id);
-        this.entities.remove(entity);
-        this.group.remove(entity.renderer.group);
+        if (entity !== null) {
+            this.entities.splice(this.entities.indexOf(entity), 1);
+            this.group.remove(entity.renderer.group);
+        }
     }
 
     getEntityById(id) {
@@ -600,6 +607,12 @@ export default class World {
 
     getChunkProvider() {
         return this.chunkProvider;
+    }
+
+    clearEntities() {
+        for (let entity of this.entities) {
+            this.removeEntityById(entity.id);
+        }
     }
 
 }

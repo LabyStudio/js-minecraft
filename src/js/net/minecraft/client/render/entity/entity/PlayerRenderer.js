@@ -25,8 +25,9 @@ export default class PlayerRenderer extends EntityRenderer {
         let firstPerson = this.worldRenderer.minecraft.settings.thirdPersonView === 0;
         let itemId = firstPerson ? this.worldRenderer.itemToRender : entity.inventory.getItemInSelectedSlot();
         let hasItem = itemId !== 0;
+        let isSelf = entity === this.worldRenderer.minecraft.player;
 
-        if (firstPerson && hasItem) {
+        if (firstPerson && hasItem && isSelf) {
             super.rebuild(entity);
 
             // Create new item group and add it to the hand
@@ -72,7 +73,12 @@ export default class PlayerRenderer extends EntityRenderer {
         }
         this.model.swingProgress = entity.prevSwingProgress + swingProgress * partialTicks;
         this.model.hasItemInHand = entity.inventory.getItemInSelectedSlot() !== 0;
-        this.model.isSneaking = entity.sneaking;
+        this.model.isSneaking = entity.isSneaking();
+
+        // TODO find a better way
+        if (entity !== this.worldRenderer.minecraft.player) {
+            this.firstPersonGroup.visible = false;
+        }
 
         super.render(entity, partialTicks);
     }

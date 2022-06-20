@@ -4,9 +4,11 @@ import Random from "../../util/Random.js";
 
 export default class Entity {
 
-    constructor(minecraft, world) {
+    constructor(minecraft, world, id) {
         this.minecraft = minecraft;
         this.world = world;
+        this.id = id;
+
         this.random = new Random();
         this.renderer = null;
 
@@ -24,7 +26,6 @@ export default class Entity {
         this.stepHeight = 0.0;
 
         this.onGround = false;
-        this.sneaking = false;
 
         this.rotationYaw = 0;
         this.rotationPitch = 0;
@@ -42,6 +43,12 @@ export default class Entity {
 
         this.ticksExisted = 0;
         this.isDead = false;
+
+        this.serverPositionX = 0;
+        this.serverPositionY = 0;
+        this.serverPositionZ = 0;
+
+        this.metaData = {};
 
         this.boundingBox = new BoundingBox();
         this.setPosition(this.x, this.y, this.z);
@@ -70,19 +77,36 @@ export default class Entity {
             y + this.height,
             z + width
         );
-
-        this.motionX = 0;
-        this.motionY = 0;
-        this.motionZ = 0;
-
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
     }
 
     setRotation(yaw, pitch) {
-        this.rotationYaw = yaw;
-        this.rotationPitch = pitch;
+        this.rotationYaw = yaw % 360;
+        this.rotationPitch = pitch % 360;
+    }
+
+    setTargetPositionAndRotation(x, y, z, yaw, pitch, increments) {
+        this.setPosition(x, y, z);
+        this.setRotation(yaw, pitch);
+    }
+
+    setPositionAndRotation(x, y, z, yaw, pitch) {
+        this.prevX = this.x = x;
+        this.prevY = this.y = y;
+        this.prevZ = this.z = z;
+
+        this.prevRotationYaw = this.rotationYaw = yaw;
+        this.prevRotationPitch = this.rotationPitch = pitch;
+
+        let diffYaw = (this.prevRotationYaw - yaw);
+        if (diffYaw < -180) {
+            this.prevRotationYaw += 360;
+        }
+        if (diffYaw >= 180) {
+            this.prevRotationYaw -= 360;
+        }
+
+        this.setPosition(this.x, this.y, this.z);
+        this.setRotation(yaw, pitch);
     }
 
     onUpdate() {
@@ -119,7 +143,7 @@ export default class Entity {
         let originalTargetY = targetY;
         let originalTargetZ = targetZ;
 
-        if (this.onGround && this.sneaking) {
+        if (this.onGround && this.isSneaking()) {
             for (; targetX !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(targetX, -this.stepHeight, 0.0)).length === 0; originalTargetX = targetX) {
                 if (targetX < 0.05 && targetX >= -0.05) {
                     targetX = 0.0;
@@ -212,6 +236,36 @@ export default class Entity {
             || this.motionZ !== 0.0
             || this.rotationYaw !== this.prevRotationYaw
             || this.rotationPitch !== this.prevRotationPitch;
+    }
+
+    isSneaking() {
+        return this.getFlag(1);
+    }
+
+    setSneaking(sneaking) {
+        this.setFlag(1, sneaking);
+    }
+
+    updateMetaData(metaData) {
+        for (const [id, value] of Object.entries(metaData)) {
+            this.metaData[value.id] = value;
+        }
+    }
+
+    getFlag(flag) {
+        return typeof this.metaData[0] !== "undefined" && (this.metaData[0].value & 1 << flag) !== 0;
+    }
+
+    setFlag(flag, value) {
+        if (typeof this.metaData[0] === "undefined") {
+            this.metaData[0] = {id: 0, type: 0, value: 0};
+        }
+
+        if (value) {
+            this.metaData[0].value |= 1 << flag;
+        } else {
+            this.metaData[0].value &= ~(1 << flag);
+        }
     }
 
 }

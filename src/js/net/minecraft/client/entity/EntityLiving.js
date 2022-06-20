@@ -3,8 +3,8 @@ import MathHelper from "../../util/MathHelper.js";
 
 export default class EntityLiving extends Entity {
 
-    constructor(minecraft, world) {
-        super(minecraft, world);
+    constructor(minecraft, world, id) {
+        super(minecraft, world, id);
 
         this.jumpTicks = 0;
 
@@ -70,6 +70,28 @@ export default class EntityLiving extends Entity {
             --this.jumpTicks;
         }
 
+        if (this.rotationPositionIncrements > 0) {
+            // Interpolate the position and rotation
+            let x = this.x + (this.targetX - this.x) / this.rotationPositionIncrements;
+            let y = this.y + (this.targetY - this.y) / this.rotationPositionIncrements;
+            let z = this.z + (this.targetZ - this.z) / this.rotationPositionIncrements;
+
+            // Update yaw and pitch
+            let yaw = MathHelper.wrapAngleTo180(this.targetYaw - this.rotationYaw);
+            this.rotationYaw = this.rotationYaw + yaw / this.rotationPositionIncrements;
+            this.rotationPitch = (this.rotationPitch + (this.targetPitch - this.rotationPitch) / this.rotationPositionIncrements);
+
+            // Decrement position increments
+            this.rotationPositionIncrements--;
+
+            // Update position
+            this.setPosition(x, y, z);
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+        }
+
+        // TODO Find the right spot to update this
+        this.rotationYawHead = this.rotationYaw;
+
         // Stop if too slow
         if (Math.abs(this.motionX) < 0.003) {
             this.motionX = 0.0;
@@ -80,8 +102,6 @@ export default class EntityLiving extends Entity {
         if (Math.abs(this.motionZ) < 0.003) {
             this.motionZ = 0.0;
         }
-
-        this.rotationYawHead = this.rotationYaw;
 
         // Jump
         if (this.jumping) {
@@ -174,6 +194,15 @@ export default class EntityLiving extends Entity {
         }
     }
 
+    setTargetPositionAndRotation(x, y, z, yaw, pitch, increments) {
+        this.targetX = x;
+        this.targetY = y;
+        this.targetZ = z;
+        this.targetYaw = yaw;
+        this.targetPitch = pitch;
+        this.rotationPositionIncrements = increments;
+    }
+
     swingArm() {
         let swingAnimationEnd = 6;
         if (!this.isSwingInProgress || this.swingProgressInt >= swingAnimationEnd / 2 || this.swingProgressInt < 0) {
@@ -215,6 +244,11 @@ export default class EntityLiving extends Entity {
             wrapped = limit;
         }
         return value - wrapped;
+    }
+
+    setRotationYawHead(yaw) {
+        this.targetYaw = yaw; // TODO should be rotationYawHead
+        // this.rotationYawHead = yaw;
     }
 
 }

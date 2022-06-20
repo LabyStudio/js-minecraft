@@ -195,7 +195,7 @@ export default class Chunk {
         while (y > 0) {
             let typeId = this.getBlockAt(x, y - 1, z);
             let block = Block.getById(typeId);
-            let opacity = typeId === 0 ? 0 : block.getOpacity();
+            let opacity = typeId === 0 || block === null ? 0 : block.getOpacity();
 
             if (opacity !== 0) {
                 break;

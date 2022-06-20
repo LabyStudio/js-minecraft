@@ -7,7 +7,7 @@ export default class PlayerController {
     }
 
     createPlayer(world) {
-        return new PlayerEntity(this.minecraft, world);
+        return new PlayerEntity(this.minecraft, world, 0);
     }
 
     sendChatMessage(message) {
