@@ -26,7 +26,7 @@ import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMu
 
 export default class Minecraft {
 
-    static VERSION = "1.1.7"
+    static VERSION = "1.1.8"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 47; //758;
 
@@ -50,15 +50,20 @@ export default class Minecraft {
         this.fps = 0;
         this.maxFps = 0;
 
-        let username = "Player" + Math.floor(Math.random() * 100);
-        let profile = new GameProfile(UUID.randomUUID(), username);
-        this.session = new Session(profile, "");
-
         // Tick timer
         this.timer = new Timer(20);
 
         this.settings = new GameSettings();
         this.settings.load();
+
+        // Load session from settings
+        if (this.settings.session === null) {
+            let username = "Player" + Math.floor(Math.random() * 100);
+            let profile = new GameProfile(UUID.randomUUID(), username);
+            this.setSession(new Session(profile, ""));
+        } else {
+            this.setSession(Session.fromJson(this.settings.session));
+        }
 
         // Create window and world renderer
         this.window = new GameWindow(this, canvasWrapperId);
@@ -119,6 +124,10 @@ export default class Minecraft {
                 if (networkHandler.getNetworkManager().isConnected()) {
                     networkHandler.getNetworkManager().close();
                 }
+
+                // Reset header and footer
+                this.ingameOverlay.playerListOverlay.setHeader(null);
+                this.ingameOverlay.playerListOverlay.setFooter(null);
             }
             this.playerController = null;
 
@@ -469,8 +478,19 @@ export default class Minecraft {
         return !this.hasInGameFocus() && this.loadingScreen === null && this.isSingleplayer();
     }
 
-    setSession(session) {
+    setSession(session, save = false) {
         this.session = session;
+
+        // Save session
+        if (save) {
+            this.settings.session = session.toJson();
+            this.settings.save();
+        }
+    }
+
+    updateAccessToken(token) {
+        this.session.setAccessToken(token);
+        this.setSession(this.session, true);
     }
 
     getSession() {

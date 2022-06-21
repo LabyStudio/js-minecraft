@@ -125,10 +125,8 @@ export default class PlayerListOverlay extends Gui {
             let indexX = Math.floor(i / rows);
             let indexY = i % rows;
 
-            let entryX = x + indexX * columnWidth + indexX * 5 - 1;
+            let entryX = x + indexX * columnWidth + indexX * 5;
             let entryY = y + indexY * FontRenderer.FONT_HEIGHT;
-
-            let rightX = entryX + columnWidth - 1;
 
             // Check if index is inside of range
             if (i < playerInfoMap.size) {
@@ -140,7 +138,7 @@ export default class PlayerListOverlay extends Gui {
                     stack,
                     entryX,
                     entryY,
-                    entryX + columnWidth,
+                    entryX + columnWidth - 1,
                     entryY + (FontRenderer.FONT_HEIGHT - 1),
                     'rgba(255,255,255,0.13)'
                 );

@@ -8,6 +8,8 @@ export default class GameSettings {
         this.keyOpenInventory = 'KeyE';
         this.keyPlayerList = 'Tab';
 
+        this.session = null;
+
         this.thirdPersonView = 0;
         this.fov = 70;
         this.viewBobbing = true;
@@ -29,6 +31,15 @@ export default class GameSettings {
                     let value = c.substring(nameEQ.length, c.length);
                     if (value.match(/^[0-9]+$/)) {
                         value = parseInt(value);
+                    }
+                    if (value === 'true') {
+                        value = true;
+                    }
+                    if (value === 'false') {
+                        value = false;
+                    }
+                    if (value === 'null') {
+                        value = null;
                     }
                     this[prop] = value;
                 }

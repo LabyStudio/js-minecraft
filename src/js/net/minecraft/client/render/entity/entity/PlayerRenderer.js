@@ -22,10 +22,10 @@ export default class PlayerRenderer extends EntityRenderer {
     }
 
     rebuild(entity) {
-        let firstPerson = this.worldRenderer.minecraft.settings.thirdPersonView === 0;
-        let itemId = firstPerson ? this.worldRenderer.itemToRender : entity.inventory.getItemInSelectedSlot();
-        let hasItem = itemId !== 0;
         let isSelf = entity === this.worldRenderer.minecraft.player;
+        let firstPerson = this.worldRenderer.minecraft.settings.thirdPersonView === 0;
+        let itemId = firstPerson && isSelf ? this.worldRenderer.itemToRender : entity.inventory.getItemInSelectedSlot();
+        let hasItem = itemId !== 0;
 
         if (firstPerson && hasItem && isSelf) {
             super.rebuild(entity);

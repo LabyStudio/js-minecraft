@@ -86,7 +86,9 @@ export default class PlayerEntity extends EntityLiving {
         let prevMoveForward = this.moveForward;
         let prevJumping = this.jumping;
 
-        this.updateKeyboardInput();
+        if (this === this.minecraft.player) {
+            this.updateKeyboardInput();
+        }
 
         // Toggle jumping
         if (!prevJumping && this.jumping) {
