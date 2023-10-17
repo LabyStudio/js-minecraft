@@ -7,6 +7,7 @@ import MathHelper from "../../../util/MathHelper.js";
 import Minecraft from "../../Minecraft.js";
 import GuiCreateWorld from "./GuiCreateWorld.js";
 import GuiDirectConnect from "./GuiDirectConnect.js";
+import Splash from "../../../../../../resources/splashes.json" assert { type: 'json' };
 
 export default class GuiMainMenu extends GuiScreen {
 
@@ -103,19 +104,8 @@ export default class GuiMainMenu extends GuiScreen {
     }
 
     getSpashText() {
-        const fs = require("fs");
-        let splash = "Minecraft made with JavaScript";
-        fs.readFile("/src/resources/gui/spashes.txt", "utf-8", function(err, data){
-            if(err) {
-                console.warn("failed to load splash.");
-                return splash;
-            }
-            var lines = data.split('\n');
-            
-            // choose one of the lines...
-            splash = lines[Math.floor(Math.random()*lines.length)];
-        });
-        return splash;
+        let i = Math.floor(Math.random() * Splash.splashes.length);
+        return Splash.splashes[i];
     }
 
     keyTyped(key) {
