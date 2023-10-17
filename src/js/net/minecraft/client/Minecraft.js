@@ -385,7 +385,7 @@ export default class Minecraft {
                             hitResult.x + 0.5,
                             hitResult.y + 0.5,
                             hitResult.z + 0.5,
-                            1.0,
+                            2.0,
                             1.0
                         );
 
@@ -455,7 +455,7 @@ export default class Minecraft {
                                 hitResult.x + 0.5,
                                 hitResult.y + 0.5,
                                 hitResult.z + 0.5,
-                                1.0,
+                                2.0,
                                 sound.getPitch() * 0.8
                             );
                         }
