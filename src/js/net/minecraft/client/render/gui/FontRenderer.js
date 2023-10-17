@@ -55,7 +55,6 @@ export default class FontRenderer {
         if (shadow) {
             this.drawStringRaw(stack, string, x + 1, y + 1, color, true);
         }
-        this.drawStringRaw(stack, string, x, y, color);
         this.drawStringRaw(stack, string, x, y, color, false);
     }
 
