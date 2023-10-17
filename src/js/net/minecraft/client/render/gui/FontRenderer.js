@@ -52,7 +52,7 @@ export default class FontRenderer {
     }
 
     drawString(stack, string, x, y, color = -1, shadow = true) {
-        if (!this.isSafari && shadow) { // TODO Fix filter on Safari
+        if (shadow) {
             this.drawStringRaw(stack, string, x + 1, y + 1, color, true);
         }
         this.drawStringRaw(stack, string, x, y, color);
@@ -61,54 +61,12 @@ export default class FontRenderer {
     drawStringRaw(stack, string, x, y, color = -1, isShadow = false) {
         stack.save();
 
-        //stack.fillStyle = '#FFFFFF';
-
         // Set color
-        if (color !== -1 || isShadow) {
-            this.setColor(stack, color, isShadow);
-        }
+        this.setColor(stack, color, isShadow);
 
-        stack.font = "6px Minecraft";
+        // Draw string
+        stack.font = "8px Minecraft";
         stack.fillText(string, x, y+6);
-
-
-        // // For each character
-        // for (let i = 0; i < string.length; i++) {
-        //     let character = string[i];
-        //     let index = FontRenderer.CHAR_INDEX_LOOKUP.indexOf(character);
-        //     let code = character.charCodeAt(0);
-
-        //     // Handle color codes if character is &
-        //     if (character === FontRenderer.COLOR_PREFIX && i !== string.length - 1) {
-        //         // Get the next character
-        //         let nextCharacter = string[i + 1];
-
-        //         // Change color of string
-        //         this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
-
-        //         // Skip the color code for rendering
-        //         i += 1;
-        //         continue;
-        //     }
-
-        //     // Get character offset in bitmap
-        //     let textureOffsetX = index % FontRenderer.BITMAP_SIZE * FontRenderer.FIELD_SIZE;
-        //     let textureOffsetY = Math.floor(index / FontRenderer.BITMAP_SIZE) * FontRenderer.FIELD_SIZE;
-
-        //     // Draw character
-        //     Gui.drawSprite(
-        //         stack,
-        //         this.texture,
-        //         textureOffsetX, textureOffsetY,
-        //         FontRenderer.FIELD_SIZE, FontRenderer.FIELD_SIZE,
-        //         Math.floor(x), Math.floor(y),
-        //         FontRenderer.FIELD_SIZE, FontRenderer.FIELD_SIZE,
-        //         alpha
-        //     );
-
-        //     // Increase drawing cursor
-        //     x += this.charWidths[code];
-        // }
 
         stack.restore();
     }
@@ -126,24 +84,8 @@ export default class FontRenderer {
     }
 
     getStringWidth(stack, string) {
-        stack.font = "6px Minecraft";
+        stack.font = "8px Minecraft";
         return stack.measureText(string).width;
-        // let length = 0;
-
-        // // For each character
-        // for (let i = 0; i < string.length; i++) {
-
-        //     // Check for color code
-        //     if (string[i] === FontRenderer.COLOR_PREFIX) {
-        //         // Skip the next character
-        //         i++;
-        //     } else {
-        //         // Add the width of the character
-        //         let code = string[i].charCodeAt(0);
-        //         length += this.charWidths[code];
-        //     }
-        // }
-        // return length;
     }
 
 
@@ -167,28 +109,9 @@ export default class FontRenderer {
         let b = (color & 0x0000FF);
 
         stack.fillStyle = `rgba(${r},${g},${b},${a})`;
-        
-        // let hsv = MathHelper.rgb2hsv(r, g, b);
-        // let hue = hsv[0] + 270;
-        // let saturation = hsv[1];
-        // let brightness = hsv[2] / 255 * 100;
-
-        // TODO fix colors
-        // let saturate1 = saturation * 1000;
-        // let saturate2 = saturation * 5000;
-        // let saturate3 = saturation * 100;
-
-        // if (!this.isSafari) { // TODO Fix filter on Safari
-        //     stack.filter = "sepia()"
-        //         + " saturate(" + saturate1 + "%)"
-        //         + " hue-rotate(" + hue + "deg)"
-        //         + " saturate(" + saturate2 + "%)"
-        //         + " brightness(" + brightness + "%)"
-        //         + " saturate(" + saturate3 + "%)";
-        // }
     }
 
     listFormattedStringToWidth(text, wrapWidth) {
-        return text.split("\n"); // TODO Implement wrap logic
+        return text.split("\n"); // TODO: Implement wrap logic
     }
 }
