@@ -14,12 +14,13 @@ export default class GuiMainMenu extends GuiScreen {
         super();
 
         this.panoramaTimer = 0;
-        this.splashText = "Minecraft written in JavaScript!";
+        this.splashText = '';
     }
 
     init() {
         super.init();
         this.textureLogo = this.getTexture("gui/title/minecraft.png");
+        this.splashText = this.getSpashText();
 
         let y = this.height / 4 + 48;
 
@@ -99,6 +100,22 @@ export default class GuiMainMenu extends GuiScreen {
 
         this.drawCenteredString(stack, this.splashText, 0, -8, -256);
         stack.restore();
+    }
+
+    getSpashText() {
+        const fs = require("fs");
+        let splash = "Minecraft made with JavaScript";
+        fs.readFile("/src/resources/gui/spashes.txt", "utf-8", function(err, data){
+            if(err) {
+                console.warn("failed to load splash.");
+                return splash;
+            }
+            var lines = data.split('\n');
+            
+            // choose one of the lines...
+            splash = lines[Math.floor(Math.random()*lines.length)];
+        });
+        return splash;
     }
 
     keyTyped(key) {
