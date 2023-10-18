@@ -23,6 +23,7 @@ import UUID from "../util/UUID.js";
 import FocusStateType from "../util/FocusStateType.js";
 import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
+import Splash from "../../../../resources/splashes.json" assert { type: 'json' };
 
 export default class Minecraft {
 
@@ -55,6 +56,9 @@ export default class Minecraft {
 
         this.settings = new GameSettings();
         this.settings.load();
+
+        // Persistent splash
+        this.splashText = this.getSpashText();
 
         // Load session from settings
         if (this.settings.session === null) {
@@ -526,5 +530,10 @@ export default class Minecraft {
         context.imageSmoothingEnabled = false;
         context.drawImage(image, 0, 0, image.width, image.height);
         return new THREE.CanvasTexture(canvas);
+    }
+    
+    getSpashText() {
+        let i = Math.floor(Math.random() * Splash.splashes.length);
+        return Splash.splashes[i];
     }
 }

@@ -7,7 +7,6 @@ import MathHelper from "../../../util/MathHelper.js";
 import Minecraft from "../../Minecraft.js";
 import GuiCreateWorld from "./GuiCreateWorld.js";
 import GuiDirectConnect from "./GuiDirectConnect.js";
-import Splash from "../../../../../../resources/splashes.json" assert { type: 'json' };
 
 export default class GuiMainMenu extends GuiScreen {
 
@@ -21,7 +20,7 @@ export default class GuiMainMenu extends GuiScreen {
     init() {
         super.init();
         this.textureLogo = this.getTexture("gui/title/minecraft.png");
-        this.splashText = this.getSpashText();
+        this.splashText = this.minecraft.splashText;
 
         let y = this.height / 4 + 48;
 
@@ -100,11 +99,6 @@ export default class GuiMainMenu extends GuiScreen {
 
         this.drawCenteredString(stack, this.splashText, 0, -8, -256);
         stack.restore();
-    }
-
-    getSpashText() {
-        let i = Math.floor(Math.random() * Splash.splashes.length);
-        return Splash.splashes[i];
     }
 
     keyTyped(key) {
