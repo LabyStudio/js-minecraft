@@ -3,7 +3,7 @@ import MathHelper from "../../../util/MathHelper.js";
 
 export default class FontRenderer {
 
-    static FONT_HEIGHT = 9;
+    static FONT_HEIGHT = 8;
 
     static BITMAP_SIZE = 16;
     static FIELD_SIZE = 8;
