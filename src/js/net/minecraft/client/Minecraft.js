@@ -358,7 +358,7 @@ export default class Minecraft {
         }
 
         // Toggle debug overlay
-        if (button === "F3") {
+        if (button === this.settings.keyToggleDebug) {
             this.settings.debugOverlay = !this.settings.debugOverlay;
             this.settings.save();
         }
