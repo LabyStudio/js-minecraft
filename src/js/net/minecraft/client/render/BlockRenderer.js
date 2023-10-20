@@ -37,6 +37,11 @@ export default class BlockRenderer {
             // Check if face is hidden by other block
             if (world === null || block.shouldRenderFace(world, x, y, z, face)) {
 
+                // No ambient occlusion for translucent objects
+                if (block.isTranslucent()) {
+                    ambientOcclusion = false;
+                }
+
                 // Render face
                 this.renderFace(world, block, boundingBox, face, ambientOcclusion, x, y, z);
             }
@@ -56,12 +61,19 @@ export default class BlockRenderer {
         let maxY = y + boundingBox.maxY;
         let maxZ = z + boundingBox.maxZ;
 
+
         // UV Mapping
         let textureIndex = block.getTextureForFace(face);
         let minU = (textureIndex % 16) / 16.0;
-        let maxU = minU + (16 / 256);
         let minV = Math.floor(textureIndex / 16) / 16.0;
-        let maxV = minV + (16 / 256);
+        let maxU = minU + (16 / 256);
+        let maxV;
+        if (face === EnumBlockFace.BOTTOM || face === EnumBlockFace.TOP) {
+            maxV = minV + (16 / 256);
+        }
+        else {
+            maxV = minV + (16 / 256 * (boundingBox.maxY - boundingBox.minY));
+        }
 
         // Flip V
         minV = 1 - minV;
@@ -305,12 +317,12 @@ export default class BlockRenderer {
         let chunkZ = z >> 4;
 
         // Vertex mappings
-        let minX = x + boundingBox.minX;
-        let minY = y + boundingBox.minY;
-        let minZ = z + boundingBox.minZ;
-        let maxX = x + boundingBox.maxX;
-        let maxY = y + boundingBox.maxY;
-        let maxZ = z + boundingBox.maxZ;
+        let minX = x;
+        let minY = y;
+        let minZ = z;
+        let maxX = x + 1;
+        let maxY = y + 1;
+        let maxZ = z + 1;
 
         // UV Mapping
         let textureIndex = block.getTextureForFace(face);
@@ -333,8 +345,8 @@ export default class BlockRenderer {
         if (!ambientOcclusion) {
             let level = world === null ? 15 : world.getTotalLightAt(minX + face.x, minY + face.y, minZ + face.z);
             let brightness = 0.9 / 15.0 * level + 0.1;
-            let shade = brightness * face.getShading();
-            this.tessellator.setColor(red * shade, green * shade, blue * shade);
+            //let shade = brightness * face.getShading();
+            this.tessellator.setColor(1, 1, 1, 0);
         }
 
         // Add face to tessellator

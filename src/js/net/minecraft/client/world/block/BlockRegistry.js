@@ -29,6 +29,7 @@ import BlockDandelion from "./type/BlockDandelion.js";
 import BlockPoppy from "./type/BlockPoppy.js";
 import BlockBrownMushroom from "./type/BlockBrownMushroom.js";
 import BlockRedMushroom from "./type/BlockRedMushroom.js";
+import BlockSlab from "./type/BlockSlab.js";
 
 export class BlockRegistry {
 
@@ -80,6 +81,7 @@ export class BlockRegistry {
         BlockRegistry.GOLD = new BlockGold(41, 18);
         BlockRegistry.IRON = new BlockIron(42, 19);
         BlockRegistry.DOUBLE_SLAB = new BlockDoubleSlab(43, 26);
+        BlockRegistry.SLAB = new BlockSlab(44, 26);
         BlockRegistry.BRICKS = new BlockBricks(45, 15);
         BlockRegistry.TNT = new BlockTNT(46, 21);
         BlockRegistry.BOOKSHELF = new BlockBookshelf(47, 17);

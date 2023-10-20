@@ -47,6 +47,10 @@ export default class Block {
         return this.getTransparency() > 0.0;
     }
 
+    isDecoration() {
+        return false;
+    }
+
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
         if (typeId === 0) {
