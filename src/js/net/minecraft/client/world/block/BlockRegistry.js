@@ -24,6 +24,11 @@ import BlockMossyCobblestone from "./type/BlockMossyCobblestone.js";
 import BlockObsidian from "./type/BlockObsidian.js";
 import BlockTNT from "./type/BlockTNT.js";
 import BlockWool from "./type/BlockWool.js";
+import BlockSapling from "./type/BlockSapling.js";
+import BlockDandelion from "./type/BlockDandelion.js";
+import BlockPoppy from "./type/BlockPoppy.js";
+import BlockBrownMushroom from "./type/BlockBrownMushroom.js";
+import BlockRedMushroom from "./type/BlockRedMushroom.js";
 
 export class BlockRegistry {
 
@@ -43,6 +48,7 @@ export class BlockRegistry {
         BlockRegistry.DIRT = new BlockDirt(3, 2);
         BlockRegistry.COBBLE_STONE = new BlockCobblestone(4, 14);
         BlockRegistry.WOOD = new BlockWood(5, 10);
+        BlockRegistry.SAPLING = new BlockSapling(6,43);
         BlockRegistry.BEDROCK = new BlockBedrock(7, 11);
         BlockRegistry.WATER = new BlockWater(9, 7);
         BlockRegistry.SAND = new BlockSand(12, 8);
@@ -67,6 +73,10 @@ export class BlockRegistry {
         BlockRegistry.WOOL_GRAY = new BlockWool(34, 40);
         BlockRegistry.WOOL_BLACK = new BlockWool(35, 41);
         BlockRegistry.WOOL_BROWN = new BlockWool(36, 42);
+        BlockRegistry.DANDELION = new BlockDandelion(37, 44);
+        BlockRegistry.POPPY = new BlockPoppy(38, 45);
+        BlockRegistry.BROWN_MUSHROOM = new BlockBrownMushroom(39, 46);
+        BlockRegistry.RED_MUSHROOM = new BlockRedMushroom(40, 47);
         BlockRegistry.GOLD = new BlockGold(41, 18);
         BlockRegistry.IRON = new BlockIron(42, 19);
         BlockRegistry.DOUBLE_SLAB = new BlockDoubleSlab(43, 26);
