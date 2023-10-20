@@ -7,12 +7,16 @@ export default class BlockWater extends Block {
         super(id, textureSlotId);
     }
 
+    isTranslucent() {
+        return true;
+    }
+
     getOpacity() {
-        return 0.01;
+        return 0;
     }
 
     getTransparency() {
-        return 0.2;
+        return 0.3;
     }
 
     isSolid() {
