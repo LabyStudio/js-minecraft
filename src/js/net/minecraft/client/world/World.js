@@ -527,7 +527,7 @@ export default class World {
         let angle = this.getCelestialAngle(partialTicks);
         let rotation = 1.0 - (Math.cos(angle * Math.PI * 2.0) * 2.0 + 0.75);
         rotation = MathHelper.clamp(rotation, 0.0, 1.0);
-        return rotation * rotation * 0.5;
+        return rotation * rotation * 0.75;
     }
 
     getLightBrightnessForEntity(entity) {

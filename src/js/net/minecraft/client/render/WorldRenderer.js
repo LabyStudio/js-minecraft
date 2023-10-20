@@ -400,7 +400,7 @@ export default class WorldRenderer {
                 let cosZ = Math.cos(rotationZ);
 
                 // Random size of the star
-                let size = 0.25 + random.nextFloat() * 0.25;
+                let size = 0.15 + random.nextFloat() * 0.15;
 
                 // Add vertices for each edge of the star
                 for (let edge = 0; edge < 4; edge++) {
@@ -425,7 +425,6 @@ export default class WorldRenderer {
 
             let mesh = this.tessellator.draw(this.listStars);
             mesh.material = mesh.material.clone();
-            mesh.material.depthTest = true;
             mesh.material.side = THREE.BackSide;
             this.cycleGroup.add(this.listStars);
         }
