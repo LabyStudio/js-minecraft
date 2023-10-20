@@ -43,7 +43,6 @@ export default class IngameOverlay extends Gui {
             let canvas = this.window.canvas;
             let debugHeight = canvasDebug.height * this.window.scaleFactor;
             let debugWidth = canvasDebug.width * this.window.scaleFactor;
-            console.log(`dw:${debugWidth},dh:${debugHeight}, sf:${this.window.scaleFactor}`);
             stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
         }
 
