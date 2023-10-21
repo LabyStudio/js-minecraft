@@ -75,13 +75,17 @@ export default class World {
         let minX = MathHelper.floor(region.minX);
         let maxX = MathHelper.floor(region.maxX + 1.0);
         let minY = MathHelper.floor(region.minY);
-        let maxY = MathHelper.floor(region.maxY + 1.0);
+        let maxY = MathHelper.floor(region.maxY + 2.0);
         let minZ = MathHelper.floor(region.minZ);
         let maxZ = MathHelper.floor(region.maxZ + 1.0);
 
         for (let x = minX; x < maxX; x++) {
             for (let y = minY; y < maxY; y++) {
                 for (let z = minZ; z < maxZ; z++) {
+                    if (this.isHalfBlockAt(x, y, z)) {
+                        boundingBoxList.push(new BoundingBox(x, y, z, x + 1, y + 0.5, z + 1));
+                        continue;
+                    }
                     if (this.isSolidBlockAt(x, y, z)) {
                         boundingBoxList.push(new BoundingBox(x, y, z, x + 1, y + 1, z + 1));
                     }
@@ -264,6 +268,16 @@ export default class World {
 
         let block = Block.getById(typeId);
         return block !== null && block.isSolid();
+    }
+
+    isHalfBlockAt(x, y, z) {
+        let typeId = this.getBlockAt(x, y, z);
+        if (typeId === 0) {
+            return false;
+        }
+
+        let block = Block.getById(typeId);
+        return block !== null && block.isHalf();
     }
 
     isTranslucentBlockAt(x, y, z) {

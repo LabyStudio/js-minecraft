@@ -38,9 +38,9 @@ export default class BlockRenderer {
             if (world === null || block.shouldRenderFace(world, x, y, z, face)) {
 
                 // No ambient occlusion for translucent objects
-                if (block.isTranslucent()) {
-                    ambientOcclusion = false;
-                }
+                // if (block.isTranslucent()) {
+                //     ambientOcclusion = false;
+                // }
 
                 // Render face
                 this.renderFace(world, block, boundingBox, face, ambientOcclusion, x, y, z);

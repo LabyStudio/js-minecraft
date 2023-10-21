@@ -35,6 +35,10 @@ export default class BlockSlab extends Block {
         return block === null || block.isTranslucent();
     }
 
+    isHalf() {
+        return true;
+    }
+
     isTranslucent() {
         return true;
     }

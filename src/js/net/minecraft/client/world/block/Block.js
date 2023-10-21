@@ -77,6 +77,10 @@ export default class Block {
         return true;
     }
 
+    isHalf() {
+        return false;
+    }
+
     getOpacity() {
         return 1.0;
     }
