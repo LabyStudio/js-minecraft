@@ -6,7 +6,7 @@ export default class BlockSponge extends Block {
         super(id, textureSlotId);
 
         // Sound
-        this.sound = Block.sounds.grass;
+        this.sound = Block.sounds.dirt;
     }
 
 }

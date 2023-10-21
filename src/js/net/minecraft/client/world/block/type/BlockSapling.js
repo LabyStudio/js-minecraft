@@ -10,7 +10,7 @@ export default class BlockSapling extends Block {
         this.boundingBox = new BoundingBox(0.125, 0.0, 0.125, 0.875, 0.875, 0.875);
 
         // Sound
-        this.sound = Block.sounds.grass;
+        this.sound = Block.sounds.dirt;
     }
 
     getRenderType() {
