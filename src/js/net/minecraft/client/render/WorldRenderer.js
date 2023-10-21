@@ -492,9 +492,9 @@ export default class WorldRenderer {
 
     setupFog(x, z, inWater, partialTicks) {
         if (inWater) {
-            let color = new THREE.Color(0.2, 0.2, 0.4);
+            let color = new THREE.Color(0.0, 0.0, 0.2);
             this.background.background = color;
-            this.scene.fog = new THREE.Fog(color, 0.0025, 5);
+            this.scene.fog = new THREE.Fog(color, -10, 15);
         } else {
             let world = this.minecraft.world;
 

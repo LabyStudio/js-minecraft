@@ -33,7 +33,19 @@ export default class BlockWater extends Block {
 
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || typeId !== this.id || typeId !== this.id && face === EnumBlockFace.TOP;
+
+        if (typeId === 0) {
+            return true;
+        }
+
+        let block = Block.getById(typeId);
+        if (block === null || (block.isTranslucent() && !block.isLiquid())){
+            console.log('this one');
+            return true;
+        }
+
+        let topTypeId = world.getBlockAtFace(x, y+2, z, face);
+        return (typeId !== this.id && face === EnumBlockFace.TOP) || (topTypeId !== this.id && face === EnumBlockFace.BOTTOM);
     }
 
     getBoundingBox(world, x, y, z) {

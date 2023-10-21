@@ -10,7 +10,7 @@ export default class BlockDandelion extends Block {
         this.boundingBox = new BoundingBox(0.3125, 0.0, 0.3125, 0.625, 0.6875, 0.625);
 
         // Sound
-        this.sound = Block.sounds.grass;
+        this.sound = Block.sounds.dirt;
     }
 
     getRenderType() {

@@ -96,6 +96,18 @@ export default class BlockRenderer {
         // Set opacity of block (Using alpha channel in texture right now)
         // this.tessellator.setAlpha(1 - block.getTransparency());
 
+        // Add extra face fot liquids
+        if (face === EnumBlockFace.BOTTOM && block.isLiquid()) {
+            if (world.getBlockAtFace(x, y, z, EnumBlockFace.BOTTOM) !== block.id) {
+                this.addFace(world, face, ambientOcclusion, chunkX, chunkY, chunkZ, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, red, green, blue);
+            }
+            if (world.getBlockAtFace(x, y, z, EnumBlockFace.TOP) !== block.id) {
+                minY += (14 / 16);
+                this.addFace(world, face, ambientOcclusion, chunkX, chunkY, chunkZ, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, red, green, blue);
+            }
+            return;
+        }
+
         // Add face to tessellator
         this.addFace(world, face, ambientOcclusion, chunkX, chunkY, chunkZ, minX, minY, minZ, maxX, maxY, maxZ, minU, minV, maxU, maxV, red, green, blue);
     }

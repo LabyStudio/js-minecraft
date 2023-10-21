@@ -453,7 +453,7 @@ export default class Minecraft {
 
                             // Play sound
                             let sound = block.getSound();
-                            let soundName = sound.getStepSound();
+                            let soundName = sound.getPlaceSound();
                             this.soundManager.playSound(
                                 soundName,
                                 hitResult.x + 0.5,

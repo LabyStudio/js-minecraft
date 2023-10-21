@@ -30,6 +30,7 @@ import BlockPoppy from "./type/BlockPoppy.js";
 import BlockBrownMushroom from "./type/BlockBrownMushroom.js";
 import BlockRedMushroom from "./type/BlockRedMushroom.js";
 import BlockSlab from "./type/BlockSlab.js";
+import SoundGrass from "./sound/SoundGrass.js";
 
 export class BlockRegistry {
 
@@ -38,7 +39,8 @@ export class BlockRegistry {
         Block.sounds.stone = new Sound("stone", 1.0);
         Block.sounds.wood = new Sound("wood", 1.0);
         Block.sounds.gravel = new Sound("gravel", 1.0);
-        Block.sounds.grass = new Sound("grass", 1.0);
+        Block.sounds.dirt = new Sound("dirt", 1.0);
+        Block.sounds.grass = new SoundGrass("grass", 1.0);
         Block.sounds.cloth = new Sound("cloth", 1.0);
         Block.sounds.sand = new Sound("sand", 1.0);
         Block.sounds.glass = new SoundGlass("stone", 1.0);
