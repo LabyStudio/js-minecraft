@@ -24,6 +24,13 @@ import BlockMossyCobblestone from "./type/BlockMossyCobblestone.js";
 import BlockObsidian from "./type/BlockObsidian.js";
 import BlockTNT from "./type/BlockTNT.js";
 import BlockWool from "./type/BlockWool.js";
+import BlockSapling from "./type/BlockSapling.js";
+import BlockDandelion from "./type/BlockDandelion.js";
+import BlockPoppy from "./type/BlockPoppy.js";
+import BlockBrownMushroom from "./type/BlockBrownMushroom.js";
+import BlockRedMushroom from "./type/BlockRedMushroom.js";
+import BlockSlab from "./type/BlockSlab.js";
+import SoundGrass from "./sound/SoundGrass.js";
 
 export class BlockRegistry {
 
@@ -32,7 +39,8 @@ export class BlockRegistry {
         Block.sounds.stone = new Sound("stone", 1.0);
         Block.sounds.wood = new Sound("wood", 1.0);
         Block.sounds.gravel = new Sound("gravel", 1.0);
-        Block.sounds.grass = new Sound("grass", 1.0);
+        Block.sounds.dirt = new Sound("dirt", 1.0);
+        Block.sounds.grass = new SoundGrass("grass", 1.0);
         Block.sounds.cloth = new Sound("cloth", 1.0);
         Block.sounds.sand = new Sound("sand", 1.0);
         Block.sounds.glass = new SoundGlass("stone", 1.0);
@@ -43,6 +51,7 @@ export class BlockRegistry {
         BlockRegistry.DIRT = new BlockDirt(3, 2);
         BlockRegistry.COBBLE_STONE = new BlockCobblestone(4, 14);
         BlockRegistry.WOOD = new BlockWood(5, 10);
+        BlockRegistry.SAPLING = new BlockSapling(6,43);
         BlockRegistry.BEDROCK = new BlockBedrock(7, 11);
         BlockRegistry.WATER = new BlockWater(9, 7);
         BlockRegistry.SAND = new BlockSand(12, 8);
@@ -67,9 +76,14 @@ export class BlockRegistry {
         BlockRegistry.WOOL_GRAY = new BlockWool(34, 40);
         BlockRegistry.WOOL_BLACK = new BlockWool(35, 41);
         BlockRegistry.WOOL_BROWN = new BlockWool(36, 42);
+        BlockRegistry.DANDELION = new BlockDandelion(37, 44);
+        BlockRegistry.POPPY = new BlockPoppy(38, 45);
+        BlockRegistry.BROWN_MUSHROOM = new BlockBrownMushroom(39, 46);
+        BlockRegistry.RED_MUSHROOM = new BlockRedMushroom(40, 47);
         BlockRegistry.GOLD = new BlockGold(41, 18);
         BlockRegistry.IRON = new BlockIron(42, 19);
         BlockRegistry.DOUBLE_SLAB = new BlockDoubleSlab(43, 26);
+        BlockRegistry.SLAB = new BlockSlab(44, 26);
         BlockRegistry.BRICKS = new BlockBricks(45, 15);
         BlockRegistry.TNT = new BlockTNT(46, 21);
         BlockRegistry.BOOKSHELF = new BlockBookshelf(47, 17);
