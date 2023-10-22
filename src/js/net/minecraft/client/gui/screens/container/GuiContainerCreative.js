@@ -20,7 +20,7 @@ export default class GuiContainerCreative extends GuiContainer {
     }
 
     drawTitle(stack) {
-        this.drawString(stack, "Creative Inventory", this.x + 8, this.y + 6, 0xff404040, false);
+        this.drawString(stack, "Creative Inventory", this.x + 8, this.y + 6, 0x404040, false);
     }
 
     drawInventoryBackground(stack) {

@@ -25,7 +25,7 @@ export default class Gui {
     }
 
     getStringWidth(stack, string) {
-        return this.minecraft.fontRenderer.getStringWidth(string);
+        return this.minecraft.fontRenderer.getStringWidth(stack, string);
     }
 
     drawRect(stack, left, top, right, bottom, color, alpha = 1) {
