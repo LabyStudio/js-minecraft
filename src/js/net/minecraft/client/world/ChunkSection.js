@@ -48,9 +48,10 @@ export default class ChunkSection {
         let ambientOcclusion = this.world.minecraft.settings.ambientOcclusion;
         let tessellator = renderer.blockRenderer.tessellator;
 
-        // Two render phases for solid and translucent
-        for (let i = 0; i < 2; i++) {
-            let isTranslucentRenderPhase = i === 1;
+        // Tree render phases for solid, translucent and decoration (alpha enabled)
+        for (let i = 0; i < 3; i++) {
+            let isSolidRenderPhase = i === 0;
+            let isDecorationRenderPhase = i === 2;
 
             // Start drawing chunk section
             tessellator.startDrawing();
@@ -66,7 +67,7 @@ export default class ChunkSection {
                             let absoluteZ = this.z * ChunkSection.SIZE + z;
 
                             let block = Block.getById(typeId);
-                            if (block === null || block.isTranslucent() !== isTranslucentRenderPhase) {
+                            if (block === null || block.isTranslucent() == isSolidRenderPhase || block.isDecoration() !== isDecorationRenderPhase) {
                                 continue;
                             }
 
@@ -77,7 +78,7 @@ export default class ChunkSection {
             }
 
             // Draw chunk section
-            tessellator.draw(this.group);
+            tessellator.draw(this.group, isDecorationRenderPhase);
         }
     }
 

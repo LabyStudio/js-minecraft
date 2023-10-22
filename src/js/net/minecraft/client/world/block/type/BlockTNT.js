@@ -7,7 +7,7 @@ export default class BlockTNT extends Block {
         super(id, textureSlotId);
 
         // Sound
-        this.sound = Block.sounds.grass;
+        this.sound = Block.sounds.dirt;
     }
 
     getParticleTextureFace() {
