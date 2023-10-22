@@ -14,12 +14,13 @@ export default class GuiMainMenu extends GuiScreen {
         super();
 
         this.panoramaTimer = 0;
-        this.splashText = "Minecraft written in JavaScript!";
+        this.splashText = '';
     }
 
     init() {
         super.init();
         this.textureLogo = this.getTexture("gui/title/minecraft.png");
+        this.splashText = this.minecraft.splashText;
 
         let y = this.height / 4 + 48;
 
@@ -84,8 +85,7 @@ export default class GuiMainMenu extends GuiScreen {
     }
 
     drawLogo(stack, x, y) {
-        this.drawSprite(stack, this.textureLogo, 0, 0, 155, 44, x, y, 155, 44);
-        this.drawSprite(stack, this.textureLogo, 0, 45, 155, 44, x + 155, y, 155, 44);
+        this.drawSprite(stack, this.textureLogo, 0, 0, 274, 51, x, y, 274, 51);
     }
 
     drawSplash(stack) {
@@ -93,7 +93,7 @@ export default class GuiMainMenu extends GuiScreen {
         f = f * 100.0 / (this.getStringWidth(stack, this.splashText) + 32);
 
         stack.save();
-        stack.translate((this.width / 2 + 90), 70.0, 0.0);
+        stack.translate((this.width / 2 + 120), 80.0, 0.0);
         stack.rotate(MathHelper.toRadians(-20));
         stack.scale(f, f, f);
 

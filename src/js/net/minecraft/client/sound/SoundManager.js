@@ -47,8 +47,9 @@ export default class SoundManager {
 
         // Create sound
         let sound = new THREE.PositionalAudio(this.audioListener);
+        sound.setDistanceModel('inverse');
         sound.setRefDistance(0.1);
-        sound.setRolloffFactor(6);
+        sound.setRolloffFactor(0.1);
         sound.setFilter(sound.context.createBiquadFilter());
         sound.setVolume(0);
 
