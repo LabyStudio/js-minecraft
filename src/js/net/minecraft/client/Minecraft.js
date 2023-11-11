@@ -399,7 +399,7 @@ export default class Minecraft {
 
                 this.player.swingArm();
             }
-
+      
             // Pick block
             if (button === 1) {
                 if (hitResult != null) {
@@ -431,33 +431,45 @@ export default class Minecraft {
 
                     // Don't place blocks if the player is standing there
                     if (!placedBoundingBox.intersects(this.player.boundingBox)) {
-                        let typeId = this.player.inventory.getItemInSelectedSlot();
-
-                        // Get previous block
-                        let prevTypeId = this.world.getBlockAt(x, y, z);
-
-                        if (typeId !== 0 && prevTypeId !== typeId) {
-                            // Place block
-                            this.world.setBlockAt(x, y, z, typeId);
-
-                            // Swing player arm
-                            this.player.swingArm();
-
-                            // Handle block abilities
+                        // Handle left mouse clicked in block
+                        let GuiLeftMouseCliked;
+                        if (!this.player.isSneaking()) {
+                            let typeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
                             let block = Block.getById(typeId);
-                            block.onBlockPlaced(this.world, x, y, z, hitResult.face);
+                            GuiLeftMouseCliked = block.getGuiLeftMouseCliked()
+                        }
+                        
+                        if (GuiLeftMouseCliked) {
+                            this.displayScreen(new GuiLeftMouseCliked(this.player))
+                        } else {
+                            let typeId = this.player.inventory.getItemInSelectedSlot();
 
-                            // Play sound
-                            let sound = block.getSound();
-                            let soundName = sound.getStepSound();
-                            this.soundManager.playSound(
-                                soundName,
-                                hitResult.x + 0.5,
-                                hitResult.y + 0.5,
-                                hitResult.z + 0.5,
-                                1.0,
-                                sound.getPitch() * 0.8
-                            );
+                            // Get previous block
+                            let prevTypeId = this.world.getBlockAt(x, y, z);
+        
+                            if (typeId !== 0 && prevTypeId !== typeId) {
+                                // Place block
+                                this.world.setBlockAt(x, y, z, typeId);
+
+                                // Swing player arm
+                                this.player.swingArm();
+
+                                // Handle block abilities
+                                let block = Block.getById(typeId);
+                                block.onBlockPlaced(this.world, x, y, z, hitResult.face);
+
+                                // Play sound
+                                let sound = block.getSound();
+                                let soundName = sound.getStepSound();
+                                this.soundManager.playSound(
+                                    soundName,
+                                    hitResult.x + 0.5,
+                                    hitResult.y + 0.5,
+                                    hitResult.z + 0.5,
+                                    1.0,
+                                    sound.getPitch() * 0.8
+                                );
+                            } 
                         }
                     }
                 }
