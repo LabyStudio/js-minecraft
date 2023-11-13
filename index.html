@@ -5,14 +5,25 @@
           content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height"/>
     <link rel="shortcut icon" href="src/resources/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css"/>
+
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="blockly/styles/index.css">
 </head>
 
-<body>
+<body  mode="maker">
 
 <div id="background" class="fullscreen"></div>
 
 <div id="content">
     <div id="canvas-container" class="fullscreen"></div>
+</div>
+
+<div id="blocklycode" class="fullscreen2">
+     <button class="mode-blockly mdl-button mdl-js-button" id="save">Save</button>
+     <button class="mode-blockly mdl-button mdl-js-button" id="run">Run</button>
+    <div class="blockly-editor">
+      <div id="blocklyDiv" style="height: 95vh; width: 90vw;"></div>
+    </div>
 </div>
 
 </body>
@@ -26,5 +37,14 @@
 
 <!-- Minecraft -->
 <script type="module" src="src/js/Start.js"></script>
+
+<!-- Blockly -->
+<script src="https://unpkg.com/blockly/blockly.min.js"></script>
+<script src="blockly/scripts/craft_blocks.js"></script>
+<script src="blockly/scripts/main.js"></script>
+<script>
+const div = document.getElementById('blocklycode');
+div.style.visibility = 'hidden';
+</script>
 
 </html>

@@ -28,3 +28,12 @@ canvas {
     white-space: nowrap;
     overflow: hidden;
 }
+.fullscreen2 {
+    position: absolute;
+    float: left;
+    display: block;
+    width: 100%;
+    height: 95vh;
+    white-space: nowrap;
+    overflow: hidden;
+}

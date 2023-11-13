@@ -169,7 +169,7 @@ export default class GameWindow {
         this.registerListener(window, 'keydown', event => {
             // Prevent browser functions except fullscreen
             if (event.key !== 'F11') {
-                event.preventDefault();
+                if (this.focusState === FocusStateType.LOCKED) event.preventDefault();
             }
 
             // Ignore key input if mouse is not inside window

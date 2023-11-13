@@ -353,6 +353,12 @@ export default class Minecraft {
             this.displayScreen(new GuiChat());
         }
 
+        // Open blockly programming editor
+        if (button === this.settings.keyCode) {	
+            this.window.updateFocusState(FocusStateType.REQUEST_EXIT);
+            const div = document.getElementById('blocklycode');
+		    div.style.visibility = 'visible';        }
+
         // Toggle debug overlay
         if (button === "F3") {
             this.settings.debugOverlay = !this.settings.debugOverlay;
