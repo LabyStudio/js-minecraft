@@ -39,7 +39,11 @@ export default class IngameOverlay extends Gui {
 
         // Render debug canvas on stack
         if (this.minecraft.settings.debugOverlay) {
-            stack.drawImage(this.window.canvasDebug, 0, 0);
+            let canvasDebug = this.window.canvasDebug;
+            let canvas = this.window.canvas;
+            let debugHeight = canvasDebug.height * this.window.scaleFactor;
+            let debugWidth = canvasDebug.width * this.window.scaleFactor;
+            stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
         }
 
         // Render player list

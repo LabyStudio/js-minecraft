@@ -7,6 +7,7 @@ import TreeGenerator from "./structure/TreeGenerator.js";
 import BigTreeGenerator from "./structure/BigTreeGenerator.js";
 import Generator from "./Generator.js";
 import ChunkSection from "../ChunkSection.js";
+import PlantGenerator from "./structure/PlantGenerator.js";
 
 export default class WorldGenerator extends Generator {
 
@@ -78,6 +79,26 @@ export default class WorldGenerator extends Generator {
 
             // Generate tree at position
             treeGenerator.generateAtBlock(totalX, totalY, totalZ);
+        }
+
+        // Noise data for plant population
+        amount = Math.floor((this.populationNoiseGenerator.perlin(absoluteX * 0.5, absoluteY * 0.5) / 8 + this.random.nextDouble() * 4 + 10)/2);
+        console.log(amount);
+        if (amount < 0) {
+            amount = 0;
+        }
+
+        let plantSeed = this.random.seed;
+        let plantGenerator = new PlantGenerator(this.world, plantSeed);
+
+        // Plant plants in the chunk
+        for (let i = 0; i < amount; i++) {
+            let totalX = absoluteX + this.random.nextInt(16) + 8;
+            let totalZ = absoluteY + this.random.nextInt(16) + 8;
+            let totalY = this.world.getHeightAt(totalX, totalZ);
+
+            // Generate plant at position
+            plantGenerator.generateAtBlock(totalX, totalY, totalZ);
         }
     }
 

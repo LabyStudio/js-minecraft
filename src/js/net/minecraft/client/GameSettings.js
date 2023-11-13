@@ -4,6 +4,7 @@ export default class GameSettings {
         this.keyCrouching = 'ShiftLeft';
         this.keySprinting = 'ControlLeft';
         this.keyTogglePerspective = 'F5';
+        this.keyToggleDebug = 'F3'
         this.keyOpenChat = 'KeyT';
         this.keyOpenInventory = 'KeyE';
         this.keyCode = 'KeyC';

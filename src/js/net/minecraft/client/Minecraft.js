@@ -23,6 +23,7 @@ import UUID from "../util/UUID.js";
 import FocusStateType from "../util/FocusStateType.js";
 import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
+import Splash from "../../../../resources/splashes.json" assert { type: 'json' };
 
 export default class Minecraft {
 
@@ -55,6 +56,9 @@ export default class Minecraft {
 
         this.settings = new GameSettings();
         this.settings.load();
+
+        // Persistent splash
+        this.splashText = this.getSpashText();
 
         // Load session from settings
         if (this.settings.session === null) {
@@ -360,7 +364,7 @@ export default class Minecraft {
 		    div.style.visibility = 'visible';        }
 
         // Toggle debug overlay
-        if (button === "F3") {
+        if (button === this.settings.keyToggleDebug) {
             this.settings.debugOverlay = !this.settings.debugOverlay;
             this.settings.save();
         }
@@ -391,7 +395,7 @@ export default class Minecraft {
                             hitResult.x + 0.5,
                             hitResult.y + 0.5,
                             hitResult.z + 0.5,
-                            1.0,
+                            2.0,
                             1.0
                         );
 
@@ -455,13 +459,13 @@ export default class Minecraft {
 
                             // Play sound
                             let sound = block.getSound();
-                            let soundName = sound.getStepSound();
+                            let soundName = sound.getPlaceSound();
                             this.soundManager.playSound(
                                 soundName,
                                 hitResult.x + 0.5,
                                 hitResult.y + 0.5,
                                 hitResult.z + 0.5,
-                                1.0,
+                                2.0,
                                 sound.getPitch() * 0.8
                             );
                         }
@@ -532,5 +536,10 @@ export default class Minecraft {
         context.imageSmoothingEnabled = false;
         context.drawImage(image, 0, 0, image.width, image.height);
         return new THREE.CanvasTexture(canvas);
+    }
+    
+    getSpashText() {
+        let i = Math.floor(Math.random() * Splash.splashes.length);
+        return Splash.splashes[i];
     }
 }
