@@ -24,7 +24,6 @@ export default class GuiContainer extends GuiScreen {
     drawScreen(stack, mouseX, mouseY, partialTicks) {
         this.drawDefaultBackground(stack);
         this.drawInventoryBackground(stack);
-        this.drawString(stack, "Creative Inventory", this.x + 8, this.y + 6, 0x404040);
 
         // Rebuild items
         if (this.container.dirty) {

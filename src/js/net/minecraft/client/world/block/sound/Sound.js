@@ -5,6 +5,10 @@ export default class Sound {
         this.pitch = pitch;
     }
 
+    getPlaceSound() {
+        return "step." + this.name;
+    }
+
     getBreakSound() {
         return "step." + this.name;
     }

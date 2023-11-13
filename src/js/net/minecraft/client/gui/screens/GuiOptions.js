@@ -45,7 +45,7 @@ export default class GuiOptions extends GuiScreen {
         this.drawDefaultBackground(stack);
 
         // Title
-        this.drawCenteredString(stack, "Settings", this.width / 2, 50);
+        this.drawCenteredString(stack, "Settings", this.width / 2, 40);
 
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }

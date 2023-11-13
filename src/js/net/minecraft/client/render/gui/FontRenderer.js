@@ -3,7 +3,7 @@ import MathHelper from "../../../util/MathHelper.js";
 
 export default class FontRenderer {
 
-    static FONT_HEIGHT = 9;
+    static FONT_HEIGHT = 8;
 
     static BITMAP_SIZE = 16;
     static FIELD_SIZE = 8;
@@ -52,59 +52,21 @@ export default class FontRenderer {
     }
 
     drawString(stack, string, x, y, color = -1, shadow = true) {
-        if (!this.isSafari && shadow) { // TODO Fix filter on Safari
+        if (shadow) {
             this.drawStringRaw(stack, string, x + 1, y + 1, color, true);
         }
-        this.drawStringRaw(stack, string, x, y, color);
+        this.drawStringRaw(stack, string, x, y, color, false);
     }
 
     drawStringRaw(stack, string, x, y, color = -1, isShadow = false) {
         stack.save();
 
         // Set color
-        if (color !== -1 || isShadow) {
-            this.setColor(stack, color, isShadow);
-        }
+        this.setColor(stack, color, isShadow);
 
-        let alpha = ((color & 0xFF000000) >>> 24) / 255;
-
-        // For each character
-        for (let i = 0; i < string.length; i++) {
-            let character = string[i];
-            let index = FontRenderer.CHAR_INDEX_LOOKUP.indexOf(character);
-            let code = character.charCodeAt(0);
-
-            // Handle color codes if character is &
-            if (character === FontRenderer.COLOR_PREFIX && i !== string.length - 1) {
-                // Get the next character
-                let nextCharacter = string[i + 1];
-
-                // Change color of string
-                this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
-
-                // Skip the color code for rendering
-                i += 1;
-                continue;
-            }
-
-            // Get character offset in bitmap
-            let textureOffsetX = index % FontRenderer.BITMAP_SIZE * FontRenderer.FIELD_SIZE;
-            let textureOffsetY = Math.floor(index / FontRenderer.BITMAP_SIZE) * FontRenderer.FIELD_SIZE;
-
-            // Draw character
-            Gui.drawSprite(
-                stack,
-                this.texture,
-                textureOffsetX, textureOffsetY,
-                FontRenderer.FIELD_SIZE, FontRenderer.FIELD_SIZE,
-                Math.floor(x), Math.floor(y),
-                FontRenderer.FIELD_SIZE, FontRenderer.FIELD_SIZE,
-                alpha
-            );
-
-            // Increase drawing cursor
-            x += this.charWidths[code];
-        }
+        // Draw string
+        stack.font = "8px Minecraft";
+        stack.fillText(string, x, y+6);
 
         stack.restore();
     }
@@ -121,23 +83,9 @@ export default class FontRenderer {
         return r << 16 | g << 8 | b;
     }
 
-    getStringWidth(string) {
-        let length = 0;
-
-        // For each character
-        for (let i = 0; i < string.length; i++) {
-
-            // Check for color code
-            if (string[i] === FontRenderer.COLOR_PREFIX) {
-                // Skip the next character
-                i++;
-            } else {
-                // Add the width of the character
-                let code = string[i].charCodeAt(0);
-                length += this.charWidths[code];
-            }
-        }
-        return length;
+    getStringWidth(stack, string) {
+        stack.font = "8px Minecraft";
+        return stack.measureText(string).width;
     }
 
 
@@ -150,34 +98,20 @@ export default class FontRenderer {
     }
 
     setColor(stack, color, isShadow = false) {
+        let a = 255;
         if (isShadow) {
             color = (color & 0xFCFCFC) >> 2;
+            a = 127;
         }
 
         let r = (color & 0xFF0000) >> 16;
         let g = (color & 0x00FF00) >> 8;
         let b = (color & 0x0000FF);
-        let hsv = MathHelper.rgb2hsv(r, g, b);
-        let hue = hsv[0] + 270;
-        let saturation = hsv[1];
-        let brightness = hsv[2] / 255 * 100;
 
-        // TODO fix colors
-        let saturate1 = saturation * 1000;
-        let saturate2 = saturation * 5000;
-        let saturate3 = saturation * 100;
-
-        if (!this.isSafari) { // TODO Fix filter on Safari
-            stack.filter = "sepia()"
-                + " saturate(" + saturate1 + "%)"
-                + " hue-rotate(" + hue + "deg)"
-                + " saturate(" + saturate2 + "%)"
-                + " brightness(" + brightness + "%)"
-                + " saturate(" + saturate3 + "%)";
-        }
+        stack.fillStyle = `rgba(${r},${g},${b},${a})`;
     }
 
     listFormattedStringToWidth(text, wrapWidth) {
-        return text.split("\n"); // TODO Implement wrap logic
+        return text.split("\n"); // TODO: Implement wrap logic
     }
 }

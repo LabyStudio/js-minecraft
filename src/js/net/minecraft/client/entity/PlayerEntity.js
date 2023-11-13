@@ -263,7 +263,7 @@ export default class PlayerEntity extends EntityLiving {
 
                     // Play sound
                     if (!block.isLiquid()) {
-                        this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.15, sound.getPitch());
+                        this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.25, sound.getPitch());
                     }
                 }
             }

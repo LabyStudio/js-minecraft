@@ -171,6 +171,9 @@ export default class GameWindow {
             if (event.key !== 'F11') {
                 if (this.focusState === FocusStateType.LOCKED) event.preventDefault();
             }
+            else {
+                this.updateWindowSize();
+            }
 
             // Ignore key input if mouse is not inside window
             if (!this.mouseInsideWindow) {
@@ -379,6 +382,8 @@ export default class GameWindow {
         if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
             this.canvasDebug.width = this.canvas.width;
             this.canvasDebug.height = this.canvas.height;
+            let ctx = this.canvasDebug.getContext('2d');
+            ctx.scale(this.scaleFactor, this.scaleFactor);
         }
 
         if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
