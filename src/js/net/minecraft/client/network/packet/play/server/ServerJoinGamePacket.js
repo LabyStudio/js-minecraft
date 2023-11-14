@@ -20,7 +20,7 @@ export default class ServerJoinGamePacket extends Packet {
     }
 
     read(buffer) {
-        this.entityId = buffer.readVarInt();
+        this.entityId = buffer.readInt();
         let bits = buffer.readByte();
         this.hardcoreMode = (bits & 8) === 8;
         this.gameType = bits & -9;

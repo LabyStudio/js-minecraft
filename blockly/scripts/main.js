@@ -182,7 +182,7 @@ class FocusStateType {
       {
         id: 'catMine',
         colour: '0f0',
-        name: 'Build',
+        name: 'Baue',
         kind: 'CATEGORY',
         contents: [
           {
@@ -300,7 +300,7 @@ class FocusStateType {
         ],
         id: 'catLogic',
         colour: '210',
-        name: 'Logic',
+        name: 'Logik',
       },
       {
         kind: 'CATEGORY',
@@ -335,7 +335,7 @@ class FocusStateType {
         ],
         id: 'catLoops',
         colour: '120',
-        name: 'Loops',
+        name: 'Schleifen',
       },
       {
         kind: 'CATEGORY',
@@ -417,7 +417,7 @@ class FocusStateType {
         ],
         id: 'catMath',
         colour: '230',
-        name: 'Math',
+        name: 'Mathe',
       },
       {
         kind: 'CATEGORY',
@@ -565,7 +565,7 @@ class FocusStateType {
         ],
         id: 'catLists',
         colour: '260',
-        name: 'Lists',
+        name: 'Listen',
       },
       {
         kind: 'CATEGORY',
@@ -595,7 +595,7 @@ class FocusStateType {
         ],
         id: 'catColour',
         colour: '20',
-        name: 'Colour',
+        name: 'Farbe',
       },
       {
         kind: 'SEP',
@@ -605,19 +605,20 @@ class FocusStateType {
         id: 'catVariables',
         colour: '330',
         custom: 'VARIABLE',
-        name: 'Variables',
+        name: 'Variablen',
       },
       {
         kind: 'CATEGORY',
         id: 'catFunctions',
         colour: '290',
         custom: 'PROCEDURE',
-        name: 'Functions',
+        name: 'Funktionen',
       },
     ],
     id: 'toolbox',
     style: 'display: none',
   };
+  
 
   Blockly.inject('blocklyDiv', {
     toolbox: toolbox,

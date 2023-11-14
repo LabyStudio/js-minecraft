@@ -1,3 +1,4 @@
+let Splash=
 {
     "splashes": [
         "Made in JavaScript!",
@@ -9,7 +10,7 @@
         "100% pure!",
         "May contain nuts!",
         "More polygons!",
-        "Sexy!",
+        "Super!",
         "Limited edition!",
         "Flashing letters!",
         "Coming soon!",
@@ -27,4 +28,5 @@
         "All inclusive!",
         "Nyan Cat!"
     ]
-}
+};
+export default Splash;

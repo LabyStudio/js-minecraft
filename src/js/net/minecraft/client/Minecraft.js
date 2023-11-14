@@ -23,8 +23,7 @@ import UUID from "../util/UUID.js";
 import FocusStateType from "../util/FocusStateType.js";
 import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
-import Splash from "../../../../resources/splashes.json" assert { type: 'json' };
-
+import Splash from "../../../../resources/splashes.js"
 export default class Minecraft {
 
     static VERSION = "1.1.8"
@@ -33,6 +32,7 @@ export default class Minecraft {
 
     // TODO Add to settings
     static PROXY = {
+        //"address": "wss://socket.labystudio.de/minecraft/"
         "address": "localhost",
         "port": 30023
     };

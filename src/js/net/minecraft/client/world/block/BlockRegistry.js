@@ -31,6 +31,7 @@ import BlockBrownMushroom from "./type/BlockBrownMushroom.js";
 import BlockRedMushroom from "./type/BlockRedMushroom.js";
 import BlockSlab from "./type/BlockSlab.js";
 import SoundGrass from "./sound/SoundGrass.js";
+import BlockJelly from "./type/BlockJelly.js";
 
 export class BlockRegistry {
 
@@ -90,5 +91,7 @@ export class BlockRegistry {
         BlockRegistry.MOSSY_COBBLE_STONE = new BlockMossyCobblestone(48, 23);
         BlockRegistry.OBSIDIAN = new BlockObsidian(49, 24);
         BlockRegistry.TORCH = new BlockTorch(50, 9);
+        BlockRegistry.PINKJELLY = new BlockJelly(51, 48);//KSKS
+
     }
 }

@@ -1,16 +1,17 @@
-Blockly.defineBlocksWithJsonArray([
+
+  Blockly.defineBlocksWithJsonArray([
     // Block for colour picker.
     {
       "type": "turn",
-      "message0": "Turn %1",
+      "message0": "Drehe %1",
       "args0": [
         {
           "type": "field_dropdown",
           "name": "VALUE",
           "options": [
-            ["right", "right"],
-            ["left", "left"],
-            ["back", "back"],
+            ["rechts", "right"],
+            ["links", "left"],
+            ["zurueck", "back"],
           ]
         }
       ],
@@ -20,35 +21,35 @@ Blockly.defineBlocksWithJsonArray([
     },
     {
       "type": "forward",
-      "message0": "forward",
+      "message0": "Vor",
       "previousStatement": null,
       "nextStatement": null,
       "colour": 355,
-   },
-   {
+    },
+    {
     "type": "up",
-    "message0": "up",
+    "message0": "Hoch",
     "previousStatement": null,
     "nextStatement": null,
     "colour": 355,
   },
   {
     "type": "down",
-    "message0": "down",
+    "message0": "Runter",
     "previousStatement": null,
     "nextStatement": null,
     "colour": 355,
   },
-   {
+    {
     "type": "destroy",
-    "message0": "destroy",
+    "message0": "Zerstoere",
     "previousStatement": null,
     "nextStatement": null,
     "colour": 355,
   },
-   {
+    {
     "type": "place",
-    "message0": "place %1 %2",
+    "message0": "Platziere %1 %2",
     "args0": [
       {
         "type": "input_value",
@@ -68,7 +69,7 @@ Blockly.defineBlocksWithJsonArray([
   },
   {
     "type": "place_at",
-    "message0": "place %1 at x: %2 y: %3 z: %4 %5",
+    "message0": "Platziere %1 bei x: %2 y: %3 z: %4 %5",
     "args0": [
       {
         "type": "input_value",
