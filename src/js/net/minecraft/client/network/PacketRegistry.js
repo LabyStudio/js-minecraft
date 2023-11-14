@@ -38,7 +38,8 @@ import ServerAnimationPacket from "./packet/play/server/ServerAnimationPacket.js
 import ServerEntityMetadataPacket from "./packet/play/server/ServerEntityMetadataPacket.js";
 import ServerConfirmTransactionPacket from "./packet/play/server/ServerConfirmTransactionPacket.js";
 import ClientConfirmTransactionPacket from "./packet/play/client/ClientConfirmTransactionPacket.js";
-
+import ClientPlayerDiggingPacket from "./packet/play/client/ClientPlayerDiggingPacket.js";
+import ClientPlayerBlockPlacementPacket from "./packet/play/client/ClientPlayerBlockPlacementPacket.js";
 export default class PacketRegistry {
 
     constructor() {
@@ -90,6 +91,8 @@ export default class PacketRegistry {
         this.registerClient(ProtocolState.PLAY, 0x04, ClientPlayerPositionPacket);
         this.registerClient(ProtocolState.PLAY, 0x05, ClientPlayerRotationPacket);
         this.registerClient(ProtocolState.PLAY, 0x06, ClientPlayerPositionRotationPacket);
+        this.registerClient(ProtocolState.PLAY, 0x07, ClientPlayerDiggingPacket);
+        this.registerClient(ProtocolState.PLAY, 0x08, ClientPlayerBlockPlacementPacket);
         this.registerClient(ProtocolState.PLAY, 0x0A, ClientSwingArmPacket);
         this.registerClient(ProtocolState.PLAY, 0x0B, ClientPlayerStatePacket);
         this.registerClient(ProtocolState.PLAY, 0x0F, ClientConfirmTransactionPacket);

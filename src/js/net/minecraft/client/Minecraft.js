@@ -404,6 +404,8 @@ export default class Minecraft {
 
                         // Destroy block
                         this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                        this.player.digging(0,hitResult.x, hitResult.y, hitResult.z,1);
+                       // this.player.digging(2,hitResult.x, hitResult.y, hitResult.z,1);
                     }
                 }
 

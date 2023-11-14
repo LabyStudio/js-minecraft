@@ -369,6 +369,10 @@ export default class EntityLiving extends Entity {
             this.isSwingInProgress = true;
         }
     }
+    digging(status,x,y,z,face){   
+    }
+    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
+    }
 
     updateArmSwingProgress() {
         let swingAnimationEnd = 6;
