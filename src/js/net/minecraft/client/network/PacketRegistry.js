@@ -40,6 +40,9 @@ import ServerConfirmTransactionPacket from "./packet/play/server/ServerConfirmTr
 import ClientConfirmTransactionPacket from "./packet/play/client/ClientConfirmTransactionPacket.js";
 import ClientPlayerDiggingPacket from "./packet/play/client/ClientPlayerDiggingPacket.js";
 import ClientPlayerBlockPlacementPacket from "./packet/play/client/ClientPlayerBlockPlacementPacket.js";
+import ServerHeldItemChangePacket from "./packet/play/server/ServerHeldItemChangePacket.js";
+import ClientHeldItemChangePacket from "./packet/play/client/ClientHeldItemChangePacket.js";
+import ClientCreativeInventoryActionPacket from "./packet/play/client/ClientCreativeInventoryActionPacket.js"
 export default class PacketRegistry {
 
     constructor() {
@@ -67,6 +70,7 @@ export default class PacketRegistry {
         this.registerServer(ProtocolState.PLAY, 0x01, ServerJoinGamePacket);
         this.registerServer(ProtocolState.PLAY, 0x02, ServerChatPacket);
         this.registerServer(ProtocolState.PLAY, 0x08, ServerPlayerPositionRotationPacket);
+        this.registerServer(ProtocolState.PLAY, 0x09, ServerHeldItemChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x0B, ServerAnimationPacket);
         this.registerServer(ProtocolState.PLAY, 0x0C, ServerSpawnPlayerPacket);
         this.registerServer(ProtocolState.PLAY, 0x13, ServerDestroyEntitiesPacket);
@@ -93,9 +97,11 @@ export default class PacketRegistry {
         this.registerClient(ProtocolState.PLAY, 0x06, ClientPlayerPositionRotationPacket);
         this.registerClient(ProtocolState.PLAY, 0x07, ClientPlayerDiggingPacket);
         this.registerClient(ProtocolState.PLAY, 0x08, ClientPlayerBlockPlacementPacket);
+        this.registerClient(ProtocolState.PLAY, 0x09, ClientHeldItemChangePacket);
         this.registerClient(ProtocolState.PLAY, 0x0A, ClientSwingArmPacket);
         this.registerClient(ProtocolState.PLAY, 0x0B, ClientPlayerStatePacket);
         this.registerClient(ProtocolState.PLAY, 0x0F, ClientConfirmTransactionPacket);
+        this.registerClient(ProtocolState.PLAY, 0x10, ClientCreativeInventoryActionPacket);
     }
 
     registerClient(state, id, packet) {

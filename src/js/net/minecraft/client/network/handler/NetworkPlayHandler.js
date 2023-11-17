@@ -247,6 +247,9 @@ export default class NetworkPlayHandler extends PacketHandler {
 
         this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(), typeId);
     }
+    handleHeldItemChange(packet){
+        this.minecraft.player.inventory.selectedSlotIndex=packet.getSlot();
+    }
 
     handleDisconnect(packet) {
         this.minecraft.loadWorld(null);

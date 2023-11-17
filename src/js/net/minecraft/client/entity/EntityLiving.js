@@ -373,7 +373,10 @@ export default class EntityLiving extends Entity {
     }
     placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
     }
-
+    inventorySelectSlot(slot){
+    }
+    setItemInSelectedSlotentorySelectSlot(slot,itemid){
+    }
     updateArmSwingProgress() {
         let swingAnimationEnd = 6;
         if (this.isSwingInProgress) {

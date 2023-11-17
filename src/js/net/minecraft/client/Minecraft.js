@@ -343,6 +343,8 @@ export default class Minecraft {
         for (let i = 1; i <= 9; i++) {
             if (button === 'Digit' + i) {
                 this.player.inventory.selectedSlotIndex = i - 1;
+                this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,this.player.inventory.getItemInSelectedSlot());
+                this.player.inventorySelectSlot(this.player.inventory.selectedSlotIndex);
             }
         }
 
@@ -404,8 +406,15 @@ export default class Minecraft {
 
                         // Destroy block
                         this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
-                        this.player.digging(0,hitResult.x, hitResult.y, hitResult.z,1);
-                       // this.player.digging(2,hitResult.x, hitResult.y, hitResult.z,1);
+                        let face;
+                        if(hitResult.face.y<0) face=0;
+                        else if(hitResult.face.y>0) face=1;
+                        else if(hitResult.face.z<0) face=2;
+                        else if(hitResult.face.z>0) face=3;
+                        else if(hitResult.face.x<0) face=4;
+                        else if(hitResult.face.x>0) face=5;
+                        
+                        this.player.digging(0,hitResult.x, hitResult.y, hitResult.z,face);
                     }
                 }
 
@@ -422,12 +431,15 @@ export default class Minecraft {
                             const index = this.player.inventory.items.indexOf(item);
                             if (item === typeId && index <= 8) {
                                 this.player.inventory.selectedSlotIndex = index;
+                                this.player.inventorySelectSlot(this.player.inventory.selectedSlotIndex);
+                             
                                 return;
                             }
                         }
 
                         // Set item in hotbar
                         this.player.inventory.setItemInSelectedSlot(typeId);
+                        this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,typeId);
                     }
                 }
             }
@@ -451,7 +463,18 @@ export default class Minecraft {
                         if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
                             this.world.setBlockAt(x, y, z, typeId);
-
+                            let face;
+                            if(hitResult.face.y<0) face=0;
+                            else if(hitResult.face.y>0) face=1;
+                            else if(hitResult.face.z<0) face=2;
+                            else if(hitResult.face.z>0) face=3;
+                            else if(hitResult.face.x<0) face=4;
+                            else if(hitResult.face.x>0) face=5;
+                            this.player.placeBlock(x,y,z,face,typeId,0,0,0)
+                            //this.player.placeBlock(x,y,z,face,this.player.inventory.selectedSlotIndex,0,0,0)
+                        //for this to work we need https://wiki.vg/index.php?title=Protocol&oldid=7368#Creative_Inventory_Action
+                        //and https://wiki.vg/index.php?title=Protocol&oldid=7368#Held_Item_Change_2
+                        //https://wiki.vg/index.php?title=Protocol&oldid=7368#Set_Slot
                             // Swing player arm
                             this.player.swingArm();
 
@@ -483,6 +506,8 @@ export default class Minecraft {
     onMouseScroll(delta) {
         if (this.isInGame()) {
             this.player.inventory.shiftSelectedSlot(delta);
+            this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,this.player.inventory.getItemInSelectedSlot());
+            this.player.inventorySelectSlot(this.player.inventory.selectedSlotIndex);          
         }
     }
 

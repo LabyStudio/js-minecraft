@@ -7,6 +7,8 @@ import MissingPackets from "../../util/MissingPackets.js";
 export default class NetworkManager {
 
     static DEBUG = false;
+    static DEBUGERROR=true;
+    static DEBUGOUT=true;
     static MAX_COMPRESSION = 2097152;
 
     constructor(minecraft) {
@@ -128,7 +130,8 @@ export default class NetworkManager {
         // Send chunk
         this.socket.send(wrapper.getArray());
 
-        if (NetworkManager.DEBUG) {
+        if (NetworkManager.DEBUG || NetworkManager.DEBUGOUT) {
+            if(packet.constructor.name!="ClientPlayerMovementPacket" &&packet.constructor.name!="ClientPlayerPositionPacket" && packet.constructor.name!="ClientPlayerRotationPacket" && packet.constructor.name!="ClientPlayerPositionRotationPacket" )
             console.log("[Network] [OUT] " + packet.constructor.name);
         }
     }
@@ -201,12 +204,29 @@ export default class NetworkManager {
                 }
             }
         }
+/*
+[Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
+NetworkManager.js:212 [Network] [IN] Unknown packet id: 42 (0x2a) (ServerSpawnParticlePacket)
+7NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
+2NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
+2NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
+5NetworkManager.js:212 [Network] [IN] Unknown packet id: 4 (0x4) (ServerEntityEquipmentPacket)
+2NetworkManager.js:212 [Network] [IN] Unknown packet id: 32 (0x20) (ServerEntityPropertiesPacket)
+NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
+8NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
+2NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
+2NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
+NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
+4NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
 
+18 and 41
+*/
         // Packet Codec
         let packetId = buffer.readByte(); // Read packet id
         let clazz = this.registry.getServerBoundById(this.protocolState, packetId);
         if (clazz === null) {
-            if (NetworkManager.DEBUG) {
+            if (NetworkManager.DEBUGERROR || NetworkManager.DEBUG) {
+                if(packetId!=18 && packetId != 41)
                 console.log("[Network] [IN] Unknown packet id: " + packetId + " (0x" + packetId.toString(16) + ") (" + new MissingPackets().get(packetId) + ")");
             }
             return;

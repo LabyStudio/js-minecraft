@@ -1,4 +1,3 @@
-//KSKS
 import Block from "../Block.js";
 import EnumBlockFace from "../../../../util/EnumBlockFace.js";
 
