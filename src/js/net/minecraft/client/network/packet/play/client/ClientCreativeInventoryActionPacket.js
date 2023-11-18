@@ -9,7 +9,7 @@ export default class ClientCreativeInventoryActionPacket extends Packet {
         this.slot=slot+0x24;
         this.itemid=selecteditem;//typically 1
         this.itemcount=1;
-        this.itemdamage=0;//contains 0-8 slot
+        this.itemdamage=0;//dataValue;
         this.nbt=0;
     }
 
@@ -18,7 +18,7 @@ export default class ClientCreativeInventoryActionPacket extends Packet {
         //item
         buffer.writeShort(this.itemid);
         buffer.writeByte(this.itemcount);
-        buffer.writeShort(this.itemdamage);
+        buffer.writeShort(this.c);
         buffer.writeByte(this.nbt);
     }
 }

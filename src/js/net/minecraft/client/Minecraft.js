@@ -266,18 +266,31 @@ export default class Minecraft {
         }
 
         // Close previous screen
+        let lastscreenwasinventory=this.currentScreen instanceof(GuiContainerCreative);
+
         if (this.currentScreen !== null) {
             this.currentScreen.onClose();
         }
 
         // Switch screen
+        
         this.currentScreen = screen;
 
         // Update window size
         this.window.updateWindowSize();
 
         // Initialize new screen
-        if (screen === null) {
+        if (screen === null) {//null is the gameing screen
+            if(lastscreenwasinventory){
+                let oldselectedslot=this.player.inventory.selectedSlotIndex;
+                for (let i = 0; i <= 8; i++) {
+                        this.player.inventory.selectedSlotIndex = i;
+                        this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,this.player.inventory.getItemInSelectedSlot());
+                }
+                this.player.inventory.selectedSlotIndex=oldselectedslot;
+          
+            }
+          
             this.window.updateFocusState(FocusStateType.REQUEST_LOCK);
         } else {
             this.window.updateFocusState(FocusStateType.REQUEST_EXIT);
