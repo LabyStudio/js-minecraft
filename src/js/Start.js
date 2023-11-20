@@ -35,7 +35,7 @@ class Start {
             "terrain/sun.png",
             "terrain/moon.png",
             "char.png",
-            "gui/title/minecraft.png",
+            "gui/title/mintblock.png",
             "gui/title/background/panorama_0.png",
             "gui/title/background/panorama_1.png",
             "gui/title/background/panorama_2.png",

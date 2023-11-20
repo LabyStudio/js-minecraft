@@ -47,8 +47,8 @@ export default class PlayerEntityMultiplayer extends PlayerEntity {
     setItemInSelectedSlot(slot,itemid){
         this.networkHandler.sendPacket(new ClientCreativeInventoryActionPacket(slot,itemid));
     }
-    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
-        this.networkHandler.sendPacket(new ClientPlayerBlockPlacementPacket(x,y,z,face,helditem,cursorx,cursory,cursorz));
+    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz,dataValue=0){
+        this.networkHandler.sendPacket(new ClientPlayerBlockPlacementPacket(x,y,z,face,helditem,cursorx,cursory,cursorz,dataValue));
     }
     onUpdateWalkingPlayer() {
         // Send sprinting to server

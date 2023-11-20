@@ -18,7 +18,7 @@ let Splash=
         "When it's finished!",
         "Excitement!",
         "Check it out!",
-        "Minecraft!",
+        "Mintcraft!",
         "Creepers gonna creep!",
         "That's no moon!",
         "Open source!",

@@ -19,7 +19,7 @@ export default class GuiMainMenu extends GuiScreen {
 
     init() {
         super.init();
-        this.textureLogo = this.getTexture("gui/title/minecraft.png");
+        this.textureLogo = this.getTexture("gui/title/mintblock.png");
         this.splashText = this.minecraft.splashText;
 
         let y = this.height / 4 + 48;

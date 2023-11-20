@@ -3,15 +3,15 @@ import BlockPosition from "../../../../../util/BlockPosition.js";
 //https://wiki.vg/index.php?title=Protocol&oldid=7368#Player_Block_Placement
 //https://wiki.vg/index.php?title=Slot_Data&oldid=7094
 //https://wiki.vg/index.php?title=Slot_Data&oldid=7835
-export default class ClientBlockPlacementPacket extends Packet {
+export default class ClientPlayerBlockPlacementPacket extends Packet {
 
-    constructor(x,y,z,face,helditem,cursorx,cursory,cursorz) {
+    constructor(x,y,z,face,helditem,cursorx,cursory,cursorz,dataValue=0) {
         super();
         this.position=new BlockPosition(x,y,z)
         this.face = face;
         this.itemid=helditem;
         this.itemcount=1;
-        this.itemdamage=0;
+        this.itemdamage=dataValue;
         this.nbt=0;
         this.cursorx=cursorx;
         this.cursory=cursory;
