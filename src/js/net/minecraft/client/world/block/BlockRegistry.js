@@ -32,6 +32,7 @@ import BlockRedMushroom from "./type/BlockRedMushroom.js";
 import BlockSlab from "./type/BlockSlab.js";
 import SoundGrass from "./sound/SoundGrass.js";
 import BlockJelly from "./type/BlockJelly.js";
+import BlockHighGrass from "./type/BlockHighGrass.js";
 
 export class BlockRegistry {
 
@@ -55,28 +56,28 @@ export class BlockRegistry {
         BlockRegistry.SAPLING = new BlockSapling(6,43);
         BlockRegistry.BEDROCK = new BlockBedrock(7, 11);
         BlockRegistry.WATER = new BlockWater(9, 7);
-        BlockRegistry.SAND = new BlockSand(12, 8);
+        BlockRegistry.SAND = new BlockSand(24, 8);
         BlockRegistry.GRAVEL = new BlockGravel(13, 13);
         BlockRegistry.LOG = new BlockLog(17, 4);
         BlockRegistry.LEAVE = new BlockLeave(18, 6);
         BlockRegistry.SPONGE = new BlockSponge(19, 16);
         BlockRegistry.GLASS = new BlockGlass(20, 12);
-        BlockRegistry.WOOL_RED = new BlockWool(21, 27);
-        BlockRegistry.WOOL_ORANGE = new BlockWool(22, 28);
-        BlockRegistry.WOOL_YELLOW = new BlockWool(23, 29);
-        BlockRegistry.WOOL_LIME = new BlockWool(24, 30);
-        BlockRegistry.WOOL_GREEN = new BlockWool(25, 31);
-        BlockRegistry.WOOL_CYAN = new BlockWool(26, 32);
-        BlockRegistry.WOOL_LIGHTBLUE = new BlockWool(27, 33);
-        BlockRegistry.WOOL_BLUE = new BlockWool(28, 34);
-        BlockRegistry.WOOL_PURPLE = new BlockWool(29, 35);
-        BlockRegistry.WOOL_MAGENTA = new BlockWool(30, 36);
-        BlockRegistry.WOOL_PINK = new BlockWool(31, 37);
-        BlockRegistry.WOOL_WHITE = new BlockWool(32, 38);
-        BlockRegistry.WOOL_LIGHTGRAY = new BlockWool(33, 39);
-        BlockRegistry.WOOL_GRAY = new BlockWool(34, 40);
-        BlockRegistry.WOOL_BLACK = new BlockWool(35, 41);
-        BlockRegistry.WOOL_BROWN = new BlockWool(36, 42);
+        BlockRegistry.WOOL_RED = new BlockWool(35, 27,0);
+        BlockRegistry.WOOL_ORANGE = new BlockWool(35, 28,1);
+        BlockRegistry.WOOL_YELLOW = new BlockWool(35, 29,2);
+        BlockRegistry.WOOL_LIME = new BlockWool(35, 30,3);
+        BlockRegistry.WOOL_GREEN = new BlockWool(35, 31,4);
+        BlockRegistry.WOOL_CYAN = new BlockWool(35, 32,5);
+        BlockRegistry.WOOL_LIGHTBLUE = new BlockWool(35, 33,6);
+        BlockRegistry.WOOL_BLUE = new BlockWool(35, 34,7);
+        BlockRegistry.WOOL_PURPLE = new BlockWool(35, 35,8);
+        BlockRegistry.WOOL_MAGENTA = new BlockWool(35, 36,9);
+        BlockRegistry.WOOL_PINK = new BlockWool(35, 37,10);
+        BlockRegistry.WOOL_WHITE = new BlockWool(35, 38,11);
+        BlockRegistry.WOOL_LIGHTGRAY = new BlockWool(35, 39,12);
+        BlockRegistry.WOOL_GRAY = new BlockWool(35, 40,13);
+        BlockRegistry.WOOL_BLACK = new BlockWool(35, 41,14);
+        BlockRegistry.WOOL_BROWN = new BlockWool(35, 42,15);
         BlockRegistry.DANDELION = new BlockDandelion(37, 44);
         BlockRegistry.POPPY = new BlockPoppy(38, 45);
         BlockRegistry.BROWN_MUSHROOM = new BlockBrownMushroom(39, 46);
@@ -92,7 +93,8 @@ export class BlockRegistry {
         BlockRegistry.OBSIDIAN = new BlockObsidian(49, 24);
         BlockRegistry.TORCH = new BlockTorch(50, 9);
         BlockRegistry.PINKJELLY = new BlockJelly(95, 48,6);//hit point should be 2 for magenta
-        BlockRegistry.PINKJELLY2 = new BlockJelly(95, 48);//hit point should be 2 for magenta
+        BlockRegistry.HIGHGRASS = new BlockHighGrass(31, 50,0);//hit point should be 2 for magenta
+        BlockRegistry.HIGHGRASS = new BlockHighGrass(175, 49,0);//hit point should be 2 for magenta
         //31 should be grass
     }
 }

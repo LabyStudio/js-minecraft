@@ -5,13 +5,13 @@ import BlockPosition from "../../../../../util/BlockPosition.js";
 //https://wiki.vg/index.php?title=Slot_Data&oldid=7835
 export default class ClientPlayerBlockPlacementPacket extends Packet {
 
-    constructor(x,y,z,face,helditem,cursorx,cursory,cursorz,dataValue=0) {
+    constructor(x,y,z,face,helditem,cursorx,cursory,cursorz,meta=0) {
         super();
         this.position=new BlockPosition(x,y,z)
         this.face = face;
         this.itemid=helditem;
         this.itemcount=1;
-        this.itemdamage=dataValue;
+        this.itemdamage=meta;
         this.nbt=0;
         this.cursorx=cursorx;
         this.cursory=cursory;

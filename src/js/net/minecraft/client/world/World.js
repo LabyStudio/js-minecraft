@@ -285,7 +285,7 @@ export default class World {
         return typeId === 0 || Block.getById(typeId).isTranslucent();
     }
 
-    setBlockAt(x, y, z, type) {
+    setBlockAt(x, y, z, type,metaValue) {
         let chunk = this.getChunkAt(x >> 4, z >> 4);
         chunk.setBlockAt(x & 15, y, z & 15, type);
 

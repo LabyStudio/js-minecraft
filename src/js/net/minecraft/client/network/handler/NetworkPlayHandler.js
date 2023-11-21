@@ -238,14 +238,20 @@ export default class NetworkPlayHandler extends PacketHandler {
             this.handleChunkData(chunkData);
         }
     }
-
+    handleMultiBlockData(packet){
+        let minX=Number.MAX_VALUE,minY=Number.MAX_VALUE,minZ=Number.MAX_VALUE;
+        let maxX=-Number.MAX_VALUE,maxY=-Number.MAX_VALUE,maxZ=-Number.MAX_VALUE;
+        for(let blockData of packet.getBlockData()){
+            this.minecraft.world.setBlockAt(blockData.x,blockData.y,blockData.z,blockData.typeId);
+        }
+    }
     handleBlockChange(packet) {
         let position = packet.getBlockPosition();
 
         let blockState = packet.getBlockState();
         let typeId = blockState >> 4;
-
-        this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(), typeId);
+        let metaValue=blockState & 15;
+        this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(), typeId);//KSKS add metaValue
     }
     handleHeldItemChange(packet){
         this.minecraft.player.inventory.selectedSlotIndex=packet.getSlot();

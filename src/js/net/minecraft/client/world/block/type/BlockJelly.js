@@ -3,8 +3,8 @@ import EnumBlockFace from "../../../../util/EnumBlockFace.js";
 
 export default class BlockJelly extends Block {
 
-    constructor(id, textureSlotId,dataValue) {
-        super(id, textureSlotId,dataValue);
+    constructor(id, textureSlotId,meta) {
+        super(id, textureSlotId,meta);
     }
 
     getOpacity() {

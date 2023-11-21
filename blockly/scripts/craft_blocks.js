@@ -156,6 +156,7 @@
 
     return `
     window.app.world.setBlockAt(x, y, z,0);
+    window.app.player.digging(0,x,y,z,0);
     `
   };
 
@@ -163,7 +164,9 @@
     let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC);
     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+      window.app.player.inventorySelectSlot(`+value+`);
       window.app.world.setBlockAt(x, y, z, typeId); 
+      window.app.player.placeBlock(x,y,z,0,typeId,0,0,0);
       }
     `
   };
@@ -175,7 +178,9 @@
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+      window.app.player.inventorySelectSlot(`+value+`);
       window.app.world.setBlockAt(x+`+x+`, y+`+y+`, z+`+z+`, typeId); 
+      window.app.player.placeBlock(x+`+x+`, y+`+y+`, z+`+z+`,0, typeId,0,0,0)
       }
     `
   };

@@ -9,8 +9,9 @@ export default class Block {
 
     static sounds = {};
 
-    constructor(id, textureSlotId = id,dataValue=0) {
-        this.id = this.packId(id,dataValue);
+    constructor(id, textureSlotId = id,metaValue=0) {
+        this.id = id;
+        this.metaValue=metaValue;
         this.textureSlotId = textureSlotId;
 
         // Bounding box
@@ -24,13 +25,10 @@ export default class Block {
     }
 
     getId() {
-        return this.id>>4;
+        return this.id;
     }
-    getDataValue(){
-        return this.id&15;
-    }
-    packId(id,dataValue){
-        return (id<<4)| dataValue;
+    getMetaValue(){
+        return this.metaValue;
     }
     getRenderType() {
         return BlockRenderType.BLOCK;

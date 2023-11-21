@@ -7,8 +7,8 @@ import MissingPackets from "../../util/MissingPackets.js";
 export default class NetworkManager {
 
     static DEBUG = false;
-    static DEBUGERROR=true;
-    static DEBUGOUT=true;
+    static DEBUGERROR=false;
+    static DEBUGOUT=false;
     static MAX_COMPRESSION = 2097152;
 
     constructor(minecraft) {

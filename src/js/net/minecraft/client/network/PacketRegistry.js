@@ -43,6 +43,7 @@ import ClientPlayerBlockPlacementPacket from "./packet/play/client/ClientPlayerB
 import ServerHeldItemChangePacket from "./packet/play/server/ServerHeldItemChangePacket.js";
 import ClientHeldItemChangePacket from "./packet/play/client/ClientHeldItemChangePacket.js";
 import ClientCreativeInventoryActionPacket from "./packet/play/client/ClientCreativeInventoryActionPacket.js"
+import ServerMultiBlockChangePacket from "./packet/play/server/ServerMultiBlockChangePacket.js";
 export default class PacketRegistry {
 
     constructor() {
@@ -82,6 +83,7 @@ export default class PacketRegistry {
         this.registerServer(ProtocolState.PLAY, 0x19, ServerEntityHeadLookPacket);
         this.registerServer(ProtocolState.PLAY, 0x1C, ServerEntityMetadataPacket);
         this.registerServer(ProtocolState.PLAY, 0x21, ServerChunkDataPacket);
+        this.registerServer(ProtocolState.PLAY, 0x22, ServerMultiBlockChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x23, ServerBlockChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x26, ServerMultiChunkDataPacket);
         this.registerServer(ProtocolState.PLAY, 0x32, ServerConfirmTransactionPacket);
