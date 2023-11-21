@@ -375,7 +375,7 @@ export default class EntityLiving extends Entity {
     }
     inventorySelectSlot(slot){
     }
-    setItemInSelectedSlotentorySelectSlot(slot,itemid){
+    setItemInSelectedSlot(slot,itemid){
     }
     updateArmSwingProgress() {
         let swingAnimationEnd = 6;

@@ -105,8 +105,37 @@
   },
   {
     "type": "check",
+    "message0": "Fühle %1 %2 %3",
+    "args0": [
+      {
+        "type": "field_dropdown",
+        "name": "FRONTBACK",
+        "options": [
+          ["", ""],
+          ["vorne", "front"],
+          ["hinten", "back"],
+        ]
+      },
+      {
+        "type": "field_dropdown",
+        "name": "LEFTRIGHT",
+        "options": [
+          ["", ""],
+          ["links", "left"],
+          ["rechts", "right"],
+        ]
+      },
+      {
+        "type": "field_dropdown",
+        "name": "TOPBOTTOM",
+        "options": [
+          ["", ""],
+          ["oben", "top"],
+          ["unten", "bottom"],
+        ]
+      }
+    ],
     "output": "Number",
-    "message0": "Fühle",
     "colour": 355,
   },
   {
@@ -221,7 +250,33 @@
   };
 
   javascript.javascriptGenerator.forBlock['check'] = function(block) {
-    return [`window.app.world.getBlockAt(x+0.5, y+0.5, z+0.5)`, javascript.Order.ATOMIC]
+    let frontback =  block.getFieldValue('FRONTBACK') ;
+    let leftright =  block.getFieldValue('LEFTRIGHT') ;
+    let topbottom =  block.getFieldValue('TOPBOTTOM') ;
+    let dx2='0',dy2='0',dz2='0';
+
+    if(frontback=='back'){
+      dx2='(-dx)';
+      dz2='(-dz)';
+    }
+    if(frontback=='front'){
+      dx2='dx';
+      dz2='dz';
+    }
+    if(leftright=='right'){
+      dz2+='+((dz==0)?dx:0)';
+      dx2+='+((dz==0)?0:(-dz))';
+    }
+    if(leftright=='left'){
+      dz2+='+((dz==0)?(-dx):0)';
+      dx2+='+((dz==0)?0:(dz))';
+    }
+    if(topbottom=='top')
+      dy2='1';
+    if(topbottom=='bottom')
+      dy2='(-1)';
+    
+    return [`window.app.world.getBlockAt(x+0.5+`+dx2+`, y+0.5+`+dy2+`, z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
   };
 
   javascript.javascriptGenerator.forBlock['check_at'] = function(block,generator) {
