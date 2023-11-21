@@ -1,0 +1,7 @@
+{
+    "type": "module",
+    "dependencies": {
+        "net": "^1.0.2",
+        "ws": "^8.12.0"
+    }
+}
