@@ -45,12 +45,12 @@ export default class BlockWater extends Block {
         }
 
         let topTypeId = world.getBlockAtFace(x, y+2, z, face);
-        return (typeId !== this.id && face === EnumBlockFace.TOP) || (topTypeId !== this.id && face === EnumBlockFace.BOTTOM);
+        return (typeId !== this.getId() && face === EnumBlockFace.TOP) || (topTypeId !== this.getId() && face === EnumBlockFace.BOTTOM);
     }
 
     getBoundingBox(world, x, y, z) {
         let box = this.boundingBox.clone();
-        if (world !== null && world.getBlockAt(x, y + 1, z) !== this.id) {
+        if (world !== null && world.getBlockAt(x, y + 1, z) !== this.getId()) {
             box.maxY = 1.0 - 0.12;
         }
         return box;
