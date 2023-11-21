@@ -320,12 +320,15 @@ export default class Chunk {
                     let metaValue = value & 0xF; // TODO handle meta of block //KSKS
 
                     // TODO support more blocks
-                    if (typeId !== 0 && Block.getById(typeId) === null) {
+                    if (value !== 0 && Block.getById(value) === null) {
+                        if(Block.getById(value&0xffff0)!=null) value=value&0xffff0;
+                        else{
                         //console.log("!!! unknown block:"+typeId+","+metaValue);
-                        typeId = 95;
+                            value = (95<<4)+6;
+                        }
                     }
 
-                    section.setBlockAt(x, y, z, typeId);
+                    section.setBlockAt(x, y, z, value);
 
                     i += 2;
                 }

@@ -94,7 +94,7 @@ export class BlockRegistry {
         BlockRegistry.TORCH = new BlockTorch(50, 9);
         BlockRegistry.PINKJELLY = new BlockJelly(95, 48,6);//hit point should be 2 for magenta
         BlockRegistry.HIGHGRASS = new BlockHighGrass(31, 50,0);//hit point should be 2 for magenta
-        BlockRegistry.HIGHGRASS = new BlockHighGrass(175, 49,0);//hit point should be 2 for magenta
+        BlockRegistry.HIGHGRASSB = new BlockHighGrass(175, 49,0);//hit point should be 2 for magenta
         //31 should be grass
     }
 }

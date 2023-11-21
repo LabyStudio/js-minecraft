@@ -21,11 +21,11 @@ export default class Block {
         this.sound = Block.sounds.stone;
 
         // Register block
-        Block.blocks.set(id, this);
+        Block.blocks.set((id<<4)+(metaValue&15), this);
     }
 
     getId() {
-        return this.id;
+        return (this.id<<4)+this.metaValue;
     }
     getMetaValue(){
         return this.metaValue;

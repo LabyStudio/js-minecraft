@@ -4,8 +4,8 @@ import Block from "../Block.js";
 
 export default class BlockHighGrass extends Block {
 
-    constructor(id, textureSlotId) {
-        super(id, textureSlotId);
+    constructor(id, textureSlotId,metaValue) {
+        super(id, textureSlotId,metaValue);
 
         this.boundingBox = new BoundingBox(0.125, 0.0, 0.125, 0.875, 0.875, 0.875);
 

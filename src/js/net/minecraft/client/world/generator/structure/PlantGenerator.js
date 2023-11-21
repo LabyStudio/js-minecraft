@@ -9,7 +9,7 @@ export default class PlantGenerator extends Generator {
 
     generateAtBlock(x, y, z) {
         // Generate random type
-        let plantTypeId = this.random.nextInt(4) + 37;
+        let plantTypeId = (this.random.nextInt(4) + 37)<<4;
 
         // Check if we have enough space for the tree to grow
         if (this.world.getBlockAt(x, y, z) !== 0) {

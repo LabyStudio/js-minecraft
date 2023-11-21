@@ -7,9 +7,9 @@ export default class ClientCreativeInventoryActionPacket extends Packet {
     constructor(slot,selecteditem) {
         super();
         this.slot=slot+0x24;
-        this.itemid=selecteditem;//typically 1
+        this.itemid=selecteditem>>4;//typically 1
         this.itemcount=1;
-        this.itemdamage=0;//metaValue;
+        this.itemdamage=selecteditem&15;
         this.nbt=0;
     }
 
