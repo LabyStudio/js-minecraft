@@ -107,6 +107,7 @@ class FocusStateType {
     code+='}'
     
     try {
+      console.log(code);
       eval(code);
     } catch (error) {
       console.log(error);
@@ -231,6 +232,40 @@ class FocusStateType {
                   },
                 },
               },
+              'X': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0,
+                  },
+                },
+              },
+              'Y': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0,
+                  },
+                },
+              },
+              'Z': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0,
+                  },
+                },
+              },
+            },
+          },
+          {
+            'kind': 'block',
+            'type': 'check',
+          },
+          {
+            'kind': 'block',
+            'type': 'check_at',
+            'inputs': {
               'X': {
                 'shadow': {
                   'type': 'math_number',

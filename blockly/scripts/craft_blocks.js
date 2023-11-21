@@ -102,6 +102,41 @@
     "colour": 230,
     "tooltip": "",
     "helpUrl": ""
+  },
+  {
+    "type": "check",
+    "output": "Number",
+    "message0": "Fühle",
+    "colour": 355,
+  },
+  {
+    "type": "check_at",
+    "message0": "Fühle bei x: %1 y: %2 z: %3 %4",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "X",
+        "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "Y",
+        "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "Z",
+        "check": "Number",
+      },
+      {
+        "type": "input_end_row"
+      }
+    ],
+    "output": "Number",
+    "inputsInline": true,
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
   }
   ]);
 
@@ -184,3 +219,15 @@
       }
     `
   };
+
+  javascript.javascriptGenerator.forBlock['check'] = function(block) {
+    return [`window.app.world.getBlockAt(x+0.5, y+0.5, z+0.5)`, javascript.Order.ATOMIC]
+  };
+
+  javascript.javascriptGenerator.forBlock['check_at'] = function(block,generator) {
+    let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
+    let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
+    let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
+    return [`window.app.world.getBlockAt(`+x+`+0.5, `+y+`0.5, `+z+`+0.5)`,javascript.Order.ATOMIC]
+  };
+
