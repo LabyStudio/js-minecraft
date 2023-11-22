@@ -18,7 +18,7 @@ export default class ClientCreativeInventoryActionPacket extends Packet {
         //item
         buffer.writeShort(this.itemid);
         buffer.writeByte(this.itemcount);
-        buffer.writeShort(this.c);
+        buffer.writeShort(this.itemdamage);
         buffer.writeByte(this.nbt);
     }
 }

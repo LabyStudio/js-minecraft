@@ -371,7 +371,7 @@ export default class EntityLiving extends Entity {
     }
     digging(status,x,y,z,face){   
     }
-    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz,metaValue=0){
+    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
     }
     inventorySelectSlot(slot){
     }

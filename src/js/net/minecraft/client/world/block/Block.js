@@ -25,7 +25,7 @@ export default class Block {
     }
 
     getId() {
-        return (this.id<<4)+this.metaValue;
+        return (this.id<<4)+(this.metaValue&15);
     }
     getMetaValue(){
         return this.metaValue;

@@ -59,7 +59,7 @@ export class BlockRegistry {
         BlockRegistry.SAND = new BlockSand(24, 8);
         BlockRegistry.GRAVEL = new BlockGravel(13, 13);
         BlockRegistry.LOG = new BlockLog(17, 4);
-        BlockRegistry.LEAVE = new BlockLeave(18, 6);
+        BlockRegistry.LEAVE = new BlockLeave(171, 6,1);
         BlockRegistry.SPONGE = new BlockSponge(19, 16);
         BlockRegistry.GLASS = new BlockGlass(20, 12);
         BlockRegistry.WOOL_RED = new BlockWool(35, 27,0);
@@ -95,6 +95,7 @@ export class BlockRegistry {
         BlockRegistry.PINKJELLY = new BlockJelly(95, 48,6);//hit point should be 2 for magenta
         BlockRegistry.HIGHGRASS = new BlockHighGrass(31, 50,0);//hit point should be 2 for magenta
         BlockRegistry.HIGHGRASSB = new BlockHighGrass(175, 49,0);//hit point should be 2 for magenta
+        BlockRegistry.LEAVE2 = new BlockLeave(18, 6,0);
         //31 should be grass
     }
 }
