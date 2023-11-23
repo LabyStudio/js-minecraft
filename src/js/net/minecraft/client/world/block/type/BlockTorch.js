@@ -46,9 +46,9 @@ export default class BlockTorch extends Block {
             if (world.isSolidBlockAt(x + dataFace.x, y + dataFace.y, z + dataFace.z)) {
                 let data = i + 1;
 
-                console.log("added:"+data);
+                //console.log("added:"+data);
                 // Update block data in world
-                world.setBlockDataAt(x, y, z, data);
+                world.setBlockDataAt(x, y, z, data);//KSKS todo something weird here
                 break;
             }
         }
@@ -56,7 +56,7 @@ export default class BlockTorch extends Block {
 
     onBlockPlaced(world, x, y, z, face) {
         let data = world.getBlockDataAt(x, y, z);
-
+        
         for (let i in this.dataFaces) {
             let dataFace = this.dataFaces[i];
 
@@ -65,7 +65,8 @@ export default class BlockTorch extends Block {
                 break;
             }
         }
-        console.log("placed:"+data);
+        
+        //console.log("placed:"+data);
         // Update block data in chunk section directly to avoid notify
         world.getChunkSectionAt(x >> 4, y >> 4, z >> 4).setBlockDataAt(x & 15, y & 15, z & 15, data);
     }

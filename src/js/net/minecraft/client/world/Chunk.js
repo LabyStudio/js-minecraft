@@ -3,7 +3,7 @@ import Block from "./block/Block.js";
 import World from "./World.js";
 import ChunkSection from "./ChunkSection.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
-
+import { BlockRegistry } from "./block/BlockRegistry.js";
 export default class Chunk {
 
     static SECTION_AMOUNT = 16;
@@ -333,7 +333,52 @@ export default class Chunk {
                         }
                     }
 
+                   
+                    let block = Block.getById(value);
+                    //WEST=-x
+                    //EAST=+x
+                    //NORTH=-Z
+                    //south=+z;
+                    //TOP=+y
+                    //BOTTOM=-y
+  
+                   // EnumBlockFace.WEST,1
+                   // EnumBlockFace.EAST,2
+                   // EnumBlockFace.NORTH,3
+                   // EnumBlockFace.SOUTH,4
+                   // EnumBlockFace.BOTTOM,5
+
+                    if((value&0xfffff0) === BlockRegistry.TORCH.getId()){//KSKS TODO MERGE TORCH HANDLING INTO BLOCKJ
+                        value=value&0xfffff0;
+                        
+                        switch(metaValue&7){
+                            case 0://unknown
+                                metaValue=0;
+                                break;
+                            case 1://west
+                                metaValue=1;
+                                break;
+                            case 2://east
+                                metaValue=2;
+                                break;
+                            case 3://north
+                                metaValue=3;
+                                break;
+                            case 4://south
+                                metaValue=4;
+                                break;
+                            case 5://top
+                                metaValue=5;
+                                break;
+                            default:
+                                metaValue=1;
+                                break;
+                        }
+                    }
                     section.setBlockAt(x, y, z, value);
+                    if(block !== null) section.setBlockDataAt(x,y,z,metaValue);
+        
+              
 
                     i += 2;
                 }

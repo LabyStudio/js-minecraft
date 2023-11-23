@@ -8,6 +8,7 @@ import PlayerEntity from "../../entity/PlayerEntity.js";
 import ServerAnimationPacket from "../packet/play/server/ServerAnimationPacket.js";
 import ClientConfirmTransactionPacket from "../packet/play/client/ClientConfirmTransactionPacket.js";
 import Block from "../../world/block/Block.js";
+import { BlockRegistry } from "../../world/block/BlockRegistry.js";
 export default class NetworkPlayHandler extends PacketHandler {
 
     constructor(networkManager, profile) {
@@ -245,8 +246,39 @@ export default class NetworkPlayHandler extends PacketHandler {
             let blockid=(blockData.typeId<<4)+(blockData.metaValue&15);
             this.minecraft.world.setBlockAt(blockData.x,blockData.y,blockData.z,blockid);
             let block = Block.getById(blockid);
-            if (block === null) block=Block.getById(blockid&0xfffff0); 
-            if(block !== null) block.onBlockPlaced(this.minecraft.world, blockData.x, blockData.y, blockData.z, blockData.metaValue&15);
+            //WEST=-x
+            //EAST=+x
+            //NORTH=-Z
+            //south=+z;
+            //TOP=+y
+            //BOTTOM=-y
+            let metaValue=blockData.metaValue & 15;
+            if((blockid&0xfffff0) === BlockRegistry.TORCH.getId()){//KSKS TODO MERGE TORCH HANDLING INTO BLOCKJ
+                switch(metaValue&7){
+                    case 0://unknown
+                        metaValue=1;
+                        break;
+                    case 1://west
+                        metaValue=4;
+                        break;
+                    case 2://east
+                        metaValue=5;
+                        break;
+                    case 3://north
+                        metaValue=2;
+                        break;
+                    case 4://south
+                        metaValue=3;
+                        break;
+                    case 5://top
+                        metaValue=1;
+                        break;
+                    default:
+                        metaValue=1;
+                        break;
+                }
+            }
+            if(block !== null) block.onBlockPlaced(this.minecraft.world, blockData.x, blockData.y, blockData.z, metaValue);
         }
     }
     handleBlockChange(packet) {
@@ -257,8 +289,38 @@ export default class NetworkPlayHandler extends PacketHandler {
         let metaValue=blockState & 15;
         this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState);//KSKS add metaValue
 
-        let block = Block.getById(typeId);
-        if (block === null) block=Block.getById(typeId&0xfffff0); 
+        let block = Block.getById(blockState);
+             //WEST=-x
+            //EAST=+x
+            //NORTH=-Z
+            //south=+z;
+            //TOP=+y
+            //BOTTOM=-y
+            if((blockState&0xfffff0) === BlockRegistry.TORCH.getId()){//KSKS TODO MERGE TORCH HANDLING INTO BLOCKJ
+                switch(metaValue&7){
+                    case 0://unknown
+                        metaValue=1;
+                        break;
+                    case 1://west
+                        metaValue=4;
+                        break;
+                    case 2://east
+                        metaValue=5;
+                        break;
+                    case 3://north
+                        metaValue=2;
+                        break;
+                    case 4://south
+                        metaValue=3;
+                        break;
+                    case 5://top
+                        metaValue=1;
+                        break;
+                    default:
+                        metaValue=1;
+                        break;
+                }
+            }
         if(block !== null) block.onBlockPlaced(this.minecraft.world, position.getX(), position.getY(), position.getZ(), metaValue);
         
     }

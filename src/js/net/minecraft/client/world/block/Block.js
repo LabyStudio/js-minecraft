@@ -108,7 +108,7 @@ export default class Block {
 
     }
 
-    onBlockPlaced(world, x, y, z, face) {
+    onBlockPlaced(world, x, y, z, face,forceface) {
 
     }
 
@@ -225,6 +225,7 @@ export default class Block {
 
     static getById(typeId) {
         let block = Block.blocks.get(typeId);
+        if(typeof block === "undefined") block=Block.blocks.get(typeId&0xfffff0);
         return typeof block === "undefined" ? null : block;
     }
 }

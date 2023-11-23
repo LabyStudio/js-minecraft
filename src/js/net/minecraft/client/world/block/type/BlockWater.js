@@ -40,7 +40,7 @@ export default class BlockWater extends Block {
 
         let block = Block.getById(typeId);
         if (block === null || (block.isTranslucent() && !block.isLiquid())){
-            console.log('this one');
+       //     console.log('this one');
             return true;
         }
 
