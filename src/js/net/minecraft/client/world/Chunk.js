@@ -324,11 +324,11 @@ export default class Chunk {
                         
                          
                         if(Block.getById(value&0xffff0)!=null) {
-                            console.log("!!! simplified block:"+typeId+","+metaValue);
+                            //console.log("!!! simplified block:"+typeId+","+metaValue);
                             value=value&0xffff0;
                         }
                         else{
-                           console.log("!!! unknown block:"+typeId+","+metaValue);
+                           //console.log("!!! unknown block:"+typeId+","+metaValue);
                             value = (95<<4)+6;
                         }
                     }
