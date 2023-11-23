@@ -276,7 +276,7 @@
     if(topbottom=='bottom')
       dy2='(-1)';
     
-    return [`window.app.world.getBlockAt(x+0.5+`+dx2+`, y+0.5+`+dy2+`, z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
+    return [`window.app.world.getBlockAt(x-0.5+`+dx2+`, y+0.5+`+dy2+`, z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
   };
 
   javascript.javascriptGenerator.forBlock['check_at'] = function(block,generator) {

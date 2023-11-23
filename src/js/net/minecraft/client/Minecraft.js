@@ -32,8 +32,7 @@ export default class Minecraft {
 
     // TODO Add to settings
     static PROXY = {
-        //"address": "wss://socket.labystudio.de/minecraft/"
-        "address": "localhost",
+        "address": "ws://localhost",
         "port": 30023
     };
 

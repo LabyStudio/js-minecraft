@@ -1,0 +1,7 @@
+#Protect Directory
+
+AddDefaultCharset utf-8
+AuthName "Dialog prompt"
+AuthType Basic
+AuthUserFile /var/www/html/wordpress/mintblock/.htpasswd
+Require valid-user
