@@ -32,7 +32,7 @@ export default class Minecraft {
 
     // TODO Add to settings
     static PROXY = {
-        "address": "ws://localhost",
+        "address": "ws://"+window.location.host.replace(/:[0-9]*$/, ""),
         "port": 30023
     };
 

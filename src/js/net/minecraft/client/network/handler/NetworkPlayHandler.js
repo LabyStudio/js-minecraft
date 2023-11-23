@@ -7,7 +7,7 @@ import ClientPlayerPositionRotationPacket from "../packet/play/client/ClientPlay
 import PlayerEntity from "../../entity/PlayerEntity.js";
 import ServerAnimationPacket from "../packet/play/server/ServerAnimationPacket.js";
 import ClientConfirmTransactionPacket from "../packet/play/client/ClientConfirmTransactionPacket.js";
-
+import Block from "../../world/block/Block.js";
 export default class NetworkPlayHandler extends PacketHandler {
 
     constructor(networkManager, profile) {
@@ -242,7 +242,11 @@ export default class NetworkPlayHandler extends PacketHandler {
         let minX=Number.MAX_VALUE,minY=Number.MAX_VALUE,minZ=Number.MAX_VALUE;
         let maxX=-Number.MAX_VALUE,maxY=-Number.MAX_VALUE,maxZ=-Number.MAX_VALUE;
         for(let blockData of packet.getBlockData()){
-            this.minecraft.world.setBlockAt(blockData.x,blockData.y,blockData.z,(blockData.typeId<<4)+(blockData.metaValue&15));
+            let blockid=(blockData.typeId<<4)+(blockData.metaValue&15);
+            this.minecraft.world.setBlockAt(blockData.x,blockData.y,blockData.z,blockid);
+            let block = Block.getById(blockid);
+            if (block === null) block=Block.getById(blockid&0xfffff0); 
+            if(block !== null) block.onBlockPlaced(this.minecraft.world, blockData.x, blockData.y, blockData.z, blockData.metaValue&15);
         }
     }
     handleBlockChange(packet) {
@@ -252,6 +256,11 @@ export default class NetworkPlayHandler extends PacketHandler {
         let typeId = blockState >> 4;
         let metaValue=blockState & 15;
         this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState);//KSKS add metaValue
+
+        let block = Block.getById(typeId);
+        if (block === null) block=Block.getById(typeId&0xfffff0); 
+        if(block !== null) block.onBlockPlaced(this.minecraft.world, position.getX(), position.getY(), position.getZ(), metaValue);
+        
     }
     handleHeldItemChange(packet){
         this.minecraft.player.inventory.selectedSlotIndex=packet.getSlot();
