@@ -253,32 +253,8 @@ export default class NetworkPlayHandler extends PacketHandler {
             //TOP=+y
             //BOTTOM=-y
             let metaValue=blockData.metaValue & 15;
-            if((blockid&0xfffff0) === BlockRegistry.TORCH.getId()){//KSKS TODO MERGE TORCH HANDLING INTO BLOCKJ
-                switch(metaValue&7){
-                    case 0://unknown
-                        metaValue=1;
-                        break;
-                    case 1://west
-                        metaValue=4;
-                        break;
-                    case 2://east
-                        metaValue=5;
-                        break;
-                    case 3://north
-                        metaValue=2;
-                        break;
-                    case 4://south
-                        metaValue=3;
-                        break;
-                    case 5://top
-                        metaValue=1;
-                        break;
-                    default:
-                        metaValue=1;
-                        break;
-                }
-            }
-            if(block !== null) block.onBlockPlaced(this.minecraft.world, blockData.x, blockData.y, blockData.z, metaValue);
+           
+            if(block !== null) block.onBlockPlaced(this.minecraft.world, blockData.x, blockData.y, blockData.z, metaValue,true);
         }
     }
     handleBlockChange(packet) {
@@ -289,39 +265,9 @@ export default class NetworkPlayHandler extends PacketHandler {
         let metaValue=blockState & 15;
         this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState);//KSKS add metaValue
 
-        let block = Block.getById(blockState);
-             //WEST=-x
-            //EAST=+x
-            //NORTH=-Z
-            //south=+z;
-            //TOP=+y
-            //BOTTOM=-y
-            if((blockState&0xfffff0) === BlockRegistry.TORCH.getId()){//KSKS TODO MERGE TORCH HANDLING INTO BLOCKJ
-                switch(metaValue&7){
-                    case 0://unknown
-                        metaValue=1;
-                        break;
-                    case 1://west
-                        metaValue=4;
-                        break;
-                    case 2://east
-                        metaValue=5;
-                        break;
-                    case 3://north
-                        metaValue=2;
-                        break;
-                    case 4://south
-                        metaValue=3;
-                        break;
-                    case 5://top
-                        metaValue=1;
-                        break;
-                    default:
-                        metaValue=1;
-                        break;
-                }
-            }
-        if(block !== null) block.onBlockPlaced(this.minecraft.world, position.getX(), position.getY(), position.getZ(), metaValue);
+        let block = Block.getById(blockState);    
+        console.log("meta"+metaValue);   
+        if(block !== null) block.onBlockPlaced(this.minecraft.world, position.getX(), position.getY(), position.getZ(), metaValue,true);
         
     }
     handleHeldItemChange(packet){
