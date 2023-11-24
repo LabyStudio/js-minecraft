@@ -1,6 +1,6 @@
 let myFont = new FontFace(
     "Minecraft",
-    "url(/src/resources/Minecraft-Regular.ttf.woff)"
+    "url(src/resources/Monocraft.woff)"
   );
   
   myFont.load().then((font) => {
