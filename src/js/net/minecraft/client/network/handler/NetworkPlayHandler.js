@@ -232,6 +232,8 @@ export default class NetworkPlayHandler extends PacketHandler {
 
         let chunk = this.minecraft.world.getChunkAt(packet.getX(), packet.getZ());
         chunk.fillChunk(packet.getData(), packet.getMask(), packet.isFullChunk());
+        chunk.generateSkylightMap();
+        chunk.generateBlockLightMap();
     }
 
     handleMultiChunkData(packet) {
