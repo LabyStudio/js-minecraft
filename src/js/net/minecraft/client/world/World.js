@@ -183,7 +183,7 @@ export default class World {
         } else if (sourceType === EnumSkyBlock.BLOCK) {
             let typeId = this.getBlockAt(x, y, z);
             let block = Block.getById(typeId);
-            let blockLight = typeId === 0 ? 0 : block.getLightValue();
+            let blockLight = ((typeId ==0)||(block === null ))? 0 : block.getLightValue();
 
             if (blockLight > level) {
                 level = blockLight;

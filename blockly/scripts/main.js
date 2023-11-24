@@ -196,11 +196,19 @@ class FocusStateType {
           },
           {
             'kind': 'block',
+            'type': 'back',
+          },
+          {
+            'kind': 'block',
             'type': 'up',
           },
           {
             'kind': 'block',
             'type': 'down',
+          },
+          {
+            'kind': 'block',
+            'type': 'jump_to',
           },
           {
             'kind': 'block',

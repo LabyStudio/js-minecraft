@@ -11,7 +11,7 @@
           "options": [
             ["rechts", "right"],
             ["links", "left"],
-            ["zurueck", "back"],
+            ["umdrehen", "turnaround"],
           ]
         }
       ],
@@ -22,6 +22,13 @@
     {
       "type": "forward",
       "message0": "Vor",
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": 355,
+    },
+    {
+      "type": "back",
+      "message0": "Zurück",
       "previousStatement": null,
       "nextStatement": null,
       "colour": 355,
@@ -40,7 +47,43 @@
     "nextStatement": null,
     "colour": 355,
   },
-    {
+  {
+    "type": "jump_to",
+    "message0": "Springe nach %1 %2 %3",
+    "args0": [
+      {
+        "type": "field_dropdown",
+        "name": "FRONTBACK",
+        "options": [
+          ["", ""],
+          ["vorne", "front"],
+          ["hinten", "back"],
+        ]
+      },
+      {
+        "type": "field_dropdown",
+        "name": "LEFTRIGHT",
+        "options": [
+          ["", ""],
+          ["links", "left"],
+          ["rechts", "right"],
+        ]
+      },
+      {
+        "type": "field_dropdown",
+        "name": "TOPBOTTOM",
+        "options": [
+          ["", ""],
+          ["oben", "top"],
+          ["unten", "bottom"],
+        ]
+      }
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 355,
+  },
+  {
     "type": "destroy",
     "message0": "Zerstoere",
     "previousStatement": null,
@@ -172,7 +215,7 @@
   javascript.javascriptGenerator.forBlock['turn'] = function(block) {
     let value =  block.getFieldValue('VALUE') ;
    // return 'MusicMaker.queueSound(' + value + ');\n';
-    if(value=='back') return `
+    if(value=='turnaround') return `
       dx=-dx;
       dz=-dz;
     `;
@@ -202,6 +245,12 @@
     return `
       x+=dx;
       z+=dz;
+    `
+  }
+  javascript.javascriptGenerator.forBlock['back'] = function(block) {
+    return `
+      x-=dx;
+      z-=dz;
     `
   }
   
@@ -277,6 +326,35 @@
       dy2='(-1)';
     
     return [`window.app.world.getBlockAt(x-0.5+`+dx2+`, y+0.5+`+dy2+`, z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
+  };
+  javascript.javascriptGenerator.forBlock['jump_to'] = function(block) {
+    let frontback =  block.getFieldValue('FRONTBACK') ;
+    let leftright =  block.getFieldValue('LEFTRIGHT') ;
+    let topbottom =  block.getFieldValue('TOPBOTTOM') ;
+    let dx2='0',dy2='0',dz2='0';
+
+    if(frontback=='back'){
+      dx2='(-dx)';
+      dz2='(-dz)';
+    }
+    if(frontback=='front'){
+      dx2='dx';
+      dz2='dz';
+    }
+    if(leftright=='right'){
+      dz2+='+((dz==0)?dx:0)';
+      dx2+='+((dz==0)?0:(-dz))';
+    }
+    if(leftright=='left'){
+      dz2+='+((dz==0)?(-dx):0)';
+      dx2+='+((dz==0)?0:(dz))';
+    }
+    if(topbottom=='top')
+      dy2='1';
+    if(topbottom=='bottom')
+      dy2='(-1)';
+    
+    return `x+=`+dx2+`;y+=`+dy2+`;z+=`+dz2+`;`;
   };
 
   javascript.javascriptGenerator.forBlock['check_at'] = function(block,generator) {
