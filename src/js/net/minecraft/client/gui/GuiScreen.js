@@ -61,6 +61,9 @@ export default class GuiScreen extends Gui {
     }
 
     keyReleased(key) {
+        if( document.getElementById('blocklycode').style.visibility=='visible'){
+            return;
+        }
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
 
@@ -71,6 +74,9 @@ export default class GuiScreen extends Gui {
     }
 
     mouseClicked(mouseX, mouseY, mouseButton) {
+        if( document.getElementById('blocklycode').style.visibility=='visible'){
+            return;
+        }
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
 
@@ -81,6 +87,9 @@ export default class GuiScreen extends Gui {
     }
 
     mouseReleased(mouseX, mouseY, mouseButton) {
+        if( document.getElementById('blocklycode').style.visibility=='visible'){
+            return;
+        }
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
 
@@ -89,6 +98,9 @@ export default class GuiScreen extends Gui {
     }
 
     mouseDragged(mouseX, mouseY, mouseButton) {
+        if( document.getElementById('blocklycode').style.visibility=='visible'){
+            return;
+        }
         for (let i in this.buttonList) {
             let button = this.buttonList[i];
 
