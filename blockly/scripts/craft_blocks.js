@@ -1,4 +1,4 @@
-//save workspace https://groups.google.com/g/blockly/c/a9sHoBJ21DA
+
   Blockly.defineBlocksWithJsonArray([
     // Block for colour picker.
     {
@@ -325,7 +325,7 @@
     if(topbottom=='bottom')
       dy2='(-1)';
     
-    return [`window.app.world.getBlockAt(_x-0.5+`+dx2+`, _y+0.5+`+dy2+`, _z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
+    return [`window.app.world.getBlockAt(_x+`+dx2+`, _y+`+dy2+`, _z+`+dz2+`)`, javascript.Order.ATOMIC]
   };
   javascript.javascriptGenerator.forBlock['jump_to'] = function(block) {
     let frontback =  block.getFieldValue('FRONTBACK') ;
