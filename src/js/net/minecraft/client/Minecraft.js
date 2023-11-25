@@ -26,7 +26,7 @@ import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMu
 import Splash from "../../../../resources/splashes.js"
 export default class Minecraft {
 
-    static VERSION = "1.1.8"
+    static VERSION = "1.2.0"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 47; //758;
 

@@ -67,7 +67,7 @@ export default class GuiMainMenu extends GuiScreen {
         this.drawLogo(stack, x, y);
 
         // Draw version
-        this.drawString(stack, "js-minecraft " + Minecraft.VERSION, 2, this.height - 10, 0xFFFFFFff);
+        this.drawString(stack, "mintblock " + Minecraft.VERSION, 2, this.height - 10, 0xFFFFFFff);
 
         // Draw copyright
         let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
