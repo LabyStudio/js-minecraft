@@ -137,19 +137,21 @@ let blocklyFunctions=null;
   }
 
   function save(button) {
-    //button.
     blocklySave = Blockly.serialization.workspaces.save(
     Blockly.getMainWorkspace());
+    localStorage.setItem("blocklySave", JSON.stringify(blocklySave));
   }
 
-  let blocklySave;
+  let blocklySave=null;
 
   function loadWorkspace(blocklySave) {
     const workspace = Blockly.getMainWorkspace();
+    if(!blocklySave){
+       blocklySave=JSON.parse(localStorage.getItem("blocklySave"));
+       workspace.clear();
+    }
     if (blocklySave) {
       Blockly.serialization.workspaces.load(blocklySave, workspace);
-    } else {
-      workspace.clear();
     }
   }
     
