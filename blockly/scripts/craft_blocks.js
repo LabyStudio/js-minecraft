@@ -1,4 +1,4 @@
-
+//save workspace https://groups.google.com/g/blockly/c/a9sHoBJ21DA
   Blockly.defineBlocksWithJsonArray([
     // Block for colour picker.
     {
@@ -216,60 +216,60 @@
     let value =  block.getFieldValue('VALUE') ;
    // return 'MusicMaker.queueSound(' + value + ');\n';
     if(value=='turnaround') return `
-      dx=-dx;
-      dz=-dz;
+      _dx=-_dx;
+      _dz=-_dz;
     `;
     if(value=='right') return `
-      if(dz==0) {
-        dz=dx;
-        dx=0;
+      if(_dz==0) {
+        _dz=_dx;
+        _dx=0;
       }
       else{
-        dx=-dz;
-        dz=0;
+        _dx=-_dz;
+        _dz=0;
       }
     `
     if(value=='left') return `
-      if(dz==0) {
-        dz=-dx;
-        dx=0;
+      if(_dz==0) {
+        _dz=-_dx;
+        _dx=0;
       }
       else{
-        dx=dz;
-        dz=0;
+        _dx=_dz;
+        _dz=0;
       }
   `;
   };
 
   javascript.javascriptGenerator.forBlock['forward'] = function(block) {
     return `
-      x+=dx;
-      z+=dz;
+      _x+=_dx;
+      _z+=_dz;
     `
   }
   javascript.javascriptGenerator.forBlock['back'] = function(block) {
     return `
-      x-=dx;
-      z-=dz;
+      _x-=_dx;
+      _z-=_dz;
     `
   }
   
   javascript.javascriptGenerator.forBlock['up'] = function(block) {
     return `
-      y+=1;
+      _y+=1;
     `
   }
   javascript.javascriptGenerator.forBlock['down'] = function(block) {
     return `
-    y-=1;
+    _y-=1;
     `
   };
 
   javascript.javascriptGenerator.forBlock['destroy'] = function(block) {
 
     return `
-    window.app.world.setBlockAt(x, y, z,0);
-    window.app.player.digging(0,x,y,z,0);
+    window.app.world.setBlockAt(_x, _y, _z,0);
+    window.app.player.digging(0,_x,_y,_z,0);
     `
   };
 
@@ -278,8 +278,8 @@
     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
-      window.app.world.setBlockAt(x, y, z, typeId); 
-      window.app.player.placeBlock(x,y,z,0,typeId,0,0,0);
+      window.app.world.setBlockAt(_x, _y, _z, typeId); 
+      window.app.player.placeBlock(_x,_y,_z,0,typeId,0,0,0);
       }
     `
   };
@@ -292,8 +292,8 @@
     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
-      window.app.world.setBlockAt(x+`+x+`, y+`+y+`, z+`+z+`, typeId); 
-      window.app.player.placeBlock(x+`+x+`, y+`+y+`, z+`+z+`,0, typeId,0,0,0)
+      window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+      window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
       }
     `
   };
@@ -305,27 +305,27 @@
     let dx2='0',dy2='0',dz2='0';
 
     if(frontback=='back'){
-      dx2='(-dx)';
-      dz2='(-dz)';
+      dx2='(-_dx)';
+      dz2='(-_dz)';
     }
     if(frontback=='front'){
-      dx2='dx';
-      dz2='dz';
+      dx2='_dx';
+      dz2='_dz';
     }
     if(leftright=='right'){
-      dz2+='+((dz==0)?dx:0)';
-      dx2+='+((dz==0)?0:(-dz))';
+      dz2+='+((_dz==0)?_dx:0)';
+      dx2+='+((_dz==0)?0:(-_dz))';
     }
     if(leftright=='left'){
-      dz2+='+((dz==0)?(-dx):0)';
-      dx2+='+((dz==0)?0:(dz))';
+      dz2+='+((_dz==0)?(-_dx):0)';
+      dx2+='+((_dz==0)?0:(_dz))';
     }
     if(topbottom=='top')
       dy2='1';
     if(topbottom=='bottom')
       dy2='(-1)';
     
-    return [`window.app.world.getBlockAt(x-0.5+`+dx2+`, y+0.5+`+dy2+`, z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
+    return [`window.app.world.getBlockAt(_x-0.5+`+dx2+`, _y+0.5+`+dy2+`, _z+0.5+`+dz2+`)`, javascript.Order.ATOMIC]
   };
   javascript.javascriptGenerator.forBlock['jump_to'] = function(block) {
     let frontback =  block.getFieldValue('FRONTBACK') ;
@@ -334,27 +334,27 @@
     let dx2='0',dy2='0',dz2='0';
 
     if(frontback=='back'){
-      dx2='(-dx)';
-      dz2='(-dz)';
+      dx2='(-_dx)';
+      dz2='(-_dz)';
     }
     if(frontback=='front'){
-      dx2='dx';
-      dz2='dz';
+      dx2='_dx';
+      dz2='_dz';
     }
     if(leftright=='right'){
-      dz2+='+((dz==0)?dx:0)';
-      dx2+='+((dz==0)?0:(-dz))';
+      dz2+='+((_dz==0)?_dx:0)';
+      dx2+='+((_dz==0)?0:(-_dz))';
     }
     if(leftright=='left'){
-      dz2+='+((dz==0)?(-dx):0)';
-      dx2+='+((dz==0)?0:(dz))';
+      dz2+='+((_dz==0)?(-_dx):0)';
+      dx2+='+((_dz==0)?0:(_dz))';
     }
     if(topbottom=='top')
       dy2='1';
     if(topbottom=='bottom')
       dy2='(-1)';
     
-    return `x+=`+dx2+`;y+=`+dy2+`;z+=`+dz2+`;`;
+    return `_x+=`+dx2+`;_y+=`+dy2+`;_z+=`+dz2+`;`;
   };
 
   javascript.javascriptGenerator.forBlock['check_at'] = function(block,generator) {

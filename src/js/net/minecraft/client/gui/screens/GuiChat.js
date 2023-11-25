@@ -29,14 +29,53 @@ export default class GuiChat extends GuiScreen {
 
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }
-
+    globalEval(src) {
+        var fn = function() {
+            window.eval.call(window,src);
+        };
+        fn();
+    };
+    
     keyTyped(key, character) {
         if (key === "Enter") {
             let message = this.inputField.getText().trim();
             if (message.length === 0) {
                 return;
             }
-
+            let splitmessage=message.replaceAll(/\s+/g, '\x01').split('\x01');
+            if(blocklyFunctions?.includes(splitmessage[0])) {
+                let code=`
+                var _x;
+                var _y;
+                var _z;
+    
+                var _xp;
+                var _yp;
+                var _zp;
+                
+                var _dx;
+                var _dz;
+                var hitResult = window.app.player.rayTrace(5, window.app.timer.partialTicks);
+                if (hitResult != null) {
+                  _x = hitResult.x + hitResult.face.x;
+                  _y = hitResult.y + hitResult.face.y;
+                  _z = hitResult.z + hitResult.face.z;
+            
+                  _xp=window.app.player.x;
+                  _yp=window.app.player.y;
+                  _zp=window.app.player.z;      
+                  _dx=0;
+                  _dz=0;
+                  
+                  if(Math.abs(_x-_xp)>Math.abs(_z-_zp))
+                    if(_x-_xp>0) _dx=1;
+                    else _dx=-1;
+                  else
+                    if(_z-_zp>0) _dz=1;
+                    else _dz=-1
+                }`;
+                this.globalEval(code+splitmessage[0]+'('+splitmessage.splice(1).join(',')+')');
+            }
             // Close screen
             this.minecraft.displayScreen(null);
 

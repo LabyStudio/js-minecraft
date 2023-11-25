@@ -77,38 +77,60 @@ class FocusStateType {
       }
   }
 }
-
+let blocklyFunctions=null;
  (function() {
+  function globalEval(src) {
+    var fn = function() {
+        window.eval.call(window,src);
+    };
+    fn();
+  };
   let currentButton;
   function handlePlay(event) {
     loadWorkspace(blocklySave)
     let code = `
-    let hitResult = window.app.player.rayTrace(5, window.app.timer.partialTicks);
-    if (hitResult != null) {
-      let x = hitResult.x + hitResult.face.x;
-      let y = hitResult.y + hitResult.face.y;
-      let z = hitResult.z + hitResult.face.z;
+    var _x;
+    var _y;
+    var _z;
 
-      let xp=window.app.player.x;
-      let yp=window.app.player.y;
-      let zp=window.app.player.z;
+    var _xp;
+    var _yp;
+    var _zp;
+    
+    var _dx;
+    var _dz;
+    var hitResult = window.app.player.rayTrace(5, window.app.timer.partialTicks);
+    if (hitResult != null) {
+      _x = hitResult.x + hitResult.face.x;
+      _y = hitResult.y + hitResult.face.y;
+      _z = hitResult.z + hitResult.face.z;
+
+      _xp=window.app.player.x;
+      _yp=window.app.player.y;
+      _zp=window.app.player.z;      
+      _dx=0;
+      _dz=0;
       
-      let dx=0;
-      let dz=0;
-      
-      if(Math.abs(x-xp)>Math.abs(z-zp))
-        if(x-xp>0) dx=1;
-        else dx=-1;
+      if(Math.abs(_x-_xp)>Math.abs(_z-_zp))
+        if(_x-_xp>0) _dx=1;
+        else _dx=-1;
       else
-        if(z-zp>0) dz=1;
-        else dz=-1
+        if(_z-_zp>0) _dz=1;
+        else _dz=-1
+    }
     `
     code+=javascript.javascriptGenerator.workspaceToCode(Blockly.getMainWorkspace());
-    code+='}'
+
+    //https://www.debuggex.com/#cheatsheet
+    const regexp = /function[ ]+([a-zA-Z_$0-9]+)[ ]*\(/g;
+    const str = code;
+    blocklyFunctions = [...str.matchAll(regexp)].map((x) => x[1]);
+   // console.log(blocklyFunctions[0][1]);console.log(blocklyFunctions[1][1])
+
     
     try {
       console.log(code);
-      eval(code);
+      globalEval(code);
     } catch (error) {
       console.log(error);
     }
