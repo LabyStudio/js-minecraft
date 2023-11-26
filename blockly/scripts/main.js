@@ -155,7 +155,7 @@ let blocklyFunctions=null;
     }
   }
     
-  function handleSave() {
+  function handleBack() {
     document.body.setAttribute('mode', 'edit');
     save(currentButton);
     document.body.setAttribute('mode', 'blockly');
@@ -174,15 +174,56 @@ let blocklyFunctions=null;
     div.style.visibility = 'hidden'
     window.app.window.updateFocusState(FocusStateType.REQUEST_LOCK);
   }
+  function download(data, fileName, contentType) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {
+      type:contentType
+    }));
+    a.setAttribute("download",fileName);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  function handleSave(){
+    save(currentButton);
+    download( blocklySave, 'mintblock.json', 'text/plain');
+  }    
+//https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
+  function handleLoad(){
+    const i=document.createElement("input");
+    i.type="file";
+    i.addEventListener("change", loadFile, false);
+    document.body.appendChild(i);
+    i.click();
+      function loadFile(){
+        console.log(i.files); 
+        let reader = new FileReader();
 
+        reader.readAsText(i.files[0]);
+      
+        reader.onload = function() {
+          blocklySave=null;         
+          localStorage.setItem("blocklySave", reader.result);
+          loadWorkspace(blocklySave)
+          console.log(reader.result);
+        };
+      
+        reader.onerror = function() {
+          console.log(reader.error);
+        };
+        document.body.removeChild(i);
+      }
+  }
+  
   function enableBlocklyMode() {
     document.body.setAttribute('mode', 'blockly');
     loadWorkspace(blocklySave);
   }
 
-  document.querySelector('#save').addEventListener('click', handleSave);
+  document.querySelector('#back').addEventListener('click', handleBack);
   document.querySelector('#run').addEventListener('click', handleRun);
-
+  document.querySelector('#save').addEventListener('click', handleSave);
+  document.querySelector('#load').addEventListener('click', handleLoad);
   //
   respondToVisibility = function(element, callback) {
     var options = {

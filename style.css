@@ -37,3 +37,9 @@ canvas {
     white-space: nowrap;
     overflow: hidden;
 }
+.blocklybuttonblock{
+    float: right;
+     display : block;
+     display: flex;
+     flex-flow: column;
+}
