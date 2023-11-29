@@ -2,6 +2,26 @@
   Blockly.defineBlocksWithJsonArray([
     // Block for colour picker.
     {
+      "type": "wait",
+      "message0": "warte %1 %2",
+      "args0": [
+        {
+          "type": "input_value",
+          "name": "BLOCK",
+          "check": "Number",
+        },
+        {
+          "type": "input_end_row"
+        }
+      ],
+      "inputsInline": true,
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": 230,
+      "tooltip": "",
+      "helpUrl": ""
+    },
+    {
       "type": "turn",
       "message0": "Drehe %1",
       "args0": [
@@ -283,7 +303,12 @@
       }
     `
   };
-
+  javascript.javascriptGenerator.forBlock['wait'] = function(block,generator) {
+    let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC);
+    return `
+      await wait(`+value+`)
+      `;
+  };
   javascript.javascriptGenerator.forBlock['place_at'] = function(block,generator) {
     let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC);
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);

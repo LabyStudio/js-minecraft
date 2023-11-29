@@ -3,6 +3,14 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+//aus miniconda
+//execute in blockly_git: npm i
+//npm run build
+//modified files in \blockly_git\generators\javascript\procedures.js to allow for async functions
+
+function wait(time) {
+  return new Promise((res)=>setTimeout(res, time));
+}
 class FocusStateType {
 
   static REQUEST_EXIT = new FocusStateType(0, 1);
@@ -89,6 +97,8 @@ let blocklyFunctions=null;
   function handlePlay(event) {
     loadWorkspace(blocklySave)
     let code = `
+    var globfn={};//only use this in main.js
+    var is_script_ended=false;
     var _x;
     var _y;
     var _z;
@@ -119,14 +129,22 @@ let blocklyFunctions=null;
         else _dz=-1
     }
     `
-    code+=javascript.javascriptGenerator.workspaceToCode(Blockly.getMainWorkspace());
-
+    let generatedcode=javascript.javascriptGenerator.workspaceToCode(Blockly.getMainWorkspace());
+    
+    const varregexp = /[ ]*var[ ]+[a-zA-Z0-9, $_]*;/;
+    const vars=generatedcode.match(varregexp);
+    code+=vars?vars:"";
+    code+=`\n(async () => {`;
+    code+=generatedcode.replace(varregexp,"");
     //https://www.debuggex.com/#cheatsheet
-    const regexp = /function[ ]+([a-zA-Z_$0-9]+)[ ]*\(/g;
-    const str = code;
+    //globfn.a= async function () {
+    // /globfn.([a-zA-Z_$0-9]+)[ ]*=[ ]*async[ ]+function[ ]*\(/g;
+    const regexp = /globfn\.([a-zA-Z_$0-9]+)=/g;
+    const str = generatedcode;
     blocklyFunctions = [...str.matchAll(regexp)].map((x) => x[1]);
-   // console.log(blocklyFunctions[0][1]);console.log(blocklyFunctions[1][1])
-
+    //console.log(blocklyFunctions);
+   
+    code += 'is_script_ended = true; })();';
     
     try {
       console.log(code);
@@ -251,6 +269,20 @@ let blocklyFunctions=null;
         name: 'Baue',
         kind: 'CATEGORY',
         contents: [
+          {
+            'kind': 'block',
+            'type': 'wait',
+            'inputs': {
+              'BLOCK': {
+                'shadow': {
+                  'type': 'math_number',
+                  'fields': {
+                    'NUM': 0,
+                  },
+                },
+              },
+            },
+          },
           {
             'kind': 'block',
             'type': 'turn',

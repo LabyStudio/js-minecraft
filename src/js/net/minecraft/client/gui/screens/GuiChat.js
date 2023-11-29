@@ -45,6 +45,7 @@ export default class GuiChat extends GuiScreen {
             let splitmessage=message.replaceAll(/\s+/g, '\x01').split('\x01');
             if(blocklyFunctions?.includes(splitmessage[0])) {
                 let code=`
+                //do not define globfn here!
                 var _x;
                 var _y;
                 var _z;
@@ -74,7 +75,8 @@ export default class GuiChat extends GuiScreen {
                     if(_z-_zp>0) _dz=1;
                     else _dz=-1
                 }`;
-                this.globalEval(code+splitmessage[0]+'('+splitmessage.splice(1).join(',')+')');
+                console.log(code+"(async () => {await globfn."+splitmessage[0]+'('+splitmessage.splice(1).join(',')+') })()');
+                this.globalEval(code+"(async () => {await globfn."+splitmessage[0]+'('+splitmessage.splice(1).join(',')+') })()');
             }
             // Close screen
             this.minecraft.displayScreen(null);
