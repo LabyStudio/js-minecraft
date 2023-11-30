@@ -44,37 +44,7 @@ export default class GuiChat extends GuiScreen {
             }
             let splitmessage=message.replaceAll(/\s+/g, '\x01').split('\x01');
             if(blocklyFunctions?.includes(splitmessage[0])) {
-                let code=`
-                //do not define globfn here!
-                var _x;
-                var _y;
-                var _z;
-    
-                var _xp;
-                var _yp;
-                var _zp;
-                
-                var _dx;
-                var _dz;
-                var hitResult = window.app.player.rayTrace(5, window.app.timer.partialTicks);
-                if (hitResult != null) {
-                  _x = hitResult.x + hitResult.face.x;
-                  _y = hitResult.y + hitResult.face.y;
-                  _z = hitResult.z + hitResult.face.z;
-            
-                  _xp=window.app.player.x;
-                  _yp=window.app.player.y;
-                  _zp=window.app.player.z;      
-                  _dx=0;
-                  _dz=0;
-                  
-                  if(Math.abs(_x-_xp)>Math.abs(_z-_zp))
-                    if(_x-_xp>0) _dx=1;
-                    else _dx=-1;
-                  else
-                    if(_z-_zp>0) _dz=1;
-                    else _dz=-1
-                }`;
+                let code=blocklycode;
                 console.log(code+"(async () => {await globfn."+splitmessage[0]+'('+splitmessage.splice(1).join(',')+') })()');
                 this.globalEval(code+"(async () => {await globfn."+splitmessage[0]+'('+splitmessage.splice(1).join(',')+') })()');
             }

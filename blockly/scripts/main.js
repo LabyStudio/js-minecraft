@@ -7,6 +7,11 @@
 //execute in blockly_git: npm i
 //npm run build
 //modified files in \blockly_git\generators\javascript\procedures.js to allow for async functions
+//
+//we need globfn[] for coordinates and position
+//as code can run parallel due to async wait...
+//variables starting with g are global others are local
+//we need a on run button pressed function
 
 function wait(time) {
   return new Promise((res)=>setTimeout(res, time));
@@ -86,6 +91,7 @@ class FocusStateType {
   }
 }
 let blocklyFunctions=null;
+let blocklycode="";
  (function() {
   function globalEval(src) {
     var fn = function() {
@@ -96,9 +102,12 @@ let blocklyFunctions=null;
   let currentButton;
   function handlePlay(event) {
     loadWorkspace(blocklySave)
-    let code = `
-    var globfn={};//only use this in main.js
+    let blocklycodepre = `
+    var globfn={};//only use this in main.js in order to use multiple parallel asynch executed functions we might need an array, we can reuse the array if is_script_ended is true
     var is_script_ended=false;
+    `;
+    blocklycode=`\n(async () => {`;
+    blocklycode+=`
     var _x;
     var _y;
     var _z;
@@ -133,9 +142,8 @@ let blocklyFunctions=null;
     
     const varregexp = /[ ]*var[ ]+[a-zA-Z0-9, $_]*;/;
     const vars=generatedcode.match(varregexp);
-    code+=vars?vars:"";
-    code+=`\n(async () => {`;
-    code+=generatedcode.replace(varregexp,"");
+    blocklycode+=vars?vars:"";
+    blocklycode+=generatedcode.replace(varregexp,"");
     //https://www.debuggex.com/#cheatsheet
     //globfn.a= async function () {
     // /globfn.([a-zA-Z_$0-9]+)[ ]*=[ ]*async[ ]+function[ ]*\(/g;
@@ -144,11 +152,11 @@ let blocklyFunctions=null;
     blocklyFunctions = [...str.matchAll(regexp)].map((x) => x[1]);
     //console.log(blocklyFunctions);
    
-    code += 'is_script_ended = true; })();';
+    blocklycode += 'is_script_ended = true; })();';
     
     try {
-      console.log(code);
-      globalEval(code);
+      console.log(blocklycodepre+blocklycode);
+      globalEval(blocklycodepre+blocklycode);
     } catch (error) {
       console.log(error);
     }
@@ -163,7 +171,11 @@ let blocklyFunctions=null;
   let blocklySave=null;
 
   function loadWorkspace(blocklySave) {
+    toolbox.contents[0].contents[0].inputs.BLOCK.shadow.fields.NUM++;
+    //TODO here we should set current coordinate in all place_at and check_at
+    //console.log("!!!!"+toolbox.contents[0].contents.find((element) => element.type==="wait").inputs.BLOCK.shadow.fields.NUM++);
     const workspace = Blockly.getMainWorkspace();
+    workspace.toolbox_.flyout_.hide();
     if(!blocklySave){
        blocklySave=JSON.parse(localStorage.getItem("blocklySave"));
        workspace.clear();
@@ -176,6 +188,7 @@ let blocklyFunctions=null;
   function handleBack() {
     document.body.setAttribute('mode', 'edit');
     save(currentButton);
+    loadWorkspace(blocklySave)
     document.body.setAttribute('mode', 'blockly');
     const div = document.getElementById('blocklycode');
     div.style.visibility = 'hidden';
@@ -759,11 +772,19 @@ let blocklyFunctions=null;
     style: 'display: none',
   };
   
-
   Blockly.inject('blocklyDiv', {
     toolbox: toolbox,
     scrollbars: true,
     horizontalLayout: false,
     toolboxPosition: "left",
+    renderer:"zelos",
+    zoom:
+    {controls: true,
+     wheel: true,
+     startScale: 0.8,
+     maxScale: 3,
+     minScale: 0.3,
+     scaleSpeed: 1.2,
+     pinch: true},
   });
 })();
