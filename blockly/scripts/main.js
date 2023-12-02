@@ -909,7 +909,8 @@ var blocklycode="";
     id: 'toolbox',
     style: 'display: none',
   };
-  
+  //todo get rid of loading sprites from
+  //https://blockly-demo.appspot.com/static/media/sprites.png
   Blockly.inject('blocklyDiv', {
     toolbox: toolbox,
     scrollbars: true,

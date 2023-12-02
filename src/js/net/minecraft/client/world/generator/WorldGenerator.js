@@ -83,7 +83,7 @@ export default class WorldGenerator extends Generator {
 
         // Noise data for plant population
         amount = Math.floor((this.populationNoiseGenerator.perlin(absoluteX * 0.5, absoluteY * 0.5) / 8 + this.random.nextDouble() * 4 + 10)/2);
-        console.log(amount);
+        //console.log(amount);
         if (amount < 0) {
             amount = 0;
         }
