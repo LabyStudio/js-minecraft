@@ -375,7 +375,10 @@ export default class Minecraft {
         if (button === this.settings.keyCode) {	
             this.window.updateFocusState(FocusStateType.REQUEST_EXIT);
             const div = document.getElementById('blocklycode');
-		    div.style.visibility = 'visible';        }
+		    div.style.visibility = 'visible';  
+            abortscript()
+     
+        }
 
         // Toggle debug overlay
         if (button === this.settings.keyToggleDebug) {

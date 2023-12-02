@@ -12,10 +12,122 @@
 //as code can run parallel due to async wait...
 //variables starting with g are global others are local
 //we need a on run button pressed function
+//todo add break in loops and function entry to allow for breaking
+//infitine loops
+//we might also need to break promises.
+//https://ckeditor.com/blog/Aborting-a-signal-how-to-cancel-an-asynchronous-task-in-JavaScript/
+//we should have a special function block that is executed is a promise.all way
+//then we need waitfor async command that waits e.g. for block at a certain position to be hit
+//the chat needs to be made in a way to support html
+//then merge the mintrobi game engine in
+//Promise.all waits for all promises to be fullfilled or rejects when one rejects
+//we should replace all await function calls with Promise.all(fn,breaker)
+//where breaker is a promise that is used to break
+//then we need to mark functions as parallelizable functions
+//and they are called only in the code execution with promise.all or better Promise.race()
+//we should also use in loops a  promise.all(sync,breaker)
+//where sync waits every 20th time for 1ms
+/*
+//also https://blog.logrocket.com/complete-guide-abortcontroller-node-js/
+https://ckeditor.com/blog/Aborting-a-signal-how-to-cancel-an-asynchronous-task-in-JavaScript/
+class Breaker extends Promise {
+    constructor(f) {
+    let rej;
+    super((resolve,reject)=>{rej=reject;f(resolve,reject);});
+    this.rej=rej;
+  }
+}
 
 function wait(time) {
   return new Promise((res)=>setTimeout(res, time));
 }
+function wait2(time) {
+  return new Breaker((res)=>{});
+}
+(async () => {
+
+console.log(1)
+let w2=wait2(3000);
+setTimeout(w2.rej, 500)
+//w2.rej()
+try{
+  await Promise.race([wait(0),w2])
+}catch{
+  console.log("err")
+}
+console.log(2)
+
+function wait(time,{signal}){
+  if (signal?.aborted){
+    return Promise.reject(new DOMException("Aborted", "AbortError"));
+  }
+  return new Promise((resolve, reject) => {
+    console.log("Promise Started");
+    let timeout;
+    const abortHandler = () => {
+      clearTimeout(timeout);
+      reject(new DOMException("Aborted", "AbortError"));
+    }
+    // start async operation
+    timeout = setTimeout(() => {
+      resolve("Promise Resolved");
+      //signal?.removeEventListener("abort", abortHandler);
+    }, time);    
+    signal?.addEventListener("abort", abortHandler,{ once: true });
+  });
+}
+
+setTimeout(()=>{controller.abort()},200)
+
+const abortctrl = new AbortController();
+    controller.abort()
+// invoke controller.abort() in some callback
+try{
+  console.log('ee')
+  const result = await wait(0,{signal: abortctrl.signal});
+  console.log(result);
+}
+catch (e){
+  console.warn(e.name === "AbortError" ? "Promise Aborted" : "Promise Rejected");
+}
+  
+})()
+*/
+var abortctrl = new AbortController();
+function abortscript()
+{
+  if(is_script_ended>0)  {
+    abortctrl.abort();
+    is_script_ended=0;
+
+  }
+}
+var is_script_ended=0;
+function abortablewait(time,{signal}){
+  if (signal?.aborted){
+    return Promise.reject(new DOMException("Aborted", "AbortError"));
+  }
+  return new Promise((resolve, reject) => {
+    console.log("Promise Started");
+    let timeout;
+    const abortHandler = () => {
+      clearTimeout(timeout);
+      reject(new DOMException("Aborted", "AbortError"));
+    }
+    // start async operation
+    timeout = setTimeout(() => {
+      console.log("Promise Resolved");
+      resolve("Promise Resolved");
+      //signal?.removeEventListener("abort", abortHandler);
+    }, time);    
+    signal?.addEventListener("abort", abortHandler,{ once: true });
+  });
+}
+
+function wait(time) {
+  return abortablewait(time,{signal: abortctrl.signal});
+}
+
 class FocusStateType {
 
   static REQUEST_EXIT = new FocusStateType(0, 1);
@@ -91,7 +203,7 @@ class FocusStateType {
   }
 }
 let blocklyFunctions=null;
-let blocklycode="";
+var blocklycode="";
  (function() {
   function globalEval(src) {
     var fn = function() {
@@ -104,10 +216,35 @@ let blocklycode="";
     loadWorkspace(blocklySave)
     let blocklycodepre = `
     var globfn={};//only use this in main.js in order to use multiple parallel asynch executed functions we might need an array, we can reuse the array if is_script_ended is true
-    var is_script_ended=false;
+    //also we should have globfn array to handle entities such as block that behaves like an animal
+    //or at least we should store the current globfn in a variable that belongs to entity
     `;
+  
+    let generatedcode=javascript.javascriptGenerator.workspaceToCode(Blockly.getMainWorkspace());
+    
+    const varregexp = /[ ]*var[ ]+[a-zA-Z0-9, $_]*;/;
+    const vars=generatedcode.match(varregexp);//TODO we should select out variables starting with g to be global
+    let gvars="";
+    let lvars="";
+    if(vars){
+      console.log('!!!!'+vars[0])
+      gvars=vars[0].substring(4).
+      split(/\s*(?:,|;$)\s*/).
+      filter(s=>s.startsWith('g')).
+      join(',');
+      lvars=vars[0].substring(4).
+      split(/\s*(?:,|;$)\s*/).
+      filter(s=>!s.startsWith('g')).
+      slice(0,-1).
+      join(',');
+      console.log('globs'+gvars)
+      console.log('lobs'+lvars)
+    }
+    blocklycodepre+=gvars?"var "+gvars+";":"";
     blocklycode=`\n(async () => {`;
     blocklycode+=`
+    is_script_ended++;
+    try{
     var _x;
     var _y;
     var _z;
@@ -138,11 +275,7 @@ let blocklycode="";
         else _dz=-1
     }
     `
-    let generatedcode=javascript.javascriptGenerator.workspaceToCode(Blockly.getMainWorkspace());
-    
-    const varregexp = /[ ]*var[ ]+[a-zA-Z0-9, $_]*;/;
-    const vars=generatedcode.match(varregexp);
-    blocklycode+=vars?vars:"";
+    blocklycode+=lvars?"var "+lvars+";":"";
     blocklycode+=generatedcode.replace(varregexp,"");
     //https://www.debuggex.com/#cheatsheet
     //globfn.a= async function () {
@@ -152,7 +285,7 @@ let blocklycode="";
     blocklyFunctions = [...str.matchAll(regexp)].map((x) => x[1]);
     //console.log(blocklyFunctions);
    
-    blocklycode += 'is_script_ended = true; })();';
+    blocklycode += 'is_script_ended--; }catch{}})();';
     
     try {
       console.log(blocklycodepre+blocklycode);
@@ -186,6 +319,8 @@ let blocklycode="";
   }
     
   function handleBack() {
+    delete abortctrl;
+    abortctrl=new AbortController();
     document.body.setAttribute('mode', 'edit');
     save(currentButton);
     loadWorkspace(blocklySave)
@@ -197,6 +332,8 @@ let blocklycode="";
   }
 
   function handleRun() {
+    delete abortctrl;
+    abortctrl=new AbortController();
     document.body.setAttribute('mode', 'edit');
     save(currentButton);
     handlePlay({})
@@ -271,6 +408,7 @@ let blocklycode="";
   }
   
   respondToVisibility(document.getElementById("blocklycode"), visible => {
+    //Problem this is only called at the beginning and never again
     enableBlocklyMode()
   });
 

@@ -44,9 +44,26 @@ export default class GuiChat extends GuiScreen {
             }
             let splitmessage=message.replaceAll(/\s+/g, '\x01').split('\x01');
             if(blocklyFunctions?.includes(splitmessage[0])) {
+                let blocklycodepre = `
+                var globfn={};//only use this in main.js in order to use multiple parallel asynch executed functions we might need an array, we can reuse the array if is_script_ended is true
+                //also we should have globfn array to handle entities such as block that behaves like an animal
+                //or at least we should store the current globfn in a variable that belongs to entity
+                is_script_ended++;
+                `;
                 let code=blocklycode;
-                console.log(code+"(async () => {await globfn."+splitmessage[0]+'('+splitmessage.splice(1).join(',')+') })()');
-                this.globalEval(code+"(async () => {await globfn."+splitmessage[0]+'('+splitmessage.splice(1).join(',')+') })()');
+                code+=`
+                is_script_ended++;
+                (
+               
+                    async () => {
+                        try{
+                            await globfn.a(`+splitmessage.slice(1).join(',')+`);
+                        }catch{}
+                    })();
+                is_script_ended--;`
+        
+                console.log(code);
+                this.globalEval(code);
             }
             // Close screen
             this.minecraft.displayScreen(null);
