@@ -96,11 +96,8 @@ catch (e){
 var abortctrl = new AbortController();
 function abortscript()
 {
-  if(is_script_ended>0)  {
     abortctrl.abort();
     is_script_ended=0;
-
-  }
 }
 var is_script_ended=0;
 function abortablewait(time,{signal}){
