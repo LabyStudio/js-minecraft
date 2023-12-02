@@ -108,7 +108,7 @@ function abortablewait(time,{signal}){
     return Promise.reject(new DOMException("Aborted", "AbortError"));
   }
   return new Promise((resolve, reject) => {
-    console.log("Promise Started");
+    //console.log("Promise Started");
     let timeout;
     const abortHandler = () => {
       clearTimeout(timeout);
@@ -116,7 +116,7 @@ function abortablewait(time,{signal}){
     }
     // start async operation
     timeout = setTimeout(() => {
-      console.log("Promise Resolved");
+      //console.log("Promise Resolved");
       resolve("Promise Resolved");
       //signal?.removeEventListener("abort", abortHandler);
     }, time);    
