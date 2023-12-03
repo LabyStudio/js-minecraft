@@ -73,7 +73,7 @@ export function procedures_callreturn(block, generator,background=false) {
     args[i] = generator.valueToCode(block, 'ARG' + i, Order.NONE) ||
         'null';
   }//KSKS added await
-  const code = (background?'':'await ')+globfn.'+funcName + '(' + args.join(', ') + ')';
+  const code = (background?'':'await ')+'globfn.'+funcName + '(' + args.join(', ') + ')';
   return [code, Order.FUNCTION_CALL];
 };
 
