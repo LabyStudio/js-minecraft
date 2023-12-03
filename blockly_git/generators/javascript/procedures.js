@@ -64,7 +64,7 @@ export function procedures_defreturn(block, generator) {
 // a procedure with a return value.
 export const procedures_defnoreturn = procedures_defreturn;
 
-export function procedures_callreturn(block, generator) {
+export function procedures_callreturn(block, generator,background=false) {
   // Call a procedure with a return value.
   const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
   const args = [];
@@ -73,7 +73,7 @@ export function procedures_callreturn(block, generator) {
     args[i] = generator.valueToCode(block, 'ARG' + i, Order.NONE) ||
         'null';
   }//KSKS added await
-  const code = 'await globfn.'+funcName + '(' + args.join(', ') + ')';
+  const code = (background?'':'await ')+globfn.'+funcName + '(' + args.join(', ') + ')';
   return [code, Order.FUNCTION_CALL];
 };
 
@@ -81,7 +81,7 @@ export function procedures_callnoreturn(block, generator) {
   // Call a procedure with no return value.
   // Generated code is for a function call as a statement is the same as a
   // function call as a value, with the addition of line ending.
-  const tuple = generator.forBlock['procedures_callreturn'](block, generator);
+  const tuple = generator.forBlock['procedures_callreturn'](block, generator,true);
   return tuple[0] + ';\n';
 };
 
