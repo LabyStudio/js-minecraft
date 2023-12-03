@@ -1194,7 +1194,7 @@ blocks['procedures_callnoreturn_background'] = {
    * Block for calling a procedure with no return value.
    */
   init: function (this: CallBlock) {
-    this.appendDummyInput('TOPROW').appendField('', 'NAME');
+    this.appendDummyInput('TOPROW').appendField('', 'NAME').appendField(Msg['PROCEDURES_BACKGROUND'])
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setStyle('procedure_blocks');
