@@ -363,5 +363,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly Arbeitsbereich",
 	"COLLAPSED_WARNINGS_WARNING": "Eingeklappte Blöcke enthalten Warnungen.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Abbrechen"
+	"DIALOG_CANCEL": "Abbrechen",
+	"PROCEDURES_BACKGROUND": "(im Hintergrund)"
 }
