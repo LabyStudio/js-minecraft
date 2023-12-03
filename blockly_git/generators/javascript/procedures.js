@@ -81,6 +81,14 @@ export function procedures_callnoreturn(block, generator) {
   // Call a procedure with no return value.
   // Generated code is for a function call as a statement is the same as a
   // function call as a value, with the addition of line ending.
+  const tuple = generator.forBlock['procedures_callreturn'](block, generator);
+  return tuple[0] + ';\n';
+};
+
+export function procedures_callnoreturn_background(block, generator) {//KSKS
+  // Call a procedure with no return value.
+  // Generated code is for a function call as a statement is the same as a
+  // function call as a value, with the addition of line ending.
   const tuple = generator.forBlock['procedures_callreturn'](block, generator,true);
   return tuple[0] + ';\n';
 };

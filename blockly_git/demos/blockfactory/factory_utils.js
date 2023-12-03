@@ -969,7 +969,7 @@ FactoryUtils.hasVariableField = function(block) {
 
 /**
  * Checks if a block is a procedures block. If procedures block names are
- * ever updated or expanded, this function should be updated as well (no
+ * ever up  dated or expanded, this function should be updated as well (no
  * other known markers for procedure blocks beyond name).
  * @param {Blockly.Block} block The block to check.
  * @return {boolean} True if the block is a procedure block, false otherwise.
