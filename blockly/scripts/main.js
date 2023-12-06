@@ -781,7 +781,12 @@ var blocklycode="";
       console.log('lobs'+lvars)
     }
     blocklycodepre+=gvars?"var "+gvars+";":"";
-    blocklycode=`\n(async () => {`;
+    blocklycode=`\n
+    function colourstrip(colourstr){
+      if(colourstr[0]=="'" && colourstr[8]=="'" )colourstr=colourstr.substring(1,8)
+      if(colourstr[0]=="#") return parseInt(colourstr.substring(1,7),16)
+      else return colourstr;
+    }(async () => {`;
     blocklycode+=`
     is_script_ended++;
     try{

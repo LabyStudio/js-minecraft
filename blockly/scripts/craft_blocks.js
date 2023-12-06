@@ -351,10 +351,6 @@ window.Block=Block;
   javascript.javascriptGenerator.forBlock['colour_at'] = function(block,generator) {
     let colourstr =  generator.valueToCode(block, 'COLOUR', javascript.Order.ATOMIC);
 
-    
-    let colour=parseInt(colourstr.substring(2,8),16)
-
-
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
@@ -370,7 +366,7 @@ window.Block=Block;
       let typeId=window.app.world.getBlockAt(`+x+`,`+y+`,`+z+`); 
       if(typeId){
         let block = Block.getById(typeId);
-        block.setColor(`+colour+`,`+x+`,`+y+`,`+z+`);
+        block.setColor(colourstrip(`+colourstr+`),`+x+`,`+y+`,`+z+`);
       } 
     }
     `
