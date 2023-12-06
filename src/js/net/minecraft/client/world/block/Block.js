@@ -2,7 +2,13 @@ import BlockRenderType from "../../../util/BlockRenderType.js";
 import EnumBlockFace from "../../../util/EnumBlockFace.js";
 import MovingObjectPosition from "../../../util/MovingObjectPosition.js";
 import BoundingBox from "../../../util/BoundingBox.js";
-
+function generateRandomColor(){
+    let maxVal = 0xFFFFFF; // 16777215
+    let randomNumber = Math.random() * maxVal; 
+    randomNumber = Math.floor(randomNumber);
+    
+    return randomNumber;
+}
 export default class Block {
 
     static blocks = new Map();
@@ -22,6 +28,8 @@ export default class Block {
 
         // Register block
         Block.blocks.set((id<<4)+(metaValue&15), this);
+        this.colormap={};
+        this.color=0xffffff;//KSKS
     }
 
     getId() {
@@ -63,9 +71,16 @@ export default class Block {
         let block = Block.getById(typeId);
         return block === null || block.isTranslucent();
     }
-
+    setColor(color,x,y,z,face){//we need to set:
+        var key = x + '#' + y + '#' + z;
+        this.colormap[key]=color;
+        //this.color=color;//KSKS
+        window.app.world.onBlockChanged(x, y, z);
+    }
+    
     getColor(world, x, y, z, face) {
-        return 0xffffff;
+        var key = x + '#' + y + '#' + z;
+        return this.colormap[key] ?? this.color;
     }
 
     getParticleColor(world, x, y, z) {

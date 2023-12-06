@@ -1,4 +1,6 @@
+import Block from "../../src/js/net/minecraft/client/world/block/Block.js"
 
+window.Block=Block;
   Blockly.defineBlocksWithJsonArray([
     // Block for colour picker.
     {
@@ -17,7 +19,7 @@
       "inputsInline": true,
       "previousStatement": null,
       "nextStatement": null,
-      "colour": 230,
+      "colour": '9c0',
       "tooltip": "",
       "helpUrl": ""
     },
@@ -37,35 +39,35 @@
       ],
       "previousStatement": null,
       "nextStatement": null,
-      "colour": 355,
+      "colour": '9c0',
     },
     {
       "type": "forward",
       "message0": "Vor",
       "previousStatement": null,
       "nextStatement": null,
-      "colour": 355,
+      "colour": '9c0',
     },
     {
       "type": "back",
       "message0": "Zurück",
       "previousStatement": null,
       "nextStatement": null,
-      "colour": 355,
+      "colour": '9c0',
     },
     {
     "type": "up",
     "message0": "Hoch",
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 355,
+    "colour": '9c0',
   },
   {
     "type": "down",
     "message0": "Runter",
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 355,
+    "colour": '9c0',
   },
   {
     "type": "jump_to",
@@ -101,14 +103,14 @@
     ],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 355,
+    "colour": '9c0',
   },
   {
     "type": "destroy",
     "message0": "Zerstoere",
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 355,
+    "colour": '9c0',
   },
     {
     "type": "place",
@@ -126,7 +128,43 @@
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": '9c0',
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "colour_at",
+    "message0": "Färbe %1 bei x: %2 y: %3 z: %4 %5",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "COLOUR",
+       // "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "X",
+        "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "Y",
+        "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "Z",
+        "check": "Number",
+      },
+
+      {
+        "type": "input_end_row"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": '9c0',
     "tooltip": "",
     "helpUrl": ""
   },
@@ -162,7 +200,7 @@
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": '9c0',
     "tooltip": "",
     "helpUrl": ""
   },
@@ -199,7 +237,7 @@
       }
     ],
     "output": "Number",
-    "colour": 355,
+    "colour": '9c0',
   },
   {
     "type": "check_at",
@@ -226,7 +264,7 @@
     ],
     "output": "Number",
     "inputsInline": true,
-    "colour": 230,
+    "colour": '9c0',
     "tooltip": "",
     "helpUrl": ""
   }
@@ -309,16 +347,52 @@
       await wait(`+value+`)
       `;
   };
+  
+  javascript.javascriptGenerator.forBlock['colour_at'] = function(block,generator) {
+    let colourstr =  generator.valueToCode(block, 'COLOUR', javascript.Order.ATOMIC);
+
+    
+    let colour=parseInt(colourstr.substring(2,8),16)
+
+
+    let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
+    let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
+    let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
+    //return `
+    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+    //  window.app.player.inventorySelectSlot(`+value+`);
+    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
+    //  }
+    //`
+     return `
+     {
+      let typeId=window.app.world.getBlockAt(`+x+`,`+y+`,`+z+`); 
+      if(typeId){
+        let block = Block.getById(typeId);
+        block.setColor(`+colour+`,`+x+`,`+y+`,`+z+`);
+      } 
+    }
+    `
+  };
+  
   javascript.javascriptGenerator.forBlock['place_at'] = function(block,generator) {
     let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC);
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    return `
+    //return `
+    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+    //  window.app.player.inventorySelectSlot(`+value+`);
+    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
+    //  }
+    //`
+     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
-      window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
-      window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
+      window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, typeId); 
+      window.app.player.placeBlock(`+x+`,`+y+`,`+z+`,0, typeId,0,0,0)
       }
     `
   };
