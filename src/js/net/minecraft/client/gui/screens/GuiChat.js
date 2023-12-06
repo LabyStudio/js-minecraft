@@ -57,7 +57,7 @@ export default class GuiChat extends GuiScreen {
                
                     async () => {
                         try{
-                            await globfn.a(`+splitmessage.slice(1).join(',')+`);
+                            await globfn.`+splitmessage[0]+`(`+splitmessage.slice(1).join(',')+`);
                         }catch{}
                     })();
                 is_script_ended--;`
