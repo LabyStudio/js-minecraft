@@ -161,6 +161,44 @@ var toolbox ={
         },
         {
           'kind': 'block',
+          'type': 'colour',
+        },
+        {
+          'kind': 'block',
+          'type': 'check',
+        },
+        {
+          'kind': 'block',
+          'type': 'goto',
+          'inputs': {
+            'X': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Y': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Z': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+          },
+        },
+        {
+          'kind': 'block',
           'type': 'colour_at',
           'inputs': {
             'X': {
@@ -229,7 +267,33 @@ var toolbox ={
         },
         {
           'kind': 'block',
-          'type': 'check',
+          'type': 'destroy_at',
+          'inputs': {
+            'X': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Y': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Z': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+          },
         },
         {
           'kind': 'block',
@@ -627,16 +691,30 @@ function abortscript()
 {
 
   var hitResult = window.app.player.rayTrace(5, window.app.timer.partialTicks);
-  let x=1,y=2,z=3;
+  let x=0,y=0,z=0;
+  let x2=0,y2=0,z2=0;
   if (hitResult != null) {
     x = hitResult.x + hitResult.face.x;
     y = hitResult.y + hitResult.face.y;
     z = hitResult.z + hitResult.face.z;
+    x2 = hitResult.x;
+    y2 = hitResult.y;
+    z2 = hitResult.z;
   }
   
   toolbox.contents[0].contents.find((element) => element.type==="place_at").inputs.X.shadow.fields.NUM=x;
   toolbox.contents[0].contents.find((element) => element.type==="place_at").inputs.Y.shadow.fields.NUM=y;
   toolbox.contents[0].contents.find((element) => element.type==="place_at").inputs.Z.shadow.fields.NUM=z;
+  toolbox.contents[0].contents.find((element) => element.type==="goto").inputs.X.shadow.fields.NUM=x;
+  toolbox.contents[0].contents.find((element) => element.type==="goto").inputs.Y.shadow.fields.NUM=y;
+  toolbox.contents[0].contents.find((element) => element.type==="goto").inputs.Z.shadow.fields.NUM=z;
+  toolbox.contents[0].contents.find((element) => element.type==="colour_at").inputs.X.shadow.fields.NUM=x2;
+  toolbox.contents[0].contents.find((element) => element.type==="colour_at").inputs.Y.shadow.fields.NUM=y2;
+  toolbox.contents[0].contents.find((element) => element.type==="colour_at").inputs.Z.shadow.fields.NUM=z2;
+  toolbox.contents[0].contents.find((element) => element.type==="destroy_at").inputs.X.shadow.fields.NUM=x2;
+  toolbox.contents[0].contents.find((element) => element.type==="destroy_at").inputs.Y.shadow.fields.NUM=y2;
+  toolbox.contents[0].contents.find((element) => element.type==="destroy_at").inputs.Z.shadow.fields.NUM=z2;
+  
   //TODO here we should set current coordinate in all place_at and check_at
     abortctrl.abort();
     is_script_ended=0;
