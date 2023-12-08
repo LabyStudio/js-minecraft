@@ -726,12 +726,54 @@ window.Block=Block;
   };
 
   javascript.javascriptGenerator.forBlock['check_color'] = function(block,generator) {
+    let frontback =  block.getFieldValue('FRONTBACK') ;
+    let leftright =  block.getFieldValue('LEFTRIGHT') ;
+    let topbottom =  block.getFieldValue('TOPBOTTOM') ;
+    let dx2='0',dy2='0',dz2='0';
 
-    return [``,javascript.Order.ATOMIC]  
+    if(frontback=='back'){
+      dx2='(-_dx)';
+      dz2='(-_dz)';
+    }
+    if(frontback=='front'){
+      dx2='_dx';
+      dz2='_dz';
+    }
+    if(leftright=='right'){
+      dz2+='+((_dz==0)?_dx:0)';
+      dx2+='+((_dz==0)?0:(-_dz))';
+    }
+    if(leftright=='left'){
+      dz2+='+((_dz==0)?(-_dx):0)';
+      dx2+='+((_dz==0)?0:(_dz))';
+    }
+    if(topbottom=='top')
+      dy2='1';
+    if(topbottom=='bottom')
+      dy2='(-1)';
+    
+
+    return [`
+    (()=>{
+      let typeId=window.app.world.getBlockAt(_x+`+dx2+`, _y+`+dy2+`, _z+`+dz2+`); 
+      if(typeId){
+        let block = Block.getById(typeId);
+        return "#"+block.getColor(window.app.world,_x+`+dx2+`, _y+`+dy2+`, _z+`+dz2+`).toString(16);
+      } 
+    })()
+    `,javascript.Order.ATOMIC]  
   };
   javascript.javascriptGenerator.forBlock['check_color_at'] = function(block,generator) {
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    return [``,javascript.Order.ATOMIC]
+    return [`
+    (()=>{
+      let typeId=window.app.world.getBlockAt(`+x+`,`+y+`,`+z+`); 
+      if(typeId){
+        let block = Block.getById(typeId);
+        return "#"+block.getColor(window.app.world,`+x+`,`+y+`,`+z+`).toString(16);
+      } 
+    })()
+    `,javascript.Order.ATOMIC]  
   };
