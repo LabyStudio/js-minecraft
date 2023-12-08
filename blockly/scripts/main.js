@@ -199,6 +199,108 @@ var toolbox ={
         },
         {
           'kind': 'block',
+          'type': 'check_color',
+        },
+        {
+          'kind': 'block',
+          'type': 'check_color_at',
+          'inputs': {
+            'X': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Y': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Z': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+          },
+        },
+        {
+          'kind': 'block',
+          'type': 'on_hit_with',
+          'inputs': {
+            'BLOCK1': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'BLOCK2': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            }
+          },
+        },
+        {
+          'kind': 'block',
+          'type': 'on_hit_with_at',
+          'inputs': {
+            'BLOCK1': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'BLOCK2': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'X': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Y': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Z': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+          },
+        },
+        {
+          'kind': 'block',
           'type': 'colour_at',
           'inputs': {
             'X': {

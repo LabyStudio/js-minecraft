@@ -131,7 +131,7 @@ window.Block=Block;
     "colour": '9c0',
     "tooltip": "",
     "helpUrl": ""
-  },
+  },//todo check color
   {
     "type": "colour",
     "message0": "Färbe %1 %2",
@@ -150,6 +150,41 @@ window.Block=Block;
     "colour": '9c0',
     "tooltip": "",
     "helpUrl": ""
+  },
+  {
+    "type": "on_hit_with",
+    "message0": "Wenn Block %1 mit Block %2 geschlagen",
+    "args0": [
+      {"type": "input_value", "name": "BLOCK1", "check": "Number"},
+      {"type": "input_value", "name": "BLOCK2", "check": "Number"}
+    ],
+    "message1": "mache %1",
+    "args1": [
+      {"type": "input_statement", "name": "DO"}
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": '9c0',
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "on_hit_with_at",
+    "message0": "Wenn Block %1 mit Block %2 geschlagen bei x: %3 y: %4 z: %5",
+    "args0": [
+      {"type": "input_value", "name": "BLOCK1", "check": "Number"},
+      {"type": "input_value", "name": "BLOCK2", "check": "Number"},
+      { "type": "input_value","name": "X", "check": "Number" },
+      { "type": "input_value","name": "Y", "check": "Number" },
+      { "type": "input_value","name": "Z", "check": "Number" }
+    ],
+    "message1": "mache %1",
+    "args1": [
+      {"type": "input_statement", "name": "DO"}
+    ],
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": '9c0'
   },
   {
     "type": "colour_at",
@@ -348,6 +383,70 @@ window.Block=Block;
     "colour": '9c0',
     "tooltip": "",
     "helpUrl": ""
+  },
+  {
+    "type": "check_color",
+    "message0": "Farbe %1 %2 %3",
+    "args0": [
+      {
+        "type": "field_dropdown",
+        "name": "FRONTBACK",
+        "options": [
+          ["", ""],
+          ["vorne", "front"],
+          ["hinten", "back"],
+        ]
+      },
+      {
+        "type": "field_dropdown",
+        "name": "LEFTRIGHT",
+        "options": [
+          ["", ""],
+          ["links", "left"],
+          ["rechts", "right"],
+        ]
+      },
+      {
+        "type": "field_dropdown",
+        "name": "TOPBOTTOM",
+        "options": [
+          ["", ""],
+          ["oben", "top"],
+          ["unten", "bottom"],
+        ]
+      }
+    ],
+    "output": "Number",
+    "colour": '9c0',
+  },
+  {
+    "type": "check_color_at",
+    "message0": "Farbe bei x: %1 y: %2 z: %3 %4",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "X",
+        "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "Y",
+        "check": "Number",
+      },
+      {
+        "type": "input_value",
+        "name": "Z",
+        "check": "Number",
+      },
+      {
+        "type": "input_end_row"
+      }
+    ],
+    "output": "Number",
+    "inputsInline": true,
+    "colour": '9c0',
+    "tooltip": "",
+    "helpUrl": ""
   }
   ]);
 
@@ -440,6 +539,46 @@ window.Block=Block;
         } 
       }
     `
+  };
+  javascript.javascriptGenerator.forBlock['on_hit_with'] = function(block,generator) {
+    let BLOCK1 =  generator.valueToCode(block, 'BLOCK1', javascript.Order.ATOMIC);
+    let BLOCK2 =  generator.valueToCode(block, 'BLOCK2', javascript.Order.ATOMIC);
+    let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
+    let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
+    let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
+    let DO =  generator.statementToCode(block, 'DO', javascript.Order.ATOMIC);
+    //return `
+    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+    //  window.app.player.inventorySelectSlot(`+value+`);
+    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
+    //  }
+    //`
+
+    return `
+    function onHitWith(){`+
+    DO
+    +`}
+    `;
+     
+  };
+  javascript.javascriptGenerator.forBlock['on_hit_with_at'] = function(block,generator) {
+    let BLOCK1 =  generator.valueToCode(block, 'BLOCK1', javascript.Order.ATOMIC);
+    let BLOCK2 =  generator.valueToCode(block, 'BLOCK2', javascript.Order.ATOMIC);
+    let DO =  generator.statementToCode(block, 'DO', javascript.Order.ATOMIC);
+    //return `
+    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+    //  window.app.player.inventorySelectSlot(`+value+`);
+    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
+    //  }
+    //`
+
+    return `
+    function onHitWith(){`+
+    DO
+    +`}
+    `;
   };
   javascript.javascriptGenerator.forBlock['colour_at'] = function(block,generator) {
     let colourstr =  generator.valueToCode(block, 'COLOUR', javascript.Order.ATOMIC);
@@ -586,3 +725,13 @@ window.Block=Block;
     return [`window.app.world.getBlockAt(`+x+`+0.5, `+y+`0.5, `+z+`+0.5)`,javascript.Order.ATOMIC]
   };
 
+  javascript.javascriptGenerator.forBlock['check_color'] = function(block,generator) {
+
+    return [``,javascript.Order.ATOMIC]  
+  };
+  javascript.javascriptGenerator.forBlock['check_color_at'] = function(block,generator) {
+    let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
+    let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
+    let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
+    return [``,javascript.Order.ATOMIC]
+  };
