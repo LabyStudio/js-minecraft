@@ -24,6 +24,13 @@ import FocusStateType from "../util/FocusStateType.js";
 import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
 import Splash from "../../../../resources/splashes.js"
+function globalEval(src) {//KSKS todo export it from main.js
+    var fn = function() {
+        window.eval.call(window,src);
+    };
+    fn();
+};
+
 export default class Minecraft {
 
     static VERSION = "1.2.0"
@@ -477,6 +484,40 @@ export default class Minecraft {
 
                         if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
+                            let hitTypeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
+
+                            if(window?.globfn?.onHitWith!=undefined){
+                                if(globfn.onHitWith.get(hitTypeId+`#`+typeId)!=undefined){
+                                    let code=blocklycode+`
+                                    is_script_ended++;
+                                    (
+                                
+                                        async () => {
+                                            try{
+                                                await globfn.onHitWith.get("`+hitTypeId+`#`+typeId+`")();
+                                            }catch{}
+                                        })();
+                                    is_script_ended--;`
+
+                                    globalEval(code);
+                                }
+                            }
+                            if(window?.globfn?.onHitWithAt!=undefined){
+                                if(globfn.onHitWithAt.get(hitTypeId+`#`+typeId+`#`+x+`#`+y+`#`+z)!=undefined){
+                                    let code=blocklycode+`
+                                    is_script_ended++;
+                                    (
+                                
+                                        async () => {
+                                            try{
+                                                await globfn.onHitWithAt.get("`+hitTypeId+`#`+typeId+`#`+x+`#`+y+`#`+z+`")();
+                                            }catch{}
+                                        })();
+                                    is_script_ended--;`
+
+                                    globalEval(code);
+                                }
+                            }
                             this.world.setBlockAt(x, y, z, typeId);
                             let face;
                             if(hitResult.face.y<0) face=0;

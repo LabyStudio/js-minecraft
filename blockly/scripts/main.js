@@ -925,7 +925,7 @@ class FocusStateType {
 let blocklyFunctions=null;
 var blocklycode="";
  
-  function globalEval(src) {
+  function globalEval(src) {//KSKS todo export it from main.js
     var fn = function() {
         window.eval.call(window,src);
     };
@@ -935,7 +935,10 @@ var blocklycode="";
   function handlePlay(event) {
     loadWorkspace(blocklySave)
     let blocklycodepre = `
-    var globfn={};//only use this in main.js in order to use multiple parallel asynch executed functions we might need an array, we can reuse the array if is_script_ended is true
+    var globfn={
+      onHitWith:new Map(),
+      onHitWithAt:new Map()
+    };//only use this in main.js in order to use multiple parallel asynch executed functions we might need an array, we can reuse the array if is_script_ended is true
     //also we should have globfn array to handle entities such as block that behaves like an animal
     //or at least we should store the current globfn in a variable that belongs to entity
     `;

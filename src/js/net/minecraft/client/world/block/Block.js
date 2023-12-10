@@ -28,7 +28,7 @@ export default class Block {
 
         // Register block
         Block.blocks.set((id<<4)+(metaValue&15), this);
-        this.colormap={};
+        this.colormap=new Map();
         this.color=0xffffff;//KSKS
     }
 
@@ -73,14 +73,14 @@ export default class Block {
     }
     setColor(color,x,y,z,face){//we need to set:
         var key = x + '#' + y + '#' + z;
-        this.colormap[key]=color;
+        this.colormap.set(key,color);
         //this.color=color;//KSKS
         window.app.world.onBlockChanged(x, y, z);
     }
     
     getColor(world, x, y, z, face) {
         var key = x + '#' + y + '#' + z;
-        return this.colormap[key] ?? this.color;
+        return this.colormap.get(key) ?? this.color;
     }
 
     getParticleColor(world, x, y, z) {

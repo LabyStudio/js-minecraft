@@ -29,7 +29,7 @@ export default class GuiChat extends GuiScreen {
 
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }
-    globalEval(src) {
+    globalEval(src) {//KSKS todo export it from main.js
         var fn = function() {
             window.eval.call(window,src);
         };
@@ -63,7 +63,7 @@ export default class GuiChat extends GuiScreen {
                 is_script_ended--;`
         
                 console.log(code);
-                this.globalEval(code);
+                globalEval(code);
             }
             // Close screen
             this.minecraft.displayScreen(null);

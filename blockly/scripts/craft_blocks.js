@@ -1,5 +1,6 @@
 import Block from "../../src/js/net/minecraft/client/world/block/Block.js"
-
+//add https://google.github.io/blockly-samples/plugins/field-bitmap/test/index
+//for texture editing
 window.Block=Block;
   Blockly.defineBlocksWithJsonArray([
     // Block for colour picker.
@@ -540,7 +541,7 @@ window.Block=Block;
       }
     `
   };
-  javascript.javascriptGenerator.forBlock['on_hit_with'] = function(block,generator) {
+  javascript.javascriptGenerator.forBlock['on_hit_with_at'] = function(block,generator) {
     let BLOCK1 =  generator.valueToCode(block, 'BLOCK1', javascript.Order.ATOMIC);
     let BLOCK2 =  generator.valueToCode(block, 'BLOCK2', javascript.Order.ATOMIC);
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
@@ -554,15 +555,15 @@ window.Block=Block;
     //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
     //  }
     //`
-
     return `
-    function onHitWith(){`+
+    globfn.onHitWithAt.set("`+BLOCK1+`#`+BLOCK2+`#`+x+`#`+y+`#`+z+`",async function (){`+
     DO
-    +`}
+    +`});
     `;
+ 
      
   };
-  javascript.javascriptGenerator.forBlock['on_hit_with_at'] = function(block,generator) {
+  javascript.javascriptGenerator.forBlock['on_hit_with'] = function(block,generator) {
     let BLOCK1 =  generator.valueToCode(block, 'BLOCK1', javascript.Order.ATOMIC);
     let BLOCK2 =  generator.valueToCode(block, 'BLOCK2', javascript.Order.ATOMIC);
     let DO =  generator.statementToCode(block, 'DO', javascript.Order.ATOMIC);
@@ -575,9 +576,9 @@ window.Block=Block;
     //`
 
     return `
-    function onHitWith(){`+
+    globfn.onHitWith.set("`+BLOCK1+`#`+BLOCK2+`",async function (){`+
     DO
-    +`}
+    +`});
     `;
   };
   javascript.javascriptGenerator.forBlock['colour_at'] = function(block,generator) {
