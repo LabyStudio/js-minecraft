@@ -15,7 +15,7 @@ export default class TagRegistry {
     static idToTag = new Map();
     static tagToId = new Map();
 
-    static {
+    constructor() {
         TagRegistry.register(1, ByteTag);
         TagRegistry.register(2, ShortTag);
         TagRegistry.register(3, IntTag);
