@@ -1118,7 +1118,7 @@ var blocklycode_onhit="";
         reader.onload = function() {
           blocklySave=null;         
           localStorage.setItem("blocklySave", reader.result);
-          //loadWorkspace(blocklySave)
+          loadWorkspace(blocklySave)
           console.log(reader.result);
         };
       
