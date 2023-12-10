@@ -485,10 +485,11 @@ export default class Minecraft {
                         if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
                             let hitTypeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
-
+                            let onHit=false;
                             if(window?.globfn?.onHitWith!=undefined){
                                 if(globfn.onHitWith.get(hitTypeId+`#`+typeId)!=undefined){
-                                    let code=blocklycode+`
+                                    onHit=true;
+                                    let code=blocklycode2+`
                                     is_script_ended++;
                                     (
                                 
@@ -504,7 +505,8 @@ export default class Minecraft {
                             }
                             if(window?.globfn?.onHitWithAt!=undefined){
                                 if(globfn.onHitWithAt.get(hitTypeId+`#`+typeId+`#`+x+`#`+y+`#`+z)!=undefined){
-                                    let code=blocklycode+`
+                                    onHit=true;
+                                    let code=blocklycode2+`
                                     is_script_ended++;
                                     (
                                 
@@ -518,7 +520,7 @@ export default class Minecraft {
                                     globalEval(code);
                                 }
                             }
-                            this.world.setBlockAt(x, y, z, typeId);
+                            if(!onHit) this.world.setBlockAt(x, y, z, typeId);
                             let face;
                             if(hitResult.face.y<0) face=0;
                             else if(hitResult.face.y>0) face=1;
@@ -526,29 +528,30 @@ export default class Minecraft {
                             else if(hitResult.face.z>0) face=3;
                             else if(hitResult.face.x<0) face=4;
                             else if(hitResult.face.x>0) face=5;
-                            this.player.placeBlock(x,y,z,face,typeId,0,0,0)
+                            if(!onHit) this.player.placeBlock(x,y,z,face,typeId,0,0,0)
                             //this.player.placeBlock(x,y,z,face,this.player.inventory.selectedSlotIndex,0,0,0)
                         //for this to work we need https://wiki.vg/index.php?title=Protocol&oldid=7368#Creative_Inventory_Action
                         //and https://wiki.vg/index.php?title=Protocol&oldid=7368#Held_Item_Change_2
                         //https://wiki.vg/index.php?title=Protocol&oldid=7368#Set_Slot
                             // Swing player arm
                             this.player.swingArm();
+                            if(!onHit) {
+                                // Handle block abilities
+                                let block = Block.getById(typeId);
+                                block.onBlockPlaced(this.world, x, y, z, hitResult.face);
 
-                            // Handle block abilities
-                            let block = Block.getById(typeId);
-                            block.onBlockPlaced(this.world, x, y, z, hitResult.face);
-
-                            // Play sound
-                            let sound = block.getSound();
-                            let soundName = sound.getPlaceSound();
-                            this.soundManager.playSound(
-                                soundName,
-                                hitResult.x + 0.5,
-                                hitResult.y + 0.5,
-                                hitResult.z + 0.5,
-                                2.0,
-                                sound.getPitch() * 0.8
-                            );
+                                // Play sound
+                                let sound = block.getSound();
+                                let soundName = sound.getPlaceSound();
+                                this.soundManager.playSound(
+                                    soundName,
+                                    hitResult.x + 0.5,
+                                    hitResult.y + 0.5,
+                                    hitResult.z + 0.5,
+                                    2.0,
+                                    sound.getPitch() * 0.8
+                                );
+                            }
                         }
                     }
                 }

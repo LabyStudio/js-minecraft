@@ -95,6 +95,7 @@ catch (e){
 */
 
 //KSKSK todo modularize it to avoid global namespace
+
 var toolbox ={
   contents: [
     {
@@ -143,17 +144,13 @@ var toolbox ={
         },
         {
           'kind': 'block',
-          'type': 'destroy',
-        },
-        {
-          'kind': 'block',
           'type': 'place',
           'inputs': {
             'BLOCK': {
               'shadow': {
                 'type': 'math_number',
                 'fields': {
-                  'NUM': 0,
+                  'NUM': 1,
                 },
               },
             },
@@ -161,7 +158,15 @@ var toolbox ={
         },
         {
           'kind': 'block',
+          'type': 'destroy',
+        },
+        {
+          'kind': 'block',
           'type': 'colour',
+        },
+        {
+          'kind': 'block',
+          'type': 'check_color',
         },
         {
           'kind': 'block',
@@ -197,14 +202,48 @@ var toolbox ={
             },
           },
         },
-        {
+         {
           'kind': 'block',
-          'type': 'check_color',
-        },
-        {
-          'kind': 'block',
-          'type': 'check_color_at',
+          'type': 'on_hit_with',
           'inputs': {
+            'BLOCK1': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'BLOCK2': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            }
+          },
+        }
+      ]
+    },
+    {
+      id: 'catMineAt',
+      colour: '9c0',
+      name: 'Baue bei',
+      kind: 'CATEGORY',
+      contents: [
+        {
+          'kind': 'block',
+          'type': 'place_at',
+          'inputs': {
+            'BLOCK': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 1,
+                },
+              },
+            },
             'X': {
               'shadow': {
                 'type': 'math_number',
@@ -228,51 +267,13 @@ var toolbox ={
                   'NUM': 0,
                 },
               },
-            },
-          },
-        },
-        {
-          'kind': 'block',
-          'type': 'on_hit_with',
-          'inputs': {
-            'BLOCK1': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
-            'BLOCK2': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
             }
           },
         },
         {
           'kind': 'block',
-          'type': 'on_hit_with_at',
+          'type': 'destroy_at',
           'inputs': {
-            'BLOCK1': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
-            'BLOCK2': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
             'X': {
               'shadow': {
                 'type': 'math_number',
@@ -331,45 +332,7 @@ var toolbox ={
         },
         {
           'kind': 'block',
-          'type': 'place_at',
-          'inputs': {
-            'BLOCK': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
-            'X': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
-            'Y': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
-            'Z': {
-              'shadow': {
-                'type': 'math_number',
-                'fields': {
-                  'NUM': 0,
-                },
-              },
-            },
-          },
-        },
-        {
-          'kind': 'block',
-          'type': 'destroy_at',
+          'type': 'check_color_at',
           'inputs': {
             'X': {
               'shadow': {
@@ -427,6 +390,52 @@ var toolbox ={
             },
           },
         },
+        {
+          'kind': 'block',
+          'type': 'on_hit_with_at',
+          'inputs': {
+            'BLOCK1': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'BLOCK2': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'X': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Y': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+            'Z': {
+              'shadow': {
+                'type': 'math_number',
+                'fields': {
+                  'NUM': 0,
+                },
+              },
+            },
+          },
+        }
       ]
     },
     {
@@ -804,18 +813,18 @@ function abortscript()
     z2 = hitResult.z;
   }
   
-  toolbox.contents[0].contents.find((element) => element.type==="place_at").inputs.X.shadow.fields.NUM=x;
-  toolbox.contents[0].contents.find((element) => element.type==="place_at").inputs.Y.shadow.fields.NUM=y;
-  toolbox.contents[0].contents.find((element) => element.type==="place_at").inputs.Z.shadow.fields.NUM=z;
+  toolbox.contents[1].contents.find((element) => element.type==="place_at").inputs.X.shadow.fields.NUM=x;
+  toolbox.contents[1].contents.find((element) => element.type==="place_at").inputs.Y.shadow.fields.NUM=y;
+  toolbox.contents[1].contents.find((element) => element.type==="place_at").inputs.Z.shadow.fields.NUM=z;
   toolbox.contents[0].contents.find((element) => element.type==="goto").inputs.X.shadow.fields.NUM=x;
   toolbox.contents[0].contents.find((element) => element.type==="goto").inputs.Y.shadow.fields.NUM=y;
   toolbox.contents[0].contents.find((element) => element.type==="goto").inputs.Z.shadow.fields.NUM=z;
-  toolbox.contents[0].contents.find((element) => element.type==="colour_at").inputs.X.shadow.fields.NUM=x2;
-  toolbox.contents[0].contents.find((element) => element.type==="colour_at").inputs.Y.shadow.fields.NUM=y2;
-  toolbox.contents[0].contents.find((element) => element.type==="colour_at").inputs.Z.shadow.fields.NUM=z2;
-  toolbox.contents[0].contents.find((element) => element.type==="destroy_at").inputs.X.shadow.fields.NUM=x2;
-  toolbox.contents[0].contents.find((element) => element.type==="destroy_at").inputs.Y.shadow.fields.NUM=y2;
-  toolbox.contents[0].contents.find((element) => element.type==="destroy_at").inputs.Z.shadow.fields.NUM=z2;
+  toolbox.contents[1].contents.find((element) => element.type==="colour_at").inputs.X.shadow.fields.NUM=x2;
+  toolbox.contents[1].contents.find((element) => element.type==="colour_at").inputs.Y.shadow.fields.NUM=y2;
+  toolbox.contents[1].contents.find((element) => element.type==="colour_at").inputs.Z.shadow.fields.NUM=z2;
+  toolbox.contents[1].contents.find((element) => element.type==="destroy_at").inputs.X.shadow.fields.NUM=x2;
+  toolbox.contents[1].contents.find((element) => element.type==="destroy_at").inputs.Y.shadow.fields.NUM=y2;
+  toolbox.contents[1].contents.find((element) => element.type==="destroy_at").inputs.Z.shadow.fields.NUM=z2;
   
   //TODO here we should set current coordinate in all place_at and check_at
     abortctrl.abort();
@@ -924,6 +933,7 @@ class FocusStateType {
 }
 let blocklyFunctions=null;
 var blocklycode="";
+var blocklycode_onhit="";
  
   function globalEval(src) {//KSKS todo export it from main.js
     var fn = function() {
@@ -970,6 +980,7 @@ var blocklycode="";
       if(colourstr[0]=="#") return parseInt(colourstr.substring(1,7),16)
       else return colourstr;
     }(async () => {`;
+  
     blocklycode+=`
     is_script_ended++;
     try{
@@ -985,10 +996,19 @@ var blocklycode="";
     var _dz;
     var hitResult = window.app.player.rayTrace(5, window.app.timer.partialTicks);
     if (hitResult != null) {
+    `;
+    blocklycode2=blocklycode;
+    blocklycode+=`
       _x = hitResult.x + hitResult.face.x;
       _y = hitResult.y + hitResult.face.y;
       _z = hitResult.z + hitResult.face.z;
-
+    `;
+    blocklycode2+=`
+      _x = hitResult.x;
+      _y = hitResult.y;
+      _z = hitResult.z;
+    `
+    let addition=`
       _xp=window.app.player.x;
       _yp=window.app.player.y;
       _zp=window.app.player.z;      
@@ -1003,8 +1023,8 @@ var blocklycode="";
         else _dz=-1
     }
     `
-    blocklycode+=lvars?"var "+lvars+";":"";
-    blocklycode+=generatedcode.replace(varregexp,"");
+    addition+=lvars?"var "+lvars+";":"";
+    addition+=generatedcode.replace(varregexp,"");
     //https://www.debuggex.com/#cheatsheet
     //globfn.a= async function () {
     // /globfn.([a-zA-Z_$0-9]+)[ ]*=[ ]*async[ ]+function[ ]*\(/g;
@@ -1013,8 +1033,9 @@ var blocklycode="";
     blocklyFunctions = [...str.matchAll(regexp)].map((x) => x[1]);
     //console.log(blocklyFunctions);
    
-    blocklycode += 'is_script_ended--; }catch{}})();';
-    
+    addition += 'is_script_ended--; }catch{}})();';
+    blocklycode+=addition;
+    blocklycode2+=addition;
     try {
       console.log(blocklycodepre+blocklycode);
       globalEval(blocklycodepre+blocklycode);

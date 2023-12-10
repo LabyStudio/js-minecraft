@@ -189,7 +189,7 @@ window.Block=Block;
   },
   {
     "type": "colour_at",
-    "message0": "Färbe %1 bei x: %2 y: %3 z: %4 %5",
+    "message0": "Färbe %1 bei x: %2 y: %3 z: %4 relativ: %5 %6",
     "args0": [
       {
         "type": "input_value",
@@ -211,7 +211,11 @@ window.Block=Block;
         "name": "Z",
         "check": "Number",
       },
-
+      {
+        "type": "field_checkbox",
+        "name": "RELATIVE",
+        "checked": false
+      },
       {
         "type": "input_end_row"
       }
@@ -225,7 +229,7 @@ window.Block=Block;
   },
   {
     "type": "goto",
-    "message0": "Gehe zu x: %1 y: %2 z: %3 %4",
+    "message0": "Gehe zu x: %1 y: %2 z: %3 relativ: %4 %5",
     "args0": [
       {
         "type": "input_value",
@@ -242,7 +246,11 @@ window.Block=Block;
         "name": "Z",
         "check": "Number",
       },
-
+      {
+        "type": "field_checkbox",
+        "name": "RELATIVE",
+        "checked": false
+      },
       {
         "type": "input_end_row"
       }
@@ -256,7 +264,7 @@ window.Block=Block;
   },
   {
     "type": "place_at",
-    "message0": "Platziere %1 bei x: %2 y: %3 z: %4 %5",
+    "message0": "Platziere %1 bei x: %2 y: %3 z: %4 relativ: %5 %6",
     "args0": [
       {
         "type": "input_value",
@@ -278,7 +286,11 @@ window.Block=Block;
         "name": "Z",
         "check": "Number",
       },
-
+      {
+        "type": "field_checkbox",
+        "name": "RELATIVE",
+        "checked": false
+      },
       {
         "type": "input_end_row"
       }
@@ -292,7 +304,7 @@ window.Block=Block;
   },
   {
     "type": "destroy_at",
-    "message0": "Zerstöre bei x: %1 y: %2 z: %3 %4",
+    "message0": "Zerstöre bei x: %1 y: %2 z: %3 relativ: %4 %5",
     "args0": [
       {
         "type": "input_value",
@@ -309,7 +321,11 @@ window.Block=Block;
         "name": "Z",
         "check": "Number",
       },
-
+      {
+        "type": "field_checkbox",
+        "name": "RELATIVE",
+        "checked": false
+      },
       {
         "type": "input_end_row"
       }
@@ -358,7 +374,7 @@ window.Block=Block;
   },
   {
     "type": "check_at",
-    "message0": "Fühle bei x: %1 y: %2 z: %3 %4",
+    "message0": "Fühle bei x: %1 y: %2 z: %3 relativ: %4 %5",
     "args0": [
       {
         "type": "input_value",
@@ -374,6 +390,11 @@ window.Block=Block;
         "type": "input_value",
         "name": "Z",
         "check": "Number",
+      },
+      {
+        "type": "field_checkbox",
+        "name": "RELATIVE",
+        "checked": false
       },
       {
         "type": "input_end_row"
@@ -422,7 +443,7 @@ window.Block=Block;
   },
   {
     "type": "check_color_at",
-    "message0": "Farbe bei x: %1 y: %2 z: %3 %4",
+    "message0": "Farbe bei x: %1 y: %2 z: %3 relativ: %4 %5",
     "args0": [
       {
         "type": "input_value",
@@ -438,6 +459,11 @@ window.Block=Block;
         "type": "input_value",
         "name": "Z",
         "check": "Number",
+      },
+      {
+        "type": "field_checkbox",
+        "name": "RELATIVE",
+        "checked": false
       },
       {
         "type": "input_end_row"
@@ -507,13 +533,29 @@ window.Block=Block;
   javascript.javascriptGenerator.forBlock['destroy'] = function(block) {
 
     return `
-    window.app.world.setBlockAt(_x, _y, _z,0);
-    window.app.player.digging(0,_x,_y,_z,0);
+    try{  
+      let typeId = window.app.world.getBlockAt(_x,_y,_z);
+      let block = Block.getById(typeId);
+      if(block?.getSound()){
+        let soundName = block.getSound().getBreakSound();
+        // Play sound
+        window.app.soundManager.playSound(
+            soundName,
+            _x+0.5,_y+0.5,_z+0.5,
+            2.0,
+            1.0
+        );
+      }
+      // Spawn particle
+      window.app.particleRenderer.spawnBlockBreakParticle(window.app.world,_x,_y,_z);
+      window.app.world.setBlockAt(_x,_y,_z, 0); 
+      window.app.player.digging(0,_x,_y,_z, 0);
+    }catch(e){console.log(e)}
     `
   };
 
   javascript.javascriptGenerator.forBlock['place'] = function(block,generator) {
-    let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC);
+    let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC)-1;
     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
@@ -587,14 +629,18 @@ window.Block=Block;
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    //return `
-    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
-    //  window.app.player.inventorySelectSlot(`+value+`);
-    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
-    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
-    //  }
-    //`
-     return `
+     let relative = block.getFieldValue('RELATIVE');
+    if(relative=="TRUE") 
+    return `
+    {
+      let typeId=window.app.world.getBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`); 
+      if(typeId){
+        let block = Block.getById(typeId);
+        block.setColor(colourstrip(`+colourstr+`),_x+`+x+`, _y+`+y+`, _z+`+z+`);
+      } 
+    }
+    `;
+    else return `
      {
       let typeId=window.app.world.getBlockAt(`+x+`,`+y+`,`+z+`); 
       if(typeId){
@@ -602,62 +648,93 @@ window.Block=Block;
         block.setColor(colourstrip(`+colourstr+`),`+x+`,`+y+`,`+z+`);
       } 
     }
-    `
+    `;
   };
   javascript.javascriptGenerator.forBlock['goto'] = function(block,generator) {
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    //return `
-    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
-    //  window.app.player.inventorySelectSlot(`+value+`);
-    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
-    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
-    //  }
-    //`
-     return `
+    let relative = block.getFieldValue('RELATIVE');
+    if(relative=="TRUE") return `
+      {
+        _x+=`+x+`;
+        _y+=`+y+`;
+        _z+=`+z+`;
+      }
+      `;
+    else return `
       {
         _x=`+x+`;
         _y=`+y+`;
         _z=`+z+`;
-      }`
+      }`;
   };
   javascript.javascriptGenerator.forBlock['place_at'] = function(block,generator) {
-    let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC);
+    let value =  generator.valueToCode(block, 'BLOCK', javascript.Order.ATOMIC)-1;
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    //return `
-    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
-    //  window.app.player.inventorySelectSlot(`+value+`);
-    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
-    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
-    //  }
-    //`
-     return `
+    let relative = block.getFieldValue('RELATIVE');
+    if(relative=="TRUE") return `
+      {
+        let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
+        window.app.player.inventorySelectSlot(`+value+`);
+        window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+        window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
+      }
+    `; 
+    else return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
       window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, typeId); 
       window.app.player.placeBlock(`+x+`,`+y+`,`+z+`,0, typeId,0,0,0)
       }
-    `
+    `;
   };
   javascript.javascriptGenerator.forBlock['destroy_at'] = function(block,generator) {
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    //return `
-    //  {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
-    //  window.app.player.inventorySelectSlot(`+value+`);
-    //  window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
-    //  window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
-    //  }
-    //`
-     return `
-      {
-        window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, 0); 
-        window.app.world.digging(0,`+x+`,`+y+`,`+z+`, 0); 
+     let relative = block.getFieldValue('RELATIVE');
+    if(relative=="TRUE") return `
+      try{  
+        let typeId = window.app.world.getBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`);
+        let block = Block.getById(typeId);
+        if(block?.getSound()){
+          let soundName = block.getSound().getBreakSound();
+          // Play sound
+          window.app.soundManager.playSound(
+              soundName,
+              _x+`+x+`+0.5, _y+`+y+`+0.5, _z+`+z+`+0.5,
+              2.0,
+              1.0
+          );
+        }
+        // Spawn particle
+        window.app.particleRenderer.spawnBlockBreakParticle(window.app.world, _x+`+x+`, _y+`+y+`, _z+`+z+`);
+        window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, 0); 
+        window.app.player.digging(0,_x+`+x+`, _y+`+y+`, _z+`+z+`, 0);
+      }catch(e){console.log(e)}
+    `;
+    else return `
+    try{  
+      let typeId = window.app.world.getBlockAt(`+x+`,`+y+`,`+z+`);
+      let block = Block.getById(typeId);
+      if(block?.getSound()){
+        let soundName = block.getSound().getBreakSound();
+        // Play sound
+        window.app.soundManager.playSound(
+            soundName,
+            `+x+`+0.5,`+y+`+0.5,`+z+`+0.5,
+            2.0,
+            1.0
+        );
       }
+      // Spawn particle
+      window.app.particleRenderer.spawnBlockBreakParticle(window.app.world, `+x+`,`+y+`,`+z+`);
+      window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, 0); 
+      window.app.player.digging(0,`+x+`,`+y+`,`+z+`, 0);
+    }catch(e){console.log(e)}
     `
   };
   javascript.javascriptGenerator.forBlock['check'] = function(block) {
@@ -723,7 +800,10 @@ window.Block=Block;
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
-    return [`window.app.world.getBlockAt(`+x+`+0.5, `+y+`0.5, `+z+`+0.5)`,javascript.Order.ATOMIC]
+    let relative = block.getFieldValue('RELATIVE');
+    if(relative=="TRUE") 
+    return [`window.app.world.getBlockAt(_x+`+x+`+0.5, _y+`+y+`+0.5, _z+`+z+`+0.5)`,javascript.Order.ATOMIC]
+    else return [`window.app.world.getBlockAt(`+x+`+0.5, `+y+`0.5, `+z+`+0.5)`,javascript.Order.ATOMIC];
   };
 
   javascript.javascriptGenerator.forBlock['check_color'] = function(block,generator) {
@@ -768,6 +848,18 @@ window.Block=Block;
     let x =  generator.valueToCode(block, 'X', javascript.Order.ATOMIC);
     let y =  generator.valueToCode(block, 'Y', javascript.Order.ATOMIC);
     let z =  generator.valueToCode(block, 'Z', javascript.Order.ATOMIC);
+     let relative = block.getFieldValue('RELATIVE');
+    if(relative=="TRUE") 
+    return [`
+    (()=>{
+      let typeId=window.app.world.getBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`); 
+      if(typeId){
+        let block = Block.getById(typeId);
+        return "#"+block.getColor(window.app.world,_x+`+x+`, _y+`+y+`, _z+`+z+`).toString(16);
+      } 
+    })()
+    `,javascript.Order.ATOMIC];
+    else
     return [`
     (()=>{
       let typeId=window.app.world.getBlockAt(`+x+`,`+y+`,`+z+`); 
