@@ -89,6 +89,7 @@ export default class WorldRenderer {
         this.webRenderer.autoClear = false;
         this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
+        this.webRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;//necessary after r154
         this.webRenderer.clear();
 
         // Create sky

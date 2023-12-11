@@ -119,7 +119,7 @@ export default class GuiMainMenu extends GuiScreen {
         this.scene = new THREE.Scene();
 
         // Create cube
-        let geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+        let geometry = new THREE.BoxGeometry (1, 1, 1);
         let materials = [
             new THREE.MeshBasicMaterial({
                 side: BackSide,
