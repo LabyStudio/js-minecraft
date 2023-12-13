@@ -42,7 +42,8 @@ class Start {
             "gui/title/background/panorama_3.png",
             "gui/title/background/panorama_4.png",
             "gui/title/background/panorama_5.png",
-            "gui/container/creative.png"
+            "gui/container/creative.png",
+            "gui/container/crafting_table.png",
         ]).then((resources) => {
             // Launch actual game on canvas
             window.app = new Minecraft(canvasWrapperId, resources);

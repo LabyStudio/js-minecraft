@@ -101,6 +101,10 @@ export default class Block {
 
     }
 
+    getGuiLeftMouseCliked() {
+        
+    }
+
     collisionRayTrace(world, x, y, z, start, end) {
         start = start.addVector(-x, -y, -z);
         end = end.addVector(-x, -y, -z);
