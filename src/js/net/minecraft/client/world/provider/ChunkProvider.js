@@ -1,10 +1,13 @@
 import Chunk from "../Chunk.js";
 
-export default class ChunkProvider {
+let world=null;
 
-    constructor(world) {
-        this.world = world;
+export default class ChunkProvider {//KSKS here everything is stored in the chunks map
+
+    constructor(world2) {
+        world = world2;
         this.chunks = new Map();
+       
     }
 
     chunkExists(x, z) {
@@ -23,7 +26,7 @@ export default class ChunkProvider {
     }
 
     generateChunk(x, z) {
-        let chunk = new Chunk(this.world, x, z);
+        let chunk = new Chunk(world, x, z);
         chunk.generateSkylightMap();
         chunk.generateBlockLightMap();
         return chunk;
@@ -44,7 +47,7 @@ export default class ChunkProvider {
         this.populateChunk(chunk);
 
         // Register in three.js
-        this.world.group.add(chunk.group);
+        world.group.add(chunk.group);
 
         return chunk;
     }

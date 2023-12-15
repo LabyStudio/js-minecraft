@@ -36,6 +36,10 @@ export default class GuiCreateWorld extends GuiScreen {
                 seed = Long.fromNumber(h);
             }
 
+            localStorage.setItem("seed", seed);
+            localStorage.setItem("continue",false);
+            
+
             // Load world
             let world = new World(this.minecraft);
             world.setChunkProvider(new ChunkProviderGenerate(world, seed));
@@ -46,6 +50,27 @@ export default class GuiCreateWorld extends GuiScreen {
         }));
         this.buttonList.push(new GuiButton("Cancel", this.width / 2 + 5, y + 110, 150, 20, () => {
             this.minecraft.displayScreen(this.previousScreen);
+        }));
+        this.buttonList.push(new GuiButton("Continue", this.width / 2 - 155, y + 110+30, 150, 20, () => {//KSKS add here code to continue
+            localStorage.setItem("continue",true);
+            let seed = localStorage.getItem("seed");
+            if (seed.length === 0) {
+                seed = new Random().nextLong();
+            } else if (isNaN(seed)) {
+                let h = 0;
+                for (let i = 0; i < seed.length; i++) {
+                    h = 31 * h + seed.charCodeAt(i);
+                }
+                seed = Long.fromNumber(h);
+            }
+
+            // Load world
+            let world = new World(this.minecraft);
+            world.setChunkProvider(new ChunkProviderGenerate(world, seed));
+            world.getChunkProvider().findSpawn();
+
+            this.minecraft.playerController = new PlayerController(this.minecraft);
+            this.minecraft.loadWorld(world);
         }));
     }
 

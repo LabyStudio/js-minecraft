@@ -24,12 +24,11 @@ import FocusStateType from "../util/FocusStateType.js";
 import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
 import Splash from "../../../../resources/splashes.js"
-function globalEval(src) {//KSKS todo export it from main.js
-    var fn = function() {
-        window.eval.call(window,src);
-    };
-    fn();
-};
+import {get,set} from "../util/idbstore.js"
+//imports for serializer
+import Chunk from "./world/Chunk.js";
+import {Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,EdgesGeometry,Float32BufferAttribute,BoxGeometry,Uint16BufferAttribute,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,Clock,Fog,Mesh,BufferGeometry,BufferAttribute,MeshBasicMaterial,CanvasTexture,Source,Vector2,Matrix3,Sphere,Box3} from "../../../../../libraries/three.module.js"
+import ChunkSection from "./world/ChunkSection.js"
 
 export default class Minecraft {
 
@@ -47,74 +46,82 @@ export default class Minecraft {
      * Create Minecraft instance and render it on a canvas
      */
     constructor(canvasWrapperId, resources) {
-        this.resources = resources;
+        (async ()=>{
+            this.classes=new Map(Object.entries({
+                Chunk,Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,Object,EdgesGeometry,Float32BufferAttribute,Float32Array,BoxGeometry,Uint16BufferAttribute,Uint16Array,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,AudioContext,GainNode,Clock,AudioBuffer,BiquadFilterNode,PannerNode,Fog,Mesh,BufferGeometry,BufferAttribute,Uint32Array,MeshBasicMaterial,CanvasTexture,Source,HTMLCanvasElement,Vector2,Matrix3,Sphere,ChunkSection,Box3,AudioBufferSourceNode
+              }));
+            window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
 
-        this.currentScreen = null;
-        this.loadingScreen = null;
-        this.world = null;
-        this.player = null;
-        this.playerController = null;
-        this.fps = 0;
-        this.maxFps = 0;
+            this.resources = resources;
 
-        // Tick timer
-        this.timer = new Timer(20);
+            this.currentScreen = null;
+            this.loadingScreen = null;
+            this.world = null;
+            this.player = null;
+            this.playerController = null;
+            this.fps = 0;
+            this.maxFps = 0;
 
-        this.settings = new GameSettings();
-        this.settings.load();
+            // Tick timer
+            this.timer = new Timer(20);
 
-        // Persistent splash
-        this.splashText = this.getSpashText();
+            this.settings = new GameSettings();
+            this.settings.load();
 
-        // Load session from settings
-        if (this.settings.session === null) {
-            let username = "Player" + Math.floor(Math.random() * 100);
-            let profile = new GameProfile(UUID.randomUUID(), username);
-            this.setSession(new Session(profile, ""));
-        } else {
-            this.setSession(Session.fromJson(this.settings.session));
-        }
+            // Persistent splash
+            this.splashText = this.getSpashText();
 
-        // Create window and world renderer
-        this.window = new GameWindow(this, canvasWrapperId);
+            // Load session from settings
+            if (this.settings.session === null) {
+                let username = "Player" + Math.floor(Math.random() * 100);
+                let profile = new GameProfile(UUID.randomUUID(), username);
+                this.setSession(new Session(profile, ""));
+            } else {
+                this.setSession(Session.fromJson(this.settings.session));
+            }
 
-        // Create renderers
-        this.worldRenderer = new WorldRenderer(this, this.window);
-        this.screenRenderer = new ScreenRenderer(this, this.window);
-        this.itemRenderer = new ItemRenderer(this, this.window);
+            // Create window and world renderer
+            this.window = new GameWindow(this, canvasWrapperId);
 
-        // Create current screen and overlay
-        this.ingameOverlay = new IngameOverlay(this, this.window);
+            // Create renderers
+            this.worldRenderer = new WorldRenderer(this, this.window);
+            this.screenRenderer = new ScreenRenderer(this, this.window);
+            this.itemRenderer = new ItemRenderer(this, this.window);
 
-        // Command handler
-        this.commandHandler = new CommandHandler(this);
+            // Create current screen and overlay
+            this.ingameOverlay = new IngameOverlay(this, this.window);
 
-        this.frames = 0;
-        this.lastTime = Date.now();
+            // Command handler
+            this.commandHandler = new CommandHandler(this);
 
-        // Create all blocks
-        BlockRegistry.create();
+            this.frames = 0;
+            this.lastTime = Date.now();
 
-        this.itemRenderer.initialize();
+            // Create all blocks
+            BlockRegistry.create();
 
-        // Create font renderer
-        this.fontRenderer = new FontRenderer(this);
+            this.itemRenderer.initialize();
 
-        // Grass colorizer
-        this.grassColorizer = new GrassColorizer(this);
+            // Create font renderer
+            this.fontRenderer = new FontRenderer(this);
 
-        this.particleRenderer = new ParticleRenderer(this);
+            // Grass colorizer
+            this.grassColorizer = new GrassColorizer(this);
 
-        // Update window size
-        this.window.updateWindowSize();
+            this.particleRenderer = new ParticleRenderer(this);
 
-        // Create sound manager
-        this.soundManager = new SoundManager();
+            // Update window size
+            this.window.updateWindowSize();
 
-        this.displayScreen(new GuiMainMenu());
+            // Create sound manager
+            this.soundManager = new SoundManager();
 
-        // Initialize
-        this.init();
+            this.displayScreen(new GuiMainMenu());
+
+            // Initialize
+            this.init();
+
+        })();
     }
 
     init() {
@@ -166,7 +173,10 @@ export default class Minecraft {
             // Create world
             this.world = world;
             this.worldRenderer.scene.add(this.world.group);
-
+            if(localStorage.getItem("continue")=="true" && window.worlddata!=undefined) {
+                this.world.getChunkProvider().chunks=new Map(window.worlddata);
+                this.worldRenderer.rebuildAll()
+            }
             // Create player
             this.player = this.playerController.createPlayer(this.world);
             this.player.username = this.session.getProfile().getUsername();
@@ -175,7 +185,10 @@ export default class Minecraft {
             // Load spawn chunks and respawn player
             this.world.loadSpawnChunks();
             this.player.respawn();
+
+
         }
+
     }
 
     hasInGameFocus() {

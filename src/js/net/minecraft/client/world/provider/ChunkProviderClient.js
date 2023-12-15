@@ -1,6 +1,5 @@
 import ChunkProvider from "./ChunkProvider.js";
 import Chunk from "../Chunk.js";
-
 export default class ChunkProviderClient extends ChunkProvider {
 
     constructor(world) {
