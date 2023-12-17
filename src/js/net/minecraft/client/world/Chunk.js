@@ -249,11 +249,11 @@ export default class Chunk {
         section.setLightAt(sourceType, x, y & 15, z, level);
     }
 
-    setBlockDataAt(x, y, z, data) {
-        this.setBlockAt(x, y, z, this.getBlockAt(x, y, z), data);
+    setBlockDataAt(x, y, z, data,mode=0) {
+        this.setBlockAt(x, y, z, this.getBlockAt(x, y, z), data,mode);
     }
 
-    setBlockAt(x, y, z, typeId, data = 0) {
+    setBlockAt(x, y, z, typeId, data = 0,mode=0) {
         if (y < 0 || y >= World.TOTAL_HEIGHT) {
             return;
         }
@@ -271,8 +271,8 @@ export default class Chunk {
         }
 
         // Update block type and data
-        section.setBlockAt(x, yInSection, z, typeId);
-        section.setBlockDataAt(x, yInSection, z, data);
+        section.setBlockAt(x, yInSection, z, typeId,mode);
+        section.setBlockDataAt(x, yInSection, z, data,mode);
 
         if (!this.loaded) {
             return;
@@ -300,7 +300,7 @@ export default class Chunk {
 
         // Handle block abilities
         if (typeId !== 0 && block !== null) {
-            block.onBlockAdded(world, totalX, y, totalZ);
+            block.onBlockAdded(world, totalX, y, totalZ,mode);
         }
 
         return true;

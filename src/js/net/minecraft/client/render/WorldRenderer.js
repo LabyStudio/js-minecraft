@@ -596,11 +596,11 @@ export default class WorldRenderer {
                 // Unload chunk
                 if (chunk.loaded) {
                     chunk.unload();
-
+                  //  console.log("unloading chunk to test storage")
                     // TODO Implement chunk unloading
-                    //let index = chunk.x + (chunk.z << 16);
-                    //world.getChunkProvider().getChunks().delete(index);
-                    //world.group.remove(chunk.group);
+                   // let index = chunk.x + (chunk.z << 16);
+                   // world.getChunkProvider().getChunks().delete(index);
+                   // world.group.remove(chunk.group);
                 }
             }
         }

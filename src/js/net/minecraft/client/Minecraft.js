@@ -50,6 +50,7 @@ export default class Minecraft {
             this.classes=new Map(Object.entries({
                 Chunk,Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,Object,EdgesGeometry,Float32BufferAttribute,Float32Array,BoxGeometry,Uint16BufferAttribute,Uint16Array,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,AudioContext,GainNode,Clock,AudioBuffer,BiquadFilterNode,PannerNode,Fog,Mesh,BufferGeometry,BufferAttribute,Uint32Array,MeshBasicMaterial,CanvasTexture,Source,HTMLCanvasElement,Vector2,Matrix3,Sphere,ChunkSection,Box3,AudioBufferSourceNode
               }));
+              //KSKSstore we shound store changedblocks
             window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
 
             this.resources = resources;
@@ -175,7 +176,10 @@ export default class Minecraft {
             this.worldRenderer.scene.add(this.world.group);
             if(localStorage.getItem("continue")=="true" && window.worlddata!=undefined) {
                 this.world.getChunkProvider().chunks=new Map(window.worlddata);
-                this.worldRenderer.rebuildAll()
+                //this.worldRenderer.rebuildAll()
+                //we need to make shure that:       
+                // Register in three.js
+               // world.group.add(chunk.group);
             }
             // Create player
             this.player = this.playerController.createPlayer(this.world);
@@ -440,7 +444,7 @@ export default class Minecraft {
                         this.particleRenderer.spawnBlockBreakParticle(this.world, hitResult.x, hitResult.y, hitResult.z);
 
                         // Destroy block
-                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0,1+this.isSingleplayer()?0:2);
                         let face;
                         if(hitResult.face.y<0) face=0;
                         else if(hitResult.face.y>0) face=1;
@@ -533,7 +537,7 @@ export default class Minecraft {
                                     globalEval(code);
                                 }
                             }
-                            if(!onHit) this.world.setBlockAt(x, y, z, typeId);
+                            if(!onHit) this.world.setBlockAt(x, y, z, typeId,1+this.isSingleplayer()?0:2);
                             let face;
                             if(hitResult.face.y<0) face=0;
                             else if(hitResult.face.y>0) face=1;
@@ -551,7 +555,7 @@ export default class Minecraft {
                             if(!onHit) {
                                 // Handle block abilities
                                 let block = Block.getById(typeId);
-                                block.onBlockPlaced(this.world, x, y, z, hitResult.face);
+                                block.onBlockPlaced(this.world, x, y, z, hitResult.face,1+this.isSingleplayer()?0:2);
 
                                 // Play sound
                                 let sound = block.getSound();

@@ -119,11 +119,11 @@ export default class Block {
         return this.boundingBox;
     }
 
-    onBlockAdded(world, x, y, z) {
+    onBlockAdded(world, x, y, z,mode=0) {
 
     }
 
-    onBlockPlaced(world, x, y, z, face,forceface) {
+    onBlockPlaced(world, x, y, z, face,forceface,mode=0) {
 
     }
 

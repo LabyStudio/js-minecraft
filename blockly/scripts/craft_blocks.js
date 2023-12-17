@@ -549,7 +549,7 @@ window.Block=Block;
         }
         // Spawn particle
         window.app.particleRenderer.spawnBlockBreakParticle(window.app.world,_x,_y,_z);
-        window.app.world.setBlockAt(_x,_y,_z, 0); 
+        window.app.world.setBlockAt(_x,_y,_z, 0,1+window.app.isSingleplayer()?0:2); 
         window.app.player.digging(0,_x,_y,_z, 0);
       }
     }catch(e){}
@@ -561,7 +561,7 @@ window.Block=Block;
     return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
-      window.app.world.setBlockAt(_x, _y, _z, typeId); 
+      window.app.world.setBlockAt(_x, _y, _z, typeId,1+window.app.isSingleplayer()?0:2); 
       window.app.player.placeBlock(_x,_y,_z,0,typeId,0,0,0);
       }
     `
@@ -681,14 +681,14 @@ window.Block=Block;
       {
         let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
         window.app.player.inventorySelectSlot(`+value+`);
-        window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId); 
+        window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, typeId,1+window.app.isSingleplayer()?0:2); 
         window.app.player.placeBlock(_x+`+x+`, _y+`+y+`, _z+`+z+`,0, typeId,0,0,0)
       }
     `; 
     else return `
       {let typeId = window.app.player.inventory.getItemInSlot(`+value+`);
       window.app.player.inventorySelectSlot(`+value+`);
-      window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, typeId); 
+      window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, typeId,1+window.app.isSingleplayer()?0:2); 
       window.app.player.placeBlock(`+x+`,`+y+`,`+z+`,0, typeId,0,0,0)
       }
     `;
@@ -715,7 +715,7 @@ window.Block=Block;
           }
           // Spawn particle
           window.app.particleRenderer.spawnBlockBreakParticle(window.app.world, _x+`+x+`, _y+`+y+`, _z+`+z+`);
-          window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, 0); 
+          window.app.world.setBlockAt(_x+`+x+`, _y+`+y+`, _z+`+z+`, 0,1+window.app.isSingleplayer()?0:2); 
           window.app.player.digging(0,_x+`+x+`, _y+`+y+`, _z+`+z+`, 0);
         }
       }catch(e){}
@@ -736,7 +736,7 @@ window.Block=Block;
       }
       // Spawn particle
       window.app.particleRenderer.spawnBlockBreakParticle(window.app.world, `+x+`,`+y+`,`+z+`);
-      window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, 0); 
+      window.app.world.setBlockAt(`+x+`,`+y+`,`+z+`, 0,1+window.app.isSingleplayer()?0:2); 
       window.app.player.digging(0,`+x+`,`+y+`,`+z+`, 0);
     }catch(e){console.log(e)}
     `

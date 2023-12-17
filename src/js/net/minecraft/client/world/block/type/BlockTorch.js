@@ -39,7 +39,7 @@ export default class BlockTorch extends Block {
         return BlockRenderType.TORCH;
     }
 
-    onBlockAdded(world, x, y, z) {
+    onBlockAdded(world, x, y, z,mode=0) {
         for (let i = this.dataFaces.length - 1; i >= 0; i--) {
             let dataFace = this.dataFaces[i];
 
@@ -48,13 +48,13 @@ export default class BlockTorch extends Block {
 
                 console.log("added:"+data);
                 // Update block data in world
-                world.setBlockDataAt(x, y, z, data);//KSKS todo something weird here
+                world.setBlockDataAt(x, y, z, data,mode);//KSKS todo something weird here
                 break;
             }
         }
     }
 
-    onBlockPlaced(world, x, y, z, face,forceface=false) {
+    onBlockPlaced(world, x, y, z, face,forceface=false,mode=0) {
         let data;
         if(forceface) data=face;
         else{
@@ -72,7 +72,7 @@ export default class BlockTorch extends Block {
         
         console.log("placed:"+data);
         // Update block data in chunk section directly to avoid notify
-        world.getChunkSectionAt(x >> 4, y >> 4, z >> 4).setBlockDataAt(x & 15, y & 15, z & 15, data);
+        world.getChunkSectionAt(x >> 4, y >> 4, z >> 4).setBlockDataAt(x & 15, y & 15, z & 15, data,mode);
     }
 
     collisionRayTrace(world, x, y, z, start, end) {

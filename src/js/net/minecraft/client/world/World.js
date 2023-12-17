@@ -285,16 +285,16 @@ export default class World {
         return typeId === 0 || Block.getById(typeId).isTranslucent();
     }
 
-    setBlockAt(x, y, z, type) {
+    setBlockAt(x, y, z, type,mode=0) {
         let chunk = this.getChunkAt(x >> 4, z >> 4);
-        chunk.setBlockAt(x & 15, y, z & 15, type);
+        chunk.setBlockAt(x & 15, y, z & 15, type,mode);
 
         // Rebuild chunk
         this.onBlockChanged(x, y, z);
     }
 
-    setBlockDataAt(x, y, z, data) {
-        this.getChunkAt(x >> 4, z >> 4).setBlockDataAt(x & 15, y, z & 15, data);
+    setBlockDataAt(x, y, z, data,mode=0) {
+        this.getChunkAt(x >> 4, z >> 4).setBlockDataAt(x & 15, y, z & 15, data,mode);
     }
 
     getBlockAt(x, y, z) {
