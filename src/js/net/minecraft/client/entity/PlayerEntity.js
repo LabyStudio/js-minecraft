@@ -204,6 +204,14 @@ export default class PlayerEntity extends EntityLiving {
         this.motionY *= 0.8;
         this.motionZ *= slipperiness;
         this.motionY -= 0.02;
+        let distanceX = this.motionX;
+        let distanceZ = this.motionZ;
+
+        this.distanceWalked += Math.sqrt(distanceX * distanceX + distanceZ * distanceZ) * 0.6;
+        if (this.distanceWalked > this.nextStepDistance ) {
+            this.nextStepDistance = this.distanceWalked + 1;
+            this.minecraft.soundManager.playSound("move.water", this.x, this.y, this.z, 0.25, 1);
+        }
     }
 
     travel(forward, vertical, strafe) {
