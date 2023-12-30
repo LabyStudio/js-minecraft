@@ -29,6 +29,7 @@ export default class EntityLiving extends Entity {
         this.prevLimbSwingStrength = 0;
 
         this.health = 20.0;
+        this.previouslyWasOnLand=true;
     }
 
     onUpdate() {
@@ -126,9 +127,15 @@ export default class EntityLiving extends Entity {
             this.travelFlying(moveForward, 0, moveStrafing);
         } else {
             if (this.isInWater()) {
-                // Is inside of water
+                if(this.previouslyWasOnLand){
+                    this.minecraft.soundManager.playSound("jump.water", this.x, this.y, this.z, 0.25, 1);
+                }
+                this.previouslyWasOnLand=false;
+                                // Is inside of water
+                
                 this.travelInWater(moveForward, 0, moveStrafing);
             } else {
+                this.previouslyWasOnLand=true;
                 // Is on land
                 this.travel(moveForward, 0, moveStrafing);
             }
