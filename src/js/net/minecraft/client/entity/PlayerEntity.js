@@ -210,7 +210,7 @@ export default class PlayerEntity extends EntityLiving {
         this.distanceWalked += Math.sqrt(distanceX * distanceX + distanceZ * distanceZ) * 0.6;
         if (this.distanceWalked > this.nextStepDistance ) {
             this.nextStepDistance = this.distanceWalked + 1;
-            this.minecraft.soundManager.playSound("move.water", this.x, this.y, this.z, 0.1, 1);
+            this.minecraft.soundManager.playSound("move.water", this.x, this.y, this.z, 0.1  , 1);
         }
     }
 

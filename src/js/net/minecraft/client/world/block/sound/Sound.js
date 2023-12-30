@@ -9,8 +9,8 @@ export default class Sound {
         return "step." + this.name;
     }
 
-    getBreakSound() {
-        return "step." + this.name;
+    getBreakSound() {//currently only sand break sound is different to step sound
+        return "break." + this.name;
     }
 
     getStepSound() {
