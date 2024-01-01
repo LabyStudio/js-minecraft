@@ -51,8 +51,11 @@ export default class Minecraft {
                 Chunk,Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,Object,EdgesGeometry,Float32BufferAttribute,Float32Array,BoxGeometry,Uint16BufferAttribute,Uint16Array,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,AudioContext,GainNode,Clock,AudioBuffer,BiquadFilterNode,PannerNode,Fog,Mesh,BufferGeometry,BufferAttribute,Uint32Array,MeshBasicMaterial,CanvasTexture,Source,HTMLCanvasElement,Vector2,Matrix3,Sphere,ChunkSection,Box3,AudioBufferSourceNode
               }));
               //KSKSstore we shound store changedblocks
-            window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
-
+            try{
+                window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
+            }catch{
+                
+            }
             this.resources = resources;
 
             this.currentScreen = null;
