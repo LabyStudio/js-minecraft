@@ -22,6 +22,8 @@ export default class SoundManager {
 
             // Load sound types
             this.loadSoundPool(sound.getStepSound());
+            this.loadSoundPool(sound.getBreakSound());
+            this.loadSoundPool(sound.getPlaceSound());
         }
         this.loadSoundPool("jump.water");
     }
