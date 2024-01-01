@@ -337,5 +337,6 @@
 	"PROCEDURES_IFRETURN_WARNING": "اخطار: این بلوک احتمالاً فقط داخل یک تابع استفاده می‌شود.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "یک چیزی بگو...",
 	"DIALOG_OK": "تأیید",
-	"DIALOG_CANCEL": "لغو"
+	"DIALOG_CANCEL": "لغو",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

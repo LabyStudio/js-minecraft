@@ -294,5 +294,6 @@
 	"PROCEDURES_IFRETURN_TOOLTIP": "மதிப்பு உண்மையானால், இரண்டாவது மதிப்பை பின்கொடு.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "ஏதாகினும் பகர்க...",
 	"DIALOG_OK": "சரி",
-	"DIALOG_CANCEL": "இரத்து செய்"
+	"DIALOG_CANCEL": "இரத்து செய்",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

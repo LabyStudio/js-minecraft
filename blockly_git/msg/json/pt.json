@@ -353,5 +353,6 @@
 	"WORKSPACE_ARIA_LABEL": "Espaço de trabalho de Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Os blocos ocultados contêm avisos.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Cancelar"
+	"DIALOG_CANCEL": "Cancelar",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

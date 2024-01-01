@@ -319,5 +319,6 @@
 	"WORKSPACE_ARIA_LABEL": "Tallunt n umahel Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Iḥedran yettin gebren ilɣa.",
 	"DIALOG_OK": "IH",
-	"DIALOG_CANCEL": "Sefsex"
+	"DIALOG_CANCEL": "Sefsex",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

@@ -330,5 +330,6 @@
 	"WORKSPACE_ARIA_LABEL": "Ruang Kerja Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Blok yang diciutkan memiliki peringatan.",
 	"DIALOG_OK": "Oke",
-	"DIALOG_CANCEL": "Batal"
+	"DIALOG_CANCEL": "Batal",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

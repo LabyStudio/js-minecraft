@@ -174,5 +174,6 @@
 	"PROCEDURES_CREATE_DO": "Создај го '%1'",
 	"WORKSPACE_ARIA_LABEL": "Работен простор на Blockly",
 	"DIALOG_OK": "ОК",
-	"DIALOG_CANCEL": "Откажи"
+	"DIALOG_CANCEL": "Откажи",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

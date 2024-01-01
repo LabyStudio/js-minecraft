@@ -218,5 +218,6 @@
 	"PROCEDURES_IFRETURN_TOOLTIP": "Актәи аҵакы иашазар, иҳанаҭоит аҩбатәи аҵакы.",
 	"PROCEDURES_IFRETURN_WARNING": "Агәаҽанҵара: Ари аблок ахархәара ауеит афункциа аԥҵара аҟны.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Аҟәыхра"
+	"DIALOG_CANCEL": "Аҟәыхра",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

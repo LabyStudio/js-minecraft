@@ -339,5 +339,6 @@
 	"WORKSPACE_ARIA_LABEL": "Không gian làm việc Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Các khối bị sập có chứa cảnh báo.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Hủy"
+	"DIALOG_CANCEL": "Hủy",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

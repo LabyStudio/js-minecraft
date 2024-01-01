@@ -333,5 +333,6 @@
 	"WORKSPACE_ARIA_LABEL": "Laborspaco de Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Falditaj blokoj enhavas avertojn.",
 	"DIALOG_OK": "Bone",
-	"DIALOG_CANCEL": "Nuligi"
+	"DIALOG_CANCEL": "Nuligi",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

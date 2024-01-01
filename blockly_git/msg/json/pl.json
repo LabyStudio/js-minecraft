@@ -353,5 +353,6 @@
 	"WORKSPACE_ARIA_LABEL": "Obszar roboczy Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Zwinięte bloki zawierają ostrzeżenia.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Anuluj"
+	"DIALOG_CANCEL": "Anuluj",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

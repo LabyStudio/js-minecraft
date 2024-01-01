@@ -295,5 +295,6 @@
 	"PROCEDURES_IFRETURN_TOOLTIP": "If a value is true, then return a second value.",
 	"PROCEDURES_IFRETURN_WARNING": "Amaran: Blok ini hanya boleh digunakan dalam fungsi definisi.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Batalkan"
+	"DIALOG_CANCEL": "Batalkan",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

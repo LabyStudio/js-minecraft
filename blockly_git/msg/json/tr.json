@@ -364,5 +364,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly Çalışma Alanı",
 	"COLLAPSED_WARNINGS_WARNING": "Daraltılmış bloklar uyarı içerir.",
 	"DIALOG_OK": "Tamam",
-	"DIALOG_CANCEL": "İptal"
+	"DIALOG_CANCEL": "İptal",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

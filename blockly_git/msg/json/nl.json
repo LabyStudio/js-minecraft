@@ -353,5 +353,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly werkruimte",
 	"COLLAPSED_WARNINGS_WARNING": "Samengevouwen blokken bevatten waarschuwingen.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Annuleren"
+	"DIALOG_CANCEL": "Annuleren",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

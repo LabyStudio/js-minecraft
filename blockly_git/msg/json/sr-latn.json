@@ -320,5 +320,6 @@
 	"PROCEDURES_IFRETURN_TOOLTIP": "Ukoliko je vrednost tačna, vrati drugu vrednost.",
 	"PROCEDURES_IFRETURN_WARNING": "Upozorenje: Ovaj blok se može koristiti jedino u definiciji funkcije.",
 	"DIALOG_OK": "U redu",
-	"DIALOG_CANCEL": "Otkaži"
+	"DIALOG_CANCEL": "Otkaži",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

@@ -365,5 +365,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly工作区",
 	"COLLAPSED_WARNINGS_WARNING": "已收起的信息块内包含警告。",
 	"DIALOG_OK": "确认",
-	"DIALOG_CANCEL": "取消"
+	"DIALOG_CANCEL": "取消",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

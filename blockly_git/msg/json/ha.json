@@ -309,5 +309,6 @@
 	"PROCEDURES_IFRETURN_WARNING": "Gargaɗi: Za a iya amfani da wannan bulo ne kawai a cikin bayani na wani aiki.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Faɗi wani abu...",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Cancel"
+	"DIALOG_CANCEL": "Cancel",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

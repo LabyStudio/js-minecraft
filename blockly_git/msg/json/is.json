@@ -327,5 +327,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly-vinnusvæðið",
 	"COLLAPSED_WARNINGS_WARNING": "Samfallnir kubbar innihalda aðvaranir.",
 	"DIALOG_OK": "Í lagi",
-	"DIALOG_CANCEL": "Hætta við"
+	"DIALOG_CANCEL": "Hætta við",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

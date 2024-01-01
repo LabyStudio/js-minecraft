@@ -328,5 +328,6 @@
 	"WORKSPACE_ARIA_LABEL": "Pracovisko Bloskly",
 	"COLLAPSED_WARNINGS_WARNING": "Zrútené bloky obsahujú varovanie.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Zrušiť"
+	"DIALOG_CANCEL": "Zrušiť",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

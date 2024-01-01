@@ -329,5 +329,6 @@
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Spune ceva...",
 	"COLLAPSED_WARNINGS_WARNING": "Blocurile blocate conțin avertismente.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Revocare"
+	"DIALOG_CANCEL": "Revocare",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

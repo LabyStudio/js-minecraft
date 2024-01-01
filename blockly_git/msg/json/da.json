@@ -340,5 +340,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly Workspace",
 	"COLLAPSED_WARNINGS_WARNING": "Sammenklappede blokke indeholder advarsler.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Afbryd"
+	"DIALOG_CANCEL": "Afbryd",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

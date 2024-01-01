@@ -341,5 +341,6 @@
 	"WORKSPACE_ARIA_LABEL": "Работна област на Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Свитите блокове съдържат предупреждения.",
 	"DIALOG_OK": "ОК",
-	"DIALOG_CANCEL": "Отказ"
+	"DIALOG_CANCEL": "Отказ",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

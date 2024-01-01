@@ -328,5 +328,6 @@
 	"PROCEDURES_IFRETURN_WARNING": "Xəbərdarlıq: Bu blok ancaq bir funksiyanın təyinatı daxilində işlədilə bilər.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Buraya nə isə yaz...",
 	"DIALOG_OK": "TAMAM",
-	"DIALOG_CANCEL": "Ləğv et"
+	"DIALOG_CANCEL": "Ləğv et",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

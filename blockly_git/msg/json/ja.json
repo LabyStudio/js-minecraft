@@ -356,5 +356,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blocklyワークスペース",
 	"COLLAPSED_WARNINGS_WARNING": "つぶしたブロックには警告が入っています。",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "キャンセル"
+	"DIALOG_CANCEL": "キャンセル",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

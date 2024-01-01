@@ -339,5 +339,6 @@
 	"WORKSPACE_ARIA_LABEL": "Hapësira e punës e Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Blloqet e shembura përmbajnë paralajmërime.",
 	"DIALOG_OK": "Në rregull",
-	"DIALOG_CANCEL": "Anulo"
+	"DIALOG_CANCEL": "Anulo",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

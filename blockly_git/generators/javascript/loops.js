@@ -40,7 +40,7 @@ export function controls_repeat_ext(block, generator) {
     code += 'var ' + endVar + ' = ' + repeats + ';\n';
   }
   code += 'for (var ' + loopVar + ' = 0; ' + loopVar + ' < ' + endVar + '; ' +
-      loopVar + '++) {\n' + branch + '}\n';
+      loopVar + '++) {await wait(0);\n' + branch + '}\n';//KSKS added await wait(0);
   return code;
 };
 
@@ -59,7 +59,7 @@ export function controls_whileUntil(block, generator) {
   if (until) {
     argument0 = '!' + argument0;
   }
-  return 'while (' + argument0 + ') {\n' + branch + '}\n';
+  return 'while (' + argument0 + ') {await wait(0);\n' + branch + '}\n';//KSKS added await wait(0);
 };
 
 export function controls_for(block, generator) {
@@ -88,7 +88,7 @@ export function controls_for(block, generator) {
     } else {
       code += (up ? ' += ' : ' -= ') + step;
     }
-    code += ') {\n' + branch + '}\n';
+    code += ') {await wait(0);\n' + branch + '}\n';//KSKS added await wait(0);
   } else {
     code = '';
     // Cache non-trivial values to variables to prevent repeated look-ups.
@@ -119,8 +119,8 @@ export function controls_for(block, generator) {
     code += '}\n';
     code += 'for (' + variable0 + ' = ' + startVar + '; ' + incVar +
         ' >= 0 ? ' + variable0 + ' <= ' + endVar + ' : ' + variable0 +
-        ' >= ' + endVar + '; ' + variable0 + ' += ' + incVar + ') {\n' +
-        branch + '}\n';
+        ' >= ' + endVar + '; ' + variable0 + ' += ' + incVar + ') {await wait(0);\n' +
+        branch + '}\n';//KSKS added await wait(0);
   }
   return code;
 };
@@ -146,7 +146,7 @@ export function controls_forEach(block, generator) {
       variable0 + '_index', NameType.VARIABLE);
   branch = generator.INDENT + variable0 + ' = ' + listVar +
       '[' + indexVar + '];\n' + branch;
-  code += 'for (var ' + indexVar + ' in ' + listVar + ') {\n' + branch + '}\n';
+  code += 'for (var ' + indexVar + ' in ' + listVar + ') {await wait(0);\n' + branch + '}\n';//KSKS added await wait(0);
   return code;
 };
 

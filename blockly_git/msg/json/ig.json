@@ -319,5 +319,6 @@
 	"PROCEDURES_IFRETURN_WARNING": "Ịdọ aka ná ntị: Ọrụ a nwere ọnụọgụ abụọ.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Kwuo ihe ọ bụla...",
 	"DIALOG_OK": "Ọ DỊ MMA",
-	"DIALOG_CANCEL": "Hapụ̀"
+	"DIALOG_CANCEL": "Hapụ̀",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

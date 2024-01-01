@@ -320,5 +320,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly Darbavieta",
 	"COLLAPSED_WARNINGS_WARNING": "Sakļautie bloki satur brīdinājumus.",
 	"DIALOG_OK": "Labi",
-	"DIALOG_CANCEL": "Atcelt"
+	"DIALOG_CANCEL": "Atcelt",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

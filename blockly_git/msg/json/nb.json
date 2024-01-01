@@ -326,5 +326,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly-arbeidsrom",
 	"COLLAPSED_WARNINGS_WARNING": "Sammenslåtte blokker inneholder advarsler.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Avbryt"
+	"DIALOG_CANCEL": "Avbryt",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

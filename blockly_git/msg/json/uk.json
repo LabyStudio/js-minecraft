@@ -341,5 +341,6 @@
 	"WORKSPACE_ARIA_LABEL": "Робоча область Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Звернуті блоки містять попередження.",
 	"DIALOG_OK": "Гаразд",
-	"DIALOG_CANCEL": "Скасувати"
+	"DIALOG_CANCEL": "Скасувати",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

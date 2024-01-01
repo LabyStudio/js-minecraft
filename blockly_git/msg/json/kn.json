@@ -328,5 +328,6 @@
 	"WORKSPACE_ARIA_LABEL": "ಬ್ಲಾಕ್ಲಿ ಕಾರ್ಯಕ್ಷೇತ್ರ",
 	"COLLAPSED_WARNINGS_WARNING": "ಸಂಕುಚಿತಗೊಂಡ ಬ್ಲಾಕ್ ಗಳು ಎಚ್ಚರಿಕೆಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತವೆ.",
 	"DIALOG_OK": "ಸರಿ",
-	"DIALOG_CANCEL": "ರದ್ದುಮಾಡಿ"
+	"DIALOG_CANCEL": "ರದ್ದುಮಾಡಿ",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

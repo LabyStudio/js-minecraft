@@ -344,5 +344,6 @@
 	"WORKSPACE_ARIA_LABEL": "Блоклијев радни простор",
 	"COLLAPSED_WARNINGS_WARNING": "Срушени блокови садрже упозорења.",
 	"DIALOG_OK": "У реду",
-	"DIALOG_CANCEL": "Откажи"
+	"DIALOG_CANCEL": "Откажи",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

@@ -112,5 +112,6 @@
 	"PROCEDURES_DEFRETURN_RETURN": "واپس آ جائیں",
 	"PROCEDURES_DEFRETURN_TOOLTIP": "بغیر آوٹ پٹ کا فنکشن بنائیں",
 	"DIALOG_OK": "ٹھیک ہے",
-	"DIALOG_CANCEL": "منسوخ"
+	"DIALOG_CANCEL": "منسوخ",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

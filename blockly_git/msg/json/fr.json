@@ -368,5 +368,6 @@
 	"WORKSPACE_ARIA_LABEL": "Espace de travail de Blocky",
 	"COLLAPSED_WARNINGS_WARNING": "Les blocs repliés contiennent des avertissements.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Annuler"
+	"DIALOG_CANCEL": "Annuler",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

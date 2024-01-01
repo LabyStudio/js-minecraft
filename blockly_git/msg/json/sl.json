@@ -351,5 +351,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blocklyjev delovni prostor",
 	"COLLAPSED_WARNINGS_WARNING": "Skrčeni bloki vsebujejo opozorila.",
 	"DIALOG_OK": "V redu",
-	"DIALOG_CANCEL": "Prekliči"
+	"DIALOG_CANCEL": "Prekliči",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

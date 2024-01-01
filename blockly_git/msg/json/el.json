@@ -350,5 +350,6 @@
 	"WORKSPACE_ARIA_LABEL": "Χώρος εργασίας Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Υπάρχουν προειδοποιήσεις για συμπτυγμένα μπλοκ.",
 	"DIALOG_OK": "Εντάξει",
-	"DIALOG_CANCEL": "Ακύρωση"
+	"DIALOG_CANCEL": "Ακύρωση",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

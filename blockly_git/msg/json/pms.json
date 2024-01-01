@@ -320,5 +320,6 @@
 	"WORKSPACE_ARIA_LABEL": "Spassi ëd travaj ëd Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Ij blòch sarà a conten-o dj'avertense.",
 	"DIALOG_OK": "Va bin",
-	"DIALOG_CANCEL": "Anulé"
+	"DIALOG_CANCEL": "Anulé",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

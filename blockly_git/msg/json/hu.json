@@ -345,5 +345,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly munkaterület",
 	"COLLAPSED_WARNINGS_WARNING": "Az összecsukott blokk figyelmeztetéseket tartalmaz.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Mégse"
+	"DIALOG_CANCEL": "Mégse",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

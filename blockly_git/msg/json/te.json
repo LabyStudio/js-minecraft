@@ -97,5 +97,6 @@
 	"PROCEDURES_CALL_BEFORE_PARAMS": "తో:",
 	"PROCEDURES_DEFRETURN_RETURN": "తిరిగి వెళ్ళు",
 	"DIALOG_OK": "సరే",
-	"DIALOG_CANCEL": "రద్దు"
+	"DIALOG_CANCEL": "రద్దు",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

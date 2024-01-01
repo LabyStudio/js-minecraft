@@ -322,5 +322,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly tööruum",
 	"COLLAPSED_WARNINGS_WARNING": "Kokkuvajunud plokid sisaldavad hoiatusi.",
 	"DIALOG_OK": "Sobib",
-	"DIALOG_CANCEL": "Loobu"
+	"DIALOG_CANCEL": "Loobu",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

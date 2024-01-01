@@ -253,5 +253,6 @@
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Çiyê vace...",
 	"WORKSPACE_ARIA_LABEL": "Blockly Caygurenayışi",
 	"DIALOG_OK": "TEMAM",
-	"DIALOG_CANCEL": "Bıtexelne"
+	"DIALOG_CANCEL": "Bıtexelne",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

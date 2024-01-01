@@ -336,7 +336,7 @@
 	"VARIABLES_SET": "setze %1 auf %2",
 	"VARIABLES_SET_TOOLTIP": "Setzt den Wert einer Variable.",
 	"VARIABLES_SET_CREATE_GET": "Erzeuge \"Lies %1\"",
-	"PROCEDURES_DEFNORETURN_TITLE": "um",
+	"PROCEDURES_DEFNORETURN_TITLE": "Beschreibe",
 	"PROCEDURES_DEFNORETURN_PROCEDURE": "etwas tun",
 	"PROCEDURES_BEFORE_PARAMS": "mit:",
 	"PROCEDURES_CALL_BEFORE_PARAMS": "mit:",
@@ -363,5 +363,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly Arbeitsbereich",
 	"COLLAPSED_WARNINGS_WARNING": "Eingeklappte Blöcke enthalten Warnungen.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Abbrechen"
+	"DIALOG_CANCEL": "Abbrechen",
+	"PROCEDURES_BACKGROUND": "(im Hintergrund)"
 }

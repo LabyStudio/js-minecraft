@@ -51,8 +51,8 @@ export function procedures_defreturn(block, generator) {
   for (let i = 0; i < variables.length; i++) {
     args[i] =
         generator.getVariableName(variables[i]);
-  }
-  let code = 'function ' + funcName + '(' + args.join(', ') + ') {\n' + xfix1 +
+  }//KSKS added async and wait(0)
+  let code = 'globfn.'+funcName+'= async function (' + args.join(', ') + ') {await wait(0);\n' + xfix1 +
       loopTrap + branch + xfix2 + returnValue + '}';
   code = generator.scrub_(block, code);
   // Add % so as not to collide with helper functions in definitions list.
@@ -64,7 +64,7 @@ export function procedures_defreturn(block, generator) {
 // a procedure with a return value.
 export const procedures_defnoreturn = procedures_defreturn;
 
-export function procedures_callreturn(block, generator) {
+export function procedures_callreturn(block, generator,background=false) {
   // Call a procedure with a return value.
   const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
   const args = [];
@@ -72,8 +72,8 @@ export function procedures_callreturn(block, generator) {
   for (let i = 0; i < variables.length; i++) {
     args[i] = generator.valueToCode(block, 'ARG' + i, Order.NONE) ||
         'null';
-  }
-  const code = funcName + '(' + args.join(', ') + ')';
+  }//KSKS added await
+  const code = (background?'':'await ')+'globfn.'+funcName + '(' + args.join(', ') + ')';
   return [code, Order.FUNCTION_CALL];
 };
 
@@ -82,6 +82,14 @@ export function procedures_callnoreturn(block, generator) {
   // Generated code is for a function call as a statement is the same as a
   // function call as a value, with the addition of line ending.
   const tuple = generator.forBlock['procedures_callreturn'](block, generator);
+  return tuple[0] + ';\n';
+};
+
+export function procedures_callnoreturn_background(block, generator) {//KSKS
+  // Call a procedure with no return value.
+  // Generated code is for a function call as a statement is the same as a
+  // function call as a value, with the addition of line ending.
+  const tuple = generator.forBlock['procedures_callreturn'](block, generator,true);
   return tuple[0] + ';\n';
 };
 

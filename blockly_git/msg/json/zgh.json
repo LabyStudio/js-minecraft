@@ -79,5 +79,6 @@
 	"PROCEDURES_CALL_BEFORE_PARAMS": "ⵙ:",
 	"PROCEDURES_MUTATORARG_TOOLTIP": "ⵔⵏⵓ ⴰⵏⴽⵛⴰⵎ ⵖⵔ ⵜⵙⵖⵏⵜ.",
 	"DIALOG_OK": "ⵡⴰⵅⵅⴰ",
-	"DIALOG_CANCEL": "ⵙⵔ"
+	"DIALOG_CANCEL": "ⵙⵔ",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

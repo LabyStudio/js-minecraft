@@ -1187,6 +1187,28 @@ blocks['procedures_callnoreturn'] = {
 
   defType_: 'procedures_defnoreturn',
 };
+//KSKS
+blocks['procedures_callnoreturn_background'] = {
+  ...PROCEDURE_CALL_COMMON,
+  /**
+   * Block for calling a procedure with no return value.
+   */
+  init: function (this: CallBlock) {
+    this.appendDummyInput('TOPROW').appendField('', 'NAME').appendField(Msg['PROCEDURES_BACKGROUND'])
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setStyle('procedure_blocks');
+    // Tooltip is set in renameProcedure.
+    this.setHelpUrl(Msg['PROCEDURES_CALLNORETURN_HELPURL']);
+    this.arguments_ = [];
+    this.argumentVarModels_ = [];
+    this.quarkConnections_ = {};
+    this.quarkIds_ = null;
+    this.previousEnabledState_ = true;
+  },
+
+  defType_: 'procedures_defnoreturn',
+};
 
 blocks['procedures_callreturn'] = {
   ...PROCEDURE_CALL_COMMON,

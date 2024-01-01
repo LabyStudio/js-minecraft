@@ -323,5 +323,6 @@
 	"WORKSPACE_ARIA_LABEL": "Radni prostor Blocklyja",
 	"COLLAPSED_WARNINGS_WARNING": "Sažeti blokovi sadrže upozorenje",
 	"DIALOG_OK": "U redu",
-	"DIALOG_CANCEL": "Odustani"
+	"DIALOG_CANCEL": "Odustani",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

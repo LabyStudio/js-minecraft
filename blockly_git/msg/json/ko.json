@@ -364,5 +364,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly 워크스페이스",
 	"COLLAPSED_WARNINGS_WARNING": "접힌 블록이 경고를 포함하고 있습니다.",
 	"DIALOG_OK": "확인",
-	"DIALOG_CANCEL": "취소"
+	"DIALOG_CANCEL": "취소",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

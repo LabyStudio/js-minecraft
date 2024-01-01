@@ -438,3 +438,4 @@ export const VARIABLE_ALREADY_EXISTS: string;
 export const VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE: string;
 export const WORKSPACE_ARIA_LABEL: string;
 export const WORKSPACE_COMMENT_DEFAULT_TEXT: string;
+export const PROCEDURES_BACKGROUND: string;//KSKS

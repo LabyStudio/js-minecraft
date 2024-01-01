@@ -317,5 +317,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly darbalaukis",
 	"COLLAPSED_WARNINGS_WARNING": "Suskleistuose blokuose yra įspėjimų.",
 	"DIALOG_OK": "Gerai",
-	"DIALOG_CANCEL": "Atšaukti"
+	"DIALOG_CANCEL": "Atšaukti",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

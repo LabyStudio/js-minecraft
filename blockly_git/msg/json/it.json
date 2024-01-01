@@ -342,5 +342,6 @@
 	"WORKSPACE_ARIA_LABEL": "Area di lavoro di Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "I blocchi compressi contengono avvertimenti.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Annulla"
+	"DIALOG_CANCEL": "Annulla",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

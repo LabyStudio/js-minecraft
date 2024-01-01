@@ -322,5 +322,6 @@
 	"WORKSPACE_ARIA_LABEL": "Працоўная прастора Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Згорнутыя блёкі ўтрымліваюць папярэджаньні.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Скасаваць"
+	"DIALOG_CANCEL": "Скасаваць",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

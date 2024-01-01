@@ -113,5 +113,6 @@
 	"PROCEDURES_DEFRETURN_RETURN": "واپس آ ونڄو",
 	"PROCEDURES_MUTATORARG_TITLE": "ان پُٹ ناں:",
 	"DIALOG_OK": "ٹھیک ہے",
-	"DIALOG_CANCEL": "منسوخ"
+	"DIALOG_CANCEL": "منسوخ",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

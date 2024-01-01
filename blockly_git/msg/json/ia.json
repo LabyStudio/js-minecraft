@@ -331,5 +331,6 @@
 	"WORKSPACE_ARIA_LABEL": "Spatio de travalio de Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Il ha blocos contrahite con advertimentos.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Cancellar"
+	"DIALOG_CANCEL": "Cancellar",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

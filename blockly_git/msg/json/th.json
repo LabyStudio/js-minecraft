@@ -329,5 +329,6 @@
 	"WORKSPACE_ARIA_LABEL": "พื้นที่ทำงาน Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "บล็อกที่ถูกพับมีคำเตือนอยู่ข้างใน.",
 	"DIALOG_OK": "ตกลง",
-	"DIALOG_CANCEL": "ยกเลิก"
+	"DIALOG_CANCEL": "ยกเลิก",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

@@ -312,5 +312,6 @@
 	"PROCEDURES_IFRETURN_WARNING": "ಎಚ್ಚರಿಕೆ: ಒಂಜಿ ಕಾರ್ಯ ವ್ಯಾಕ್ಯಾನೊದುಲಯಿ ಮಾತ್ರ ಈ ತಡೆನ್ ಗಲಸೊಲಿ.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "ದಾದಾಂಡಲ ಪನ್ಲೇ...",
 	"DIALOG_OK": "ಅವು",
-	"DIALOG_CANCEL": "ಉಂತಾಲೆ"
+	"DIALOG_CANCEL": "ಉಂತಾಲೆ",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

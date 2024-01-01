@@ -339,5 +339,6 @@
 	"PROCEDURES_IFRETURN_TOOLTIP": "Je-li hodnota pravda, pak vrátí druhou hodnotu.",
 	"PROCEDURES_IFRETURN_WARNING": "Varování: Tento blok může být použit pouze uvnitř definici funkce.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Zrušit"
+	"DIALOG_CANCEL": "Zrušit",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

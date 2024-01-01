@@ -333,5 +333,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blockly աշխատատարածք",
 	"COLLAPSED_WARNINGS_WARNING": "Ծալված բլոկները զգուշացումներ են պարունակում։",
 	"DIALOG_OK": "Լավ",
-	"DIALOG_CANCEL": "Չեղարկել"
+	"DIALOG_CANCEL": "Չեղարկել",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

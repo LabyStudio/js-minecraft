@@ -278,5 +278,6 @@
 	"PROCEDURES_IFRETURN_TOOLTIP": "اگر یک مقدار صحیح است، مقدار دوم را برگردان.",
 	"PROCEDURES_IFRETURN_WARNING": "اخطار: این بلوک احتمالاً فقط داخل یک تابع استفاده می‌شود.",
 	"DIALOG_OK": "تأیید",
-	"DIALOG_CANCEL": "ئآهووسانن/لغو"
+	"DIALOG_CANCEL": "ئآهووسانن/لغو",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

@@ -337,5 +337,6 @@
 	"WORKSPACE_ARIA_LABEL": "Espai de treball Blockly",
 	"COLLAPSED_WARNINGS_WARNING": "Els blocs plegats contenen avisos.",
 	"DIALOG_OK": "D'acord",
-	"DIALOG_CANCEL": "Cancel·la"
+	"DIALOG_CANCEL": "Cancel·la",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }

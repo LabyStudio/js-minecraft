@@ -346,5 +346,6 @@
 	"WORKSPACE_ARIA_LABEL": "Blocklyn työnäkymä",
 	"COLLAPSED_WARNINGS_WARNING": "Supistetut lohkot sisältävät varoituksia.",
 	"DIALOG_OK": "OK",
-	"DIALOG_CANCEL": "Peru"
+	"DIALOG_CANCEL": "Peru",
+	"PROCEDURES_BACKGROUND": "(in the background)"
 }
