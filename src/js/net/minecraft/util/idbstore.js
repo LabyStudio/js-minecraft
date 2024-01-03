@@ -1,4 +1,4 @@
-import { openDB, deleteDB, wrap, unwrap } from "../../../../../../../libraries/idb.js"
+import { openDB, deleteDB, wrap, unwrap } from "../../../../../libraries/idb.js"
 const dbPromise = openDB('keyval-store', 1, {
     upgrade(db) {
       db.createObjectStore('keyval');
