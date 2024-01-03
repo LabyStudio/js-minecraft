@@ -30,7 +30,7 @@ function globalEval(src) {//KSKS todo export it from main.js
 */
 
 if (typeof JSON.decycle !== "function") {
-    JSON.decycle = function decycle(object, replacer) {
+    JSON.decycle = function decycle(object,classes, replacer) {
         "use strict";
 
 // Make a deep copy of an object or array, assuring that there is at most
@@ -110,12 +110,15 @@ if (typeof JSON.decycle !== "function") {
 // If it is an object, replicate the object.
 
                     nu = {"$$$CLASSNAME$$$":value.constructor.name};
-                    Object.keys(value).forEach(function (name) {
-                        nu[name] = derez(
-                            value[name],
-                            path + "[" + JSON.stringify(name) + "]"
-                        );
-                    });
+                    if(classes.get(value.constructor.name)!=undefined){
+                        Object.keys(value).forEach(function (name) {
+                            nu[name] = derez(
+                                value[name],
+                                path + "[" + JSON.stringify(name) + "]"
+                            );
+                        });
+                    }
+                    else return undefined;
                 }
                 return nu;
             }
@@ -173,9 +176,12 @@ if (typeof JSON.retrocycle !== "function") {
                     Object.keys(value).forEach(function (name) {
                         var item = value[name];
                         if(name=="$$$CLASSNAME$$$"){
-                            //console.log(value[name])
-                            value.__proto__=classes.get(value[name]).prototype;
-                            delete value[name];
+                            //
+                            if(classes.get(value[name])!=undefined){
+                                value.__proto__=classes.get(value[name]).prototype;
+                                delete value[name];
+                            }
+                            else console.log("cycle.js: Missing object:"+value[name]) 
                         }
                         else{
                             item=value[name]

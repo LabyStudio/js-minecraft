@@ -23,16 +23,22 @@ export default class GuiIngameMenu extends GuiScreen {
         }));
 
         this.buttonList.push(new GuiButton("Save and Quit to Title", this.width / 2 - 100, y + 70, 200, 20, () => {
-            let data=JSON.stringify( JSON.decycle(Array.from(window.app.world.getChunkProvider().chunks.entries())));
-          //  let compressed = this.pako.deflate(new Uint8Array(data), {
-          //      chunkSize: 8192
-          //  });
-            (async () => {
-                await set("worlddata",data);//KSKS save world here      
-               // console.log(JSON.retrocycle(JSON.parse(await get("worlddata"))));
+            window.worlddata=Array.from(window.app.world.getChunkProvider().chunks.entries());//this is stored for direct reload when restarting the game
+            let data=JSON.stringify( JSON.decycle(window.worlddata,window.app.classes));
+           
+            //TODO use compression, and only store differences to worldcreator 
+            //let compressed = this.pako.deflate(new Uint8Array(data),{chunkSize: 8192 });
+            (async () => {//here we store reduced data in indexdb such that it survives browser refresh and exit.
+                await set("worlddata",data);//saving world in indexdb
                this.minecraft.loadWorld(null);
             })();
 
+        }));
+        this.buttonList.push(new GuiButton("Quit to Title", this.width / 2 - 100, y + 94, 200, 20, () => {
+            //this is a quickfix, as  this.minecraft.loadWorld(null); keeps changes until next reload
+            setTimeout(function(){
+                window.location.reload(1);
+                }, 1);
         }));
     }
 

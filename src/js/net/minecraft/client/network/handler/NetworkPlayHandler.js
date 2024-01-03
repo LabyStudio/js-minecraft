@@ -265,7 +265,7 @@ export default class NetworkPlayHandler extends PacketHandler {
         let blockState = packet.getBlockState();
         let typeId = blockState >> 4;
         let metaValue=blockState & 15;
-        this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState,2);//KSKS add metaValue done
+        this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState,2);
 
         let block = Block.getById(blockState);    
         console.log("meta"+metaValue);   

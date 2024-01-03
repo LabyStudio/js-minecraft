@@ -48,13 +48,13 @@ export default class Minecraft {
     constructor(canvasWrapperId, resources) {
         (async ()=>{
             this.classes=new Map(Object.entries({
-                Chunk,Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,Object,EdgesGeometry,Float32BufferAttribute,Float32Array,BoxGeometry,Uint16BufferAttribute,Uint16Array,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,AudioContext,GainNode,Clock,AudioBuffer,BiquadFilterNode,PannerNode,Fog,Mesh,BufferGeometry,BufferAttribute,Uint32Array,MeshBasicMaterial,CanvasTexture,Source,HTMLCanvasElement,Vector2,Matrix3,Sphere,ChunkSection,Box3,AudioBufferSourceNode
+                Chunk,ChunkSection
+                //these classes do not need to be stored: Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,Object,EdgesGeometry,Float32BufferAttribute,Float32Array,BoxGeometry,Uint16BufferAttribute,Uint16Array,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,AudioContext,GainNode,Clock,AudioBuffer,BiquadFilterNode,PannerNode,Fog,Mesh,BufferGeometry,BufferAttribute,Uint32Array,MeshBasicMaterial,CanvasTexture,Source,HTMLCanvasElement,Vector2,Matrix3,Sphere,Box3,AudioBufferSourceNode
               }));
-              //KSKSstore we shound store changedblocks
-            try{
+            try{//preload saved world
                 window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
-            }catch{
-                
+            }catch(e){
+                console.error(e)
             }
             this.resources = resources;
 
@@ -177,8 +177,29 @@ export default class Minecraft {
             // Create world
             this.world = world;
             this.worldRenderer.scene.add(this.world.group);
-            if(localStorage.getItem("continue")=="true" && window.worlddata!=undefined) {
-                this.world.getChunkProvider().chunks=new Map(window.worlddata);
+            if(localStorage.getItem("continue")=="true" && window.worlddata!=undefined) {//making a Map(window.worlddata) is not advisable as the threejs classes are not properly initilialized
+                let provider =  this.world.getChunkProvider();
+                for (const storedchunk of window.worlddata) {
+                    let index=storedchunk[0];
+                    let x=index&65535;
+                    let z=index>>16;
+                    //provider.loadChunk(x,z);
+                    let chunk = this.world.getChunkAt(x,z);
+                    for(let i=0;i<chunk.sections.length;++i){
+                        chunk.sections[i].blocks=storedchunk[1].sections[i].blocks;
+                        chunk.sections[i].blocksData=storedchunk[1].sections[i].blocksData;
+                        chunk.sections[i].isModified=storedchunk[1].sections[i].isModified;
+
+                    }
+                    chunk.generateSkylightMap();
+                    chunk.generateBlockLightMap();
+            
+
+                }
+              //  this.worldRenderer.rebuildAll()
+
+
+                
                 //this.worldRenderer.rebuildAll()
                 //we need to make shure that:       
                 // Register in three.js

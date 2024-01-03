@@ -29,7 +29,7 @@ export default class Block {
         // Register block
         Block.blocks.set((id<<4)+(metaValue&15), this);
         this.colormap=new Map();
-        this.color=0xffffff;//KSKS
+        this.color=0xffffff;
     }
 
     getId() {
@@ -71,10 +71,9 @@ export default class Block {
         let block = Block.getById(typeId);
         return block === null || block.isTranslucent();
     }
-    setColor(color,x,y,z,face){//we need to set:
+    setColor(color,x,y,z,face){
         var key = x + '#' + y + '#' + z;
         this.colormap.set(key,color);
-        //this.color=color;//KSKS
         window.app.world.onBlockChanged(x, y, z);
     }
     

@@ -91,12 +91,12 @@ export default class ChunkSection {
         let index = y << 8 | z << 4 | x;
         return !this.empty && index in this.blocksData ? this.blocksData[index] : 0;
     }
-
+    //mode allows for storing differences due to user interaction such that efficient storage and undo will become possible
     //mode 0=created by worldgenerator
     //mode 1=created by user
     //mode 2=created by network server
      //mode 3=created by user in network mode
-    setBlockAt(x, y, z, typeId,mode=0) {//KSKSstore we should here store differences when caused by user interaction
+    setBlockAt(x, y, z, typeId,mode=0) {
         let index = y << 8 | z << 4 | x;
         this.blocks[index] = typeId;
         this.isModified = true;
@@ -105,11 +105,12 @@ export default class ChunkSection {
             this.empty = false;
         }
     }
-   //mode 0=created by worldgenerator
+    //mode allows for storing differences due to user interaction such that efficient storage and undo will become possible
+    //mode 0=created by worldgenerator
     //mode 1=created by user
     //mode 2=created by network server
     //mode 3=created by user in network mode
-    setBlockDataAt(x, y, z, data,mode=0) {//KSKSstore we should here store differences when caused by user interaction
+    setBlockDataAt(x, y, z, data,mode=0) {
         let index = y << 8 | z << 4 | x;
         this.blocksData[index] = data;
         this.isModified = true;

@@ -11,7 +11,7 @@ export default class Chunk {
     static SECTION_AMOUNT = 16;
     constructor(world2, x, z) {
         world=world2;
-        //world = world;//KSKS this needs to be taken out as otherwise we cannot serialize it
+        //world = world;//if world is part of chunk serialization was very slow.
         this.x = x;
         this.z = z;
 
@@ -248,11 +248,11 @@ export default class Chunk {
         let section = this.getSection(y >> 4);
         section.setLightAt(sourceType, x, y & 15, z, level);
     }
-
+    //mode allows for storing differences due to user interaction such that efficient storage and undo will become possible
     setBlockDataAt(x, y, z, data,mode=0) {
         this.setBlockAt(x, y, z, this.getBlockAt(x, y, z), data,mode);
     }
-
+    //mode allows for storing differences due to user interaction such that efficient storage and undo will become possible
     setBlockAt(x, y, z, typeId, data = 0,mode=0) {
         if (y < 0 || y >= World.TOTAL_HEIGHT) {
             return;
@@ -319,7 +319,7 @@ export default class Chunk {
 
                     let value = (((data[i] & 0xFF) | (data[i + 1] & 0xFF) << 8));
                     let typeId = value >> 4;
-                    let metaValue = value & 0xF; // TODO handle meta of block //KSKS
+                    let metaValue = value & 0xF;
 
                     // TODO support more blocks
                     if (value !== 0 && Block.getById(value) === null) {
@@ -337,8 +337,6 @@ export default class Chunk {
 
                    
                     let block = Block.getById(value);
-
-                   // if((value&0xfffff0) === BlockRegistry.TORCH.getId());//KSKS TODO MERGE TORCH HANDLING INTO BLOCKJ
 
                     section.setBlockAt(x, y, z, value);
                     if(block !== null) section.setBlockDataAt(x,y,z,metaValue);
