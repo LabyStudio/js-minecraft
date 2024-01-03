@@ -7,7 +7,6 @@ export default class GameSettings {
         this.keyToggleDebug = 'F3'
         this.keyOpenChat = 'KeyT';
         this.keyOpenInventory = 'KeyE';
-        this.keyCode = 'KeyC';
         this.keyPlayerList = 'Tab';
 
         this.session = null;
@@ -19,7 +18,7 @@ export default class GameSettings {
         this.sensitivity = 100;
         this.viewDistance = 4;
         this.debugOverlay = false;
-        this.serverAddress = 'localhost';
+        this.serverAddress = 'server.labystudio.de';
     }
 
     load() {

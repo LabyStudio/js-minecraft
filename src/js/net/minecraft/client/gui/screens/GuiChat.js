@@ -29,42 +29,14 @@ export default class GuiChat extends GuiScreen {
 
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }
-    globalEval(src) {//KSKS todo export it from main.js
-        var fn = function() {
-            window.eval.call(window,src);
-        };
-        fn();
-    };
-    
+
     keyTyped(key, character) {
         if (key === "Enter") {
             let message = this.inputField.getText().trim();
             if (message.length === 0) {
                 return;
             }
-            let splitmessage=message.replaceAll(/\s+/g, '\x01').split('\x01');
-            if(blocklyFunctions?.includes(splitmessage[0])) {
-                let blocklycodepre = `
-                var globfn={};//only use this in main.js in order to use multiple parallel asynch executed functions we might need an array, we can reuse the array if is_script_ended is true
-                //also we should have globfn array to handle entities such as block that behaves like an animal
-                //or at least we should store the current globfn in a variable that belongs to entity
-                is_script_ended++;
-                `;
-                let code=blocklycode;
-                code+=`
-                is_script_ended++;
-                (
-               
-                    async () => {
-                        try{
-                            await globfn.`+splitmessage[0]+`(`+splitmessage.slice(1).join(',')+`);
-                        }catch{}
-                    })();
-                is_script_ended--;`
-        
-                console.log(code);
-                globalEval(code);
-            }
+
             // Close screen
             this.minecraft.displayScreen(null);
 

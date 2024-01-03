@@ -1,34 +1,18 @@
 <html lang="en">
 <head>
-    <title>Mintblock</title>
+    <title>Minecraft</title>
     <meta name="viewport"
           content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height"/>
     <link rel="shortcut icon" href="src/resources/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css"/>
-
-    <!--<link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">-->
-    <link rel="stylesheet" href="src/resources/material.indigo-pink.min.css">
-    <link rel="stylesheet" href="blockly/styles/index.css">
 </head>
 
-<body  mode="maker">
+<body>
 
 <div id="background" class="fullscreen"></div>
 
 <div id="content">
     <div id="canvas-container" class="fullscreen"></div>
-</div>
-
-<div id="blocklycode" class="fullscreen2">
-    <div class="blocklybuttonblock">
-     <button class="mode-blockly mdl-button mdl-js-button" id="back">Zurück</button>
-     <button class="mode-blockly mdl-button mdl-js-button" id="run">Ausführen</button>
-     <button class="mode-blockly mdl-button mdl-js-button" id="save">Speichern</button>
-     <button class="mode-blockly mdl-button mdl-js-button" id="load">Laden</button>
-    </div>
-    <div class="blockly-editor">
-      <div id="blocklyDiv" style="height: 95vh; width: 90vw;"></div>
-    </div>
 </div>
 
 </body>
@@ -46,42 +30,5 @@
 
 <!-- Minecraft -->
 <script type="module" src="src/js/Start.js"></script>
-
-<!-- Blockly -->
-<!-- https://neil.fraser.name/blockly/hacking/building -->
-<!--Watch tests/playground-->
-<script src="blockly_git/dist/blockly_compressed.js"></script>
-<script src="blockly_git/dist/blocks_compressed.js"></script>
- 
-
- <script  src="blockly_git/dist/javascript_compressed.js"></script>
-  
-  <script src="blockly_git/build/msg/de.js"></script>
-<!--
-
-
-    
-   
-
-
--->
-
-<!-- <script src="blockly_git/build/msg/messages.js"></script> -->
-<!--
-
-      <script src="../../dist/blockly_compressed.js"></script>
-  <script src="../../dist/blocks_compressed.js"></script>
-  <script src="../../dist/javascript_compressed.js"></script>
-
-
-<script src="https://unpkg.com/blockly/blockly.min.js"></script>
-<script src="https://unpkg.com/blockly/msg/de.js"></script>
--->
-<script  type="module" src="blockly/scripts/craft_blocks.js"></script>
-<script src="blockly/scripts/main.js"></script>
-<script>
-const div = document.getElementById('blocklycode');
-div.style.visibility = 'hidden';
-</script>
 
 </html>

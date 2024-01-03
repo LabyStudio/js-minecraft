@@ -28,18 +28,3 @@ canvas {
     white-space: nowrap;
     overflow: hidden;
 }
-.fullscreen2 {
-    position: absolute;
-    float: left;
-    display: block;
-    width: 100%;
-    height: 95vh;
-    white-space: nowrap;
-    overflow: hidden;
-}
-.blocklybuttonblock{
-    float: right;
-     display : block;
-     display: flex;
-     flex-flow: column;
-}

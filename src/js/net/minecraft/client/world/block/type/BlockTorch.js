@@ -48,7 +48,7 @@ export default class BlockTorch extends Block {
 
                 console.log("added:"+data);
                 // Update block data in world
-                world.setBlockDataAt(x, y, z, data,mode);//KSKS todo something weird here
+                world.setBlockDataAt(x, y, z, data,mode);
                 break;
             }
         }

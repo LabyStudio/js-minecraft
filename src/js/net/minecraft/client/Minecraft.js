@@ -193,17 +193,8 @@ export default class Minecraft {
                     }
                     chunk.generateSkylightMap();
                     chunk.generateBlockLightMap();
-            
-
                 }
               //  this.worldRenderer.rebuildAll()
-
-
-                
-                //this.worldRenderer.rebuildAll()
-                //we need to make shure that:       
-                // Register in three.js
-               // world.group.add(chunk.group);
             }
             // Create player
             this.player = this.playerController.createPlayer(this.world);
@@ -213,8 +204,6 @@ export default class Minecraft {
             // Load spawn chunks and respawn player
             this.world.loadSpawnChunks();
             this.player.respawn();
-
-
         }
 
     }
@@ -419,15 +408,6 @@ export default class Minecraft {
             this.displayScreen(new GuiChat());
         }
 
-        // Open blockly programming editor
-        if (button === this.settings.keyCode) {	
-            this.window.updateFocusState(FocusStateType.REQUEST_EXIT);
-            const div = document.getElementById('blocklycode');
-            abortscript()
-		    div.style.visibility = 'visible';  
-
-        }
-
         // Toggle debug overlay
         if (button === this.settings.keyToggleDebug) {
             this.settings.debugOverlay = !this.settings.debugOverlay;
@@ -525,43 +505,8 @@ export default class Minecraft {
 
                         if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
-                            let hitTypeId = this.world.getBlockAt(hitResult.x, hitResult.y, hitResult.z);
-                            let onHit=false;
-                            if(window?.globfn?.onHitWith!=undefined){
-                                if(globfn.onHitWith.get(hitTypeId+`#`+typeId)!=undefined){
-                                    onHit=true;
-                                    let code=blocklycode2+`
-                                    is_script_ended++;
-                                    (
-                                
-                                        async () => {
-                                            try{
-                                                await globfn.onHitWith.get("`+hitTypeId+`#`+typeId+`")();
-                                            }catch{}
-                                        })();
-                                    is_script_ended--;`
-
-                                    globalEval(code);
-                                }
-                            }
-                            if(window?.globfn?.onHitWithAt!=undefined){
-                                if(globfn.onHitWithAt.get(hitTypeId+`#`+typeId+`#`+x+`#`+y+`#`+z)!=undefined){
-                                    onHit=true;
-                                    let code=blocklycode2+`
-                                    is_script_ended++;
-                                    (
-                                
-                                        async () => {
-                                            try{
-                                                await globfn.onHitWithAt.get("`+hitTypeId+`#`+typeId+`#`+x+`#`+y+`#`+z+`")();
-                                            }catch{}
-                                        })();
-                                    is_script_ended--;`
-
-                                    globalEval(code);
-                                }
-                            }
-                            if(!onHit) this.world.setBlockAt(x, y, z, typeId,1+this.isSingleplayer()?0:2);
+                            
+                            this.world.setBlockAt(x, y, z, typeId,1+this.isSingleplayer()?0:2);
                             let face;
                             if(hitResult.face.y<0) face=0;
                             else if(hitResult.face.y>0) face=1;
@@ -569,30 +514,30 @@ export default class Minecraft {
                             else if(hitResult.face.z>0) face=3;
                             else if(hitResult.face.x<0) face=4;
                             else if(hitResult.face.x>0) face=5;
-                            if(!onHit) this.player.placeBlock(x,y,z,face,typeId,0,0,0)
+                            this.player.placeBlock(x,y,z,face,typeId,0,0,0)
                             //this.player.placeBlock(x,y,z,face,this.player.inventory.selectedSlotIndex,0,0,0)
                         //for this to work we need https://wiki.vg/index.php?title=Protocol&oldid=7368#Creative_Inventory_Action
                         //and https://wiki.vg/index.php?title=Protocol&oldid=7368#Held_Item_Change_2
                         //https://wiki.vg/index.php?title=Protocol&oldid=7368#Set_Slot
                             // Swing player arm
                             this.player.swingArm();
-                            if(!onHit) {
-                                // Handle block abilities
-                                let block = Block.getById(typeId);
-                                block.onBlockPlaced(this.world, x, y, z, hitResult.face,1+this.isSingleplayer()?0:2);
+                          
+                            // Handle block abilities
+                            let block = Block.getById(typeId);
+                            block.onBlockPlaced(this.world, x, y, z, hitResult.face,1+this.isSingleplayer()?0:2);
 
-                                // Play sound
-                                let sound = block.getSound();
-                                let soundName = sound.getPlaceSound();
-                                this.soundManager.playSound(
-                                    soundName,
-                                    hitResult.x + 0.5,
-                                    hitResult.y + 0.5,
-                                    hitResult.z + 0.5,
-                                    2.0,
-                                    sound.getPitch() * 0.8
-                                );
-                            }
+                            // Play sound
+                            let sound = block.getSound();
+                            let soundName = sound.getPlaceSound();
+                            this.soundManager.playSound(
+                                soundName,
+                                hitResult.x + 0.5,
+                                hitResult.y + 0.5,
+                                hitResult.z + 0.5,
+                                2.0,
+                                sound.getPitch() * 0.8
+                            );
+                        
                         }
                     }
                 }

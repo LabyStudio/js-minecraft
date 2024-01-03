@@ -2,7 +2,7 @@ import Chunk from "../Chunk.js";
 
 let world=null;
 
-export default class ChunkProvider {//KSKS here everything is stored in the chunks map
+export default class ChunkProvider {
 
     constructor(world2) {
         world = world2;

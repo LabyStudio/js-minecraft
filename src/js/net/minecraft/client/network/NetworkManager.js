@@ -204,23 +204,7 @@ export default class NetworkManager {
                 }
             }
         }
-/*
-[Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
-NetworkManager.js:212 [Network] [IN] Unknown packet id: 42 (0x2a) (ServerSpawnParticlePacket)
-7NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
-2NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
-2NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
-5NetworkManager.js:212 [Network] [IN] Unknown packet id: 4 (0x4) (ServerEntityEquipmentPacket)
-2NetworkManager.js:212 [Network] [IN] Unknown packet id: 32 (0x20) (ServerEntityPropertiesPacket)
-NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
-8NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
-2NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
-2NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
-NetworkManager.js:212 [Network] [IN] Unknown packet id: 34 (0x22) (ServerMultiBlockChangePacket)
-4NetworkManager.js:212 [Network] [IN] Unknown packet id: 3 (0x3) (ServerUpdateTimePacket)
 
-18 and 41
-*/
         // Packet Codec
         let packetId = buffer.readByte(); // Read packet id
         let clazz = this.registry.getServerBoundById(this.protocolState, packetId);
