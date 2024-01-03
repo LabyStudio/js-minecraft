@@ -1,7 +1,6 @@
 //Simple local Websocket server for forwarding to
 //minecraft server
-//use sniffcraft-windows-1.12.2.exe 25564 localhost
-//to get packages
+
 import { WebSocketServer } from 'ws';
 import * as net from "net";
 let wss;
