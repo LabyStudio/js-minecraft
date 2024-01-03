@@ -210,7 +210,6 @@ export default class NetworkManager {
         let clazz = this.registry.getServerBoundById(this.protocolState, packetId);
         if (clazz === null) {
             if (NetworkManager.DEBUGERROR || NetworkManager.DEBUG) {
-                if(packetId!=18 && packetId != 41)
                 console.log("[Network] [IN] Unknown packet id: " + packetId + " (0x" + packetId.toString(16) + ") (" + new MissingPackets().get(packetId) + ")");
             }
             return;
