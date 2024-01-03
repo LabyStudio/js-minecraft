@@ -116,7 +116,7 @@ _Note: All textures from the original game were used for the screenshots only!_
 - BigInt extension for RSA encryption by [bigint-mod-arith](https://github.com/juanelas/bigint-mod-arith)
 - Public key parser implemented by [asn1-parser.js](https://git.coolaj86.com/coolaj86/asn1-parser.js)
 - Minecraft chat component parser by [mc-chat-format](https://github.com/janispritzkau/mc-chat-format)
-- All used sound resources are taken from [freesounds.org](https://freesound.org/people/C418/downloaded_sounds/?page=8#sound)
+- Only free sound resources are used and taken from [pixabay.com](https://pixabay.com/de/sound-effects/)
 <hr>
 
 NOT OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG.
