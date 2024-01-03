@@ -1,7 +1,7 @@
-# Minecraft recode in JavaScript
+# Mintblock
 
 This is a sandbox that provides all basic features of Minecraft.<br>
-The main purpose of this project is to understand the render and physics engine of Minecraft.<br>
+The main purpose of this project is to understand the render and physics engine of Minecraft and provide a graphical programming environment for kids.<br>
 The source code builds upon the [js-minecraft](https://github.com/LabyStudio/js-minecraft) project with the integration of [blockly](https://github.com/google/blockly) for graphical coding.
 
 ![Ingame](.github/assets/ingame.png)<br>
