@@ -33,7 +33,8 @@ import ChunkSection from "./world/ChunkSection.js"
 export default class Minecraft {
 
     static VERSION = "1.2.0"
-    static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
+    static URL_GITHUB = "https://github.com/kiliansinger/mintblock";
+    static URL_EXIT = "https://mintrobi.de";
     static PROTOCOL_VERSION = 47; //758;
 
     // TODO Add to settings

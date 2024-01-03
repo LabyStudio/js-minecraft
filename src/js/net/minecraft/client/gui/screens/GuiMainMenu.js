@@ -71,7 +71,7 @@ export default class GuiMainMenu extends GuiScreen {
 
         // Draw copyright
         let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
-        this.drawRightString(stack, "GitHub @LabyStudio/js-minecraft", this.width - 2, this.height - 10, mouseOver ? 0xFF00FFFF : 0xFFFFFFff);
+        this.drawRightString(stack, "Github @kiliansinger/mintblock built on @LabyStudio/js-minecraft", this.width - 2, this.height - 10, mouseOver ? 0xFF00FFFF : 0xFFFFFFff);
 
         // Draw buttons
         super.drawScreen(stack, mouseX, mouseY, partialTicks);

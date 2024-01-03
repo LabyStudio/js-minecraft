@@ -520,7 +520,7 @@ export default class GameWindow {
     }
 
     close() {
-        this.openUrl(Minecraft.URL_GITHUB);
+        this.openUrl(Minecraft.URL_EXIT);
     }
 
     async getClipboardText() {
