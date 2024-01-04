@@ -287,7 +287,7 @@ export default class World {
 
     setBlockAt(x, y, z, type,mode=0) {
         let chunk = this.getChunkAt(x >> 4, z >> 4);
-        chunk.setBlockAt(x & 15, y, z & 15, type,mode);
+        chunk.setBlockAt(x & 15, y, z & 15, type,0,mode);
 
         // Rebuild chunk
         this.onBlockChanged(x, y, z);
