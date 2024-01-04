@@ -203,6 +203,8 @@ export default class Minecraft {
                 //we need to make shure that:       
                 // Register in three.js
                // world.group.add(chunk.group);
+               this.world.setSpawn(Math.round(localStorage.getItem("player_x")),Math.round(localStorage.getItem("player_z")));
+
             }
             // Create player
             this.player = this.playerController.createPlayer(this.world);
