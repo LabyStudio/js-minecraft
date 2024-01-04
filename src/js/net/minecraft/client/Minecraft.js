@@ -27,7 +27,6 @@ import Splash from "../../../../resources/splashes.js"
 import {get,set} from "../util/idbstore.js"
 //imports for serializer
 import Chunk from "./world/Chunk.js";
-import {Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,EdgesGeometry,Float32BufferAttribute,BoxGeometry,Uint16BufferAttribute,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,Clock,Fog,Mesh,BufferGeometry,BufferAttribute,MeshBasicMaterial,CanvasTexture,Source,Vector2,Matrix3,Sphere,Box3} from "../../../../../libraries/three.module.js"
 import ChunkSection from "./world/ChunkSection.js"
 
 export default class Minecraft {
@@ -49,7 +48,6 @@ export default class Minecraft {
         (async ()=>{
             this.classes=new Map(Object.entries({
                 Chunk,ChunkSection
-                //these classes do not need to be stored: Object3D,Scene,LineSegments,Vector3,Euler,Quaternion,Matrix4,Layers,Object,EdgesGeometry,Float32BufferAttribute,Float32Array,BoxGeometry,Uint16BufferAttribute,Uint16Array,LineBasicMaterial,Color,PositionalAudio,AudioListener,PerspectiveCamera,AudioContext,GainNode,Clock,AudioBuffer,BiquadFilterNode,PannerNode,Fog,Mesh,BufferGeometry,BufferAttribute,Uint32Array,MeshBasicMaterial,CanvasTexture,Source,HTMLCanvasElement,Vector2,Matrix3,Sphere,Box3,AudioBufferSourceNode
               }));
             try{//preload saved world
                 window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
