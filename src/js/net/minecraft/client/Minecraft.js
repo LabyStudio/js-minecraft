@@ -183,12 +183,16 @@ export default class Minecraft {
                     let z=index>>16;
                     //provider.loadChunk(x,z);
                     let chunk = this.world.getChunkAt(x,z);
+                    chunk.isTerrainPopulated=storedchunk[1].isTerrainPopulated;
+
                     for(let i=0;i<chunk.sections.length;++i){
                         chunk.sections[i].blocks=storedchunk[1].sections[i].blocks;
+                        //someIsNotZero|=chunk.sections[i].blocks.some(item => item !== 0);
                         chunk.sections[i].blocksData=storedchunk[1].sections[i].blocksData;
                         chunk.sections[i].isModified=storedchunk[1].sections[i].isModified;
-
+                        chunk.sections[i].empty=storedchunk[1].sections[i].empty;
                     }
+                    chunk.isTerrainPopulated=
                     chunk.generateSkylightMap();
                     chunk.generateBlockLightMap();
                 }
