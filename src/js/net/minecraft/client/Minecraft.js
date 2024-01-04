@@ -193,7 +193,6 @@ export default class Minecraft {
                         chunk.sections[i].isModified=storedchunk[1].sections[i].isModified;
                         chunk.sections[i].empty=storedchunk[1].sections[i].empty;
                     }
-                    chunk.isTerrainPopulated=
                     chunk.generateSkylightMap();
                     chunk.generateBlockLightMap();
             
