@@ -25,9 +25,6 @@ import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
 import Splash from "../../../../resources/splashes.js"
 import {get,set} from "../util/idbstore.js"
-//imports for serializer
-import Chunk from "./world/Chunk.js";
-import ChunkSection from "./world/ChunkSection.js"
 
 export default class Minecraft {
 
@@ -46,16 +43,17 @@ export default class Minecraft {
      */
     constructor(canvasWrapperId, resources) {
         (async ()=>{
-            this.classes=new Map(Object.entries({
-                Chunk,ChunkSection
-              }));
+            this.changedBlocksArray=null;
+            this.changedBlocksDataArray=null;
+
             try{//preload saved world
-                window.worlddata=await JSON.retrocycle(JSON.parse(await get("worlddata")),this.classes);
+                this.changedBlocksArray=await JSON.parse(await get("changedBlocksMap"));
+                this.changedBlocksDataArray=await JSON.parse(await get("changedBlocksDataMap"));
             }catch(e){
                 console.error(e)
             }
-            this.resources = resources;
 
+            this.resources = resources;
             this.currentScreen = null;
             this.loadingScreen = null;
             this.world = null;
@@ -175,36 +173,22 @@ export default class Minecraft {
             // Create world
             this.world = world;
             this.worldRenderer.scene.add(this.world.group);
-            if(localStorage.getItem("continue")=="true" && window.worlddata!=undefined) {//making a Map(window.worlddata) is not advisable as the threejs classes are not properly initilialized
-                let provider =  this.world.getChunkProvider();
-                for (const storedchunk of window.worlddata) {
-                    let index=storedchunk[0];
-                    let x=index&65535;
-                    let z=index>>16;
-                    //provider.loadChunk(x,z);
-                    let chunk = this.world.getChunkAt(x,z);
-                    chunk.isTerrainPopulated=storedchunk[1].isTerrainPopulated;
-
-                    for(let i=0;i<chunk.sections.length;++i){
-                        chunk.sections[i].blocks=storedchunk[1].sections[i].blocks;
-                        //someIsNotZero|=chunk.sections[i].blocks.some(item => item !== 0);
-                        chunk.sections[i].blocksData=storedchunk[1].sections[i].blocksData;
-                        chunk.sections[i].isModified=storedchunk[1].sections[i].isModified;
-                        chunk.sections[i].empty=storedchunk[1].sections[i].empty;
-                    }
-                    chunk.generateSkylightMap();
-                    chunk.generateBlockLightMap();
+            if(localStorage.getItem("continue")=="true" && this.changedBlocksArray!=null) {//making a Map(window.worlddata) is not advisable as the threejs classes are not properly initilialized
+                this.world.setSpawn(Math.round(localStorage.getItem("player_x")),Math.round(localStorage.getItem("player_z")));
+               
+                this.world.changedBlocksMap=new Map(this.changedBlocksArray);
+                this.world.changedBlocksDataMap=new Map(this.changedBlocksDataArray);
+                for (const [key, value] of this.world.changedBlocksMap.entries()) {
+                    this.world.setBlockAt(parseInt(value.x),parseInt(value.y),parseInt(value.z),parseInt(value.typeId));
+                    console.log(value,parseInt(value.x),parseInt(value.y),parseInt(value.z),parseInt(value.typeId))
                 }
-              //  this.worldRenderer.rebuildAll()
-
-
-                
-                //this.worldRenderer.rebuildAll()
-                //we need to make shure that:       
-                // Register in three.js
-               // world.group.add(chunk.group);
-               this.world.setSpawn(Math.round(localStorage.getItem("player_x")),Math.round(localStorage.getItem("player_z")));
-
+                for (const [key, value] of this.world.changedBlocksDataMap.entries()) {
+                    this.world.setBlockDataAt(parseInt(value.x),parseInt(value.y),parseInt(value.z),parseInt(value.data));
+                    console.log(value)
+                }
+                this.worldRenderer.flushRebuild = true;
+            
+            
             }
             // Create player
             this.player = this.playerController.createPlayer(this.world);
@@ -213,6 +197,11 @@ export default class Minecraft {
 
             // Load spawn chunks and respawn player
             this.world.loadSpawnChunks();
+            if(localStorage.getItem("continue")!="true"){
+                this.world.changedBlocksMap=new Map();
+                this.world.changedBlocksDataMap=new Map();
+            }
+           
             this.player.respawn();
         }
 
@@ -431,6 +420,8 @@ export default class Minecraft {
     }
 
     onMouseClicked(button) {
+
+
         if (this.window.isLocked()) {
             let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
 

@@ -99,7 +99,7 @@ export default class ChunkSection {
         let index = y << 8 | z << 4 | x;
         this.blocks[index] = typeId;
         this.isModified = true;
-
+        if(mode==1) this.world.changedBlocksMap.set(this.x*ChunkSection.SIZE+x+"#"+this.y*ChunkSection.SIZE+y+"#"+this.z*ChunkSection.SIZE+z,{"x":this.x*ChunkSection.SIZE+x,"y":this.y*ChunkSection.SIZE+y,"z":this.z*ChunkSection.SIZE+z,"typeId":typeId});
         if (this.empty && typeId !== 0) {
             this.empty = false;
         }
@@ -111,6 +111,7 @@ export default class ChunkSection {
     //mode 3=created by user in network mode
     setBlockDataAt(x, y, z, data,mode=0) {
         let index = y << 8 | z << 4 | x;
+        if(mode==1) this.world.changedBlocksDataMap.set(this.x*ChunkSection.SIZE+x+"#"+this.y*ChunkSection.SIZE+y+"#"+this.z*ChunkSection.SIZE+z,{"x":this.x*ChunkSection.SIZE+x,"y":this.y*ChunkSection.SIZE+y,"z":this.z*ChunkSection.SIZE+z,"data":data});
         this.blocksData[index] = data;
         this.isModified = true;
     }
