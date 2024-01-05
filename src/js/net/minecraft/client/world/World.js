@@ -26,7 +26,8 @@ export default class World {
 
         this.time = 0;
         this.spawn = new Vector3(0, 0, 0);
-
+        this.changedBlocksMap=new Map();
+        this.changedBlocksDataMap=new Map();
         // Update lights async
         let scope = this;
         setInterval(function () {
