@@ -376,7 +376,7 @@ export default class EntityLiving extends Entity {
             this.isSwingInProgress = true;
         }
     }
-    digging(status,x,y,z,face){   //KSKS!! This is the point where we should store in local storage
+    digging(status,x,y,z,face){
     }
     placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
     }

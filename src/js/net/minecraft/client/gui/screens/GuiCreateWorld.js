@@ -51,7 +51,7 @@ export default class GuiCreateWorld extends GuiScreen {
         this.buttonList.push(new GuiButton("Cancel", this.width / 2 + 5, y + 110, 150, 20, () => {
             this.minecraft.displayScreen(this.previousScreen);
         }));
-        this.buttonList.push(new GuiButton("Continue", this.width / 2 - 155, y + 110+30, 150, 20, () => {//KSKS add here code to continue
+        this.buttonList.push(new GuiButton("Continue", this.width / 2 - 155, y + 110+30, 150, 20, () => {
             localStorage.setItem("continue",true);
             let seed = localStorage.getItem("seed");
             if (seed.length === 0) {
