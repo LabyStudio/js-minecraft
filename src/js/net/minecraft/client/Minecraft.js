@@ -180,12 +180,10 @@ export default class Minecraft {
                 this.world.changedBlocksMap=new Map(this.changedBlocksArray);
                 this.world.changedBlocksDataMap=new Map(this.changedBlocksDataArray);
                 for (const [key, value] of this.world.changedBlocksMap.entries()) {
-                    this.world.setBlockAt(parseInt(value.x),parseInt(value.y),parseInt(value.z),parseInt(value.typeId));
-                    console.log(value,parseInt(value.x),parseInt(value.y),parseInt(value.z),parseInt(value.typeId))
+                    this.world.setBlockAt(value.x,value.y,value.z,value.typeId);
                 }
                 for (const [key, value] of this.world.changedBlocksDataMap.entries()) {
-                    this.world.setBlockDataAt(parseInt(value.x),parseInt(value.y),parseInt(value.z),parseInt(value.data));
-                    console.log(value)
+                    this.world.setBlockDataAt(value.x,value.y,value.z,value.data);
                 }
                 this.worldRenderer.flushRebuild = true;
             
