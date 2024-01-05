@@ -35,8 +35,8 @@ export default class GuiCreateWorld extends GuiScreen {
                 }
                 seed = Long.fromNumber(h);
             }
-
-            localStorage.setItem("seed", seed);
+            window.app.seed=seed;
+            
             localStorage.setItem("continue",false);
             
 
@@ -63,7 +63,7 @@ export default class GuiCreateWorld extends GuiScreen {
                 }
                 seed = Long.fromNumber(h);
             }
-
+            window.app.seed=seed;
             // Load world
             let world = new World(this.minecraft);
             world.setChunkProvider(new ChunkProviderGenerate(world, seed));

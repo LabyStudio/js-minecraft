@@ -31,6 +31,7 @@ export default class GuiIngameMenu extends GuiScreen {
                 localStorage.setItem("player_x",window.app.player.x);
                 localStorage.setItem("player_y",window.app.player.y);
                 localStorage.setItem("player_z",window.app.player.z);
+                localStorage.setItem("seed", window.app.seed);
 
                 //TODO use compression, and only store differences to worldcreator 
                 //let compressed = this.pako.deflate(new Uint8Array(data),{chunkSize: 8192 });
