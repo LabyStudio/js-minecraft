@@ -109,9 +109,13 @@ export default class GuiMainMenu extends GuiScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         // Click on GitHub text
-        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
+        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 40 && mouseY < this.height - 20
+        let mouseOver2 = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
         if (mouseOver) {
             this.minecraft.window.openUrl(Minecraft.URL_GITHUB, true);
+        }
+        if (mouseOver2) {
+            this.minecraft.window.openUrl(Minecraft.URL_GITHUB_LABYSTUDIO, true);
         }
     }
 
