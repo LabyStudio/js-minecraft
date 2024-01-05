@@ -70,8 +70,10 @@ export default class GuiMainMenu extends GuiScreen {
         this.drawString(stack, "mintblock " + Minecraft.VERSION, 2, this.height - 10, 0xFFFFFFff);
 
         // Draw copyright
-        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
-        this.drawRightString(stack, "Github @kiliansinger/mintblock built on @LabyStudio/js-minecraft", this.width - 2, this.height - 10, mouseOver ? 0xFF00FFFF : 0xFFFFFFff);
+        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 40 && mouseY < this.height - 20
+        this.drawRightString(stack, "Github @kiliansinger/mintblock", this.width - 2, this.height - 20, mouseOver ? 0xFF00FFFF : 0xFFFFFFff);
+        let mouseOver2 = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
+        this.drawRightString(stack, "built on @LabyStudio/js-minecraft", this.width - 2, this.height - 10, mouseOver2 ? 0xFF00FFFF : 0xFFFFFFff);
 
         // Draw buttons
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
@@ -109,9 +111,13 @@ export default class GuiMainMenu extends GuiScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         // Click on GitHub text
-        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
+        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 40 && mouseY < this.height - 20
+        let mouseOver2 = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
         if (mouseOver) {
             this.minecraft.window.openUrl(Minecraft.URL_GITHUB, true);
+        }
+        if (mouseOver2) {
+            this.minecraft.window.openUrl(Minecraft.URL_GITHUB_LABYSTUDIO, true);
         }
     }
 

@@ -67,13 +67,17 @@ export default class GameWindow {
         this.registerListener(document, 'mousedown', event => {
             // In-Game mouse click
             this.minecraft.onMouseClicked(event.button);
-
-            // Start interval to repeat the mouse event
-            if (this.mouseDownInterval !== null) {
-                clearInterval(this.mouseDownInterval);
+            if(!this.minecraft.inhibitMouseDownInterval){
+                // Start interval to repeat the mouse event
+                if (this.mouseDownInterval !== null) {
+                    clearInterval(this.mouseDownInterval);
+                }
+                this.mouseDownInterval = setInterval(_ => this.minecraft.onMouseClicked(event.button), 250);
+            }else{
+                if (this.mouseDownInterval !== null) {
+                    clearInterval(this.mouseDownInterval);
+                }
             }
-            this.mouseDownInterval = setInterval(_ => this.minecraft.onMouseClicked(event.button), 250);
-
             // Handle mouse click on screen
             let currentScreen = this.minecraft.currentScreen;
             if (currentScreen !== null) {

@@ -25,11 +25,11 @@ import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
 import Splash from "../../../../resources/splashes.js"
 import {get,set} from "../util/idbstore.js"
-
+import {require} from "../../../Start.js"
 export default class Minecraft {
-
     static VERSION = "1.2.0"
     static URL_GITHUB = "https://github.com/kiliansinger/mintblock";
+    static URL_GITHUB_LABYSTUDIO = "https://github.com/LabyStudio/js-minecraft"
     static URL_EXIT = "https://mintrobi.de";
     static PROTOCOL_VERSION = 47; //758;
 
@@ -43,17 +43,27 @@ export default class Minecraft {
      * Create Minecraft instance and render it on a canvas
      */
     constructor(canvasWrapperId, resources) {
+        this.pako=require("pako");
         (async ()=>{
             this.changedBlocksArray=null;
             this.changedBlocksDataArray=null;
 
             try{//preload saved world
-                this.changedBlocksArray=await JSON.parse(await get("changedBlocksMap"));
-                this.changedBlocksDataArray=await JSON.parse(await get("changedBlocksDataMap"));
+                let textdecoder=new TextDecoder("utf-8");
+                let compressed_block=await get("changedBlocksMap");
+                console.log(compressed_block)
+                let decompressed_block=this.pako.inflate(compressed_block,{chunkSize: 8192 })
+                this.changedBlocksArray=JSON.parse(textdecoder.decode(decompressed_block));
+                let compressed_data=await get("changedBlocksDataMap");
+                let decompressed_data=this.pako.inflate(compressed_data,{chunkSize: 8192 })
+                this.changedBlocksDataArray=JSON.parse(textdecoder.decode(decompressed_data));
             }catch(e){
                 console.error(e)
             }
-
+            this.playerx=0;
+            this.playery=0;
+            this.playerz=0;
+            this.inhibitMouseDownInterval=false;
             this.resources = resources;
             this.currentScreen = null;
             this.loadingScreen = null;
@@ -175,7 +185,7 @@ export default class Minecraft {
             this.world = world;
             this.worldRenderer.scene.add(this.world.group);
             if(localStorage.getItem("continue")=="true" && this.changedBlocksArray!=null) {//making a Map(window.worlddata) is not advisable as the threejs classes are not properly initilialized
-                this.world.setSpawn(Math.round(localStorage.getItem("player_x")),Math.round(localStorage.getItem("player_z")));
+                this.world.setSpawn(this.playerx,this.playerz);
                
                 this.world.changedBlocksMap=new Map(this.changedBlocksArray);
                 this.world.changedBlocksDataMap=new Map(this.changedBlocksDataArray);
