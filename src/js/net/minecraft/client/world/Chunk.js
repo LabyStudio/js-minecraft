@@ -4,13 +4,11 @@ import World from "./World.js";
 import ChunkSection from "./ChunkSection.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
 import { BlockRegistry } from "./block/BlockRegistry.js";
-let world=null;
-
 export default class Chunk {
 
     static SECTION_AMOUNT = 16;
-    constructor(world2, x, z) {
-        world=world2;
+    constructor(world, x, z) {
+        this.world=world;
         //world = world;//if world is part of chunk serialization was very slow.
         this.x = x;
         this.z = z;
@@ -26,7 +24,7 @@ export default class Chunk {
         // Initialize sections
         this.sections = [];
         for (let y = 0; y < Chunk.SECTION_AMOUNT; y++) {
-            let section = new ChunkSection(world, this, x, y, z);
+            let section = new ChunkSection(this.world, this, x, y, z);
 
             this.sections[y] = section;
             this.group.add(section.group);
@@ -103,7 +101,7 @@ export default class Chunk {
             }
         }
 
-        world.updateLight(EnumSkyBlock.BLOCK,
+        this.world.updateLight(EnumSkyBlock.BLOCK,
             this.x * 16, targetY - 1, this.z * 16,
             this.x * 16 + 16, targetY + 1, this.z * 16 + 16
         );
@@ -126,11 +124,11 @@ export default class Chunk {
     }
 
     updateSkyLight(x, z, y) {
-        let height = world.getHeightAt(x, z);
+        let height = this.world.getHeightAt(x, z);
         if (height > y) {
-            world.updateLight(EnumSkyBlock.SKY, x, y, z, x, height, z);
+            this.world.updateLight(EnumSkyBlock.SKY, x, y, z, x, height, z);
         } else if (height < y) {
-            world.updateLight(EnumSkyBlock.SKY, x, height, z, x, y, z);
+            this.world.updateLight(EnumSkyBlock.SKY, x, height, z, x, y, z);
         }
         this.setModifiedAllSections();
     }
@@ -158,7 +156,7 @@ export default class Chunk {
                 this.setLightAt(EnumSkyBlock.SKY, relX, hy, relZ, 15);
             }
         } else {
-            world.updateLight(EnumSkyBlock.SKY, x, currentHighestY, z, x, highestY, z);
+            this.world.updateLight(EnumSkyBlock.SKY, x, currentHighestY, z, x, highestY, z);
             for (let hy = currentHighestY; hy < highestY; hy++) {
                 this.setLightAt(EnumSkyBlock.SKY, relX, hy, relZ, 0);
             }
@@ -187,7 +185,7 @@ export default class Chunk {
         highestY = this.calculateHeightAt(relX, relZ, highestY);
 
         if (highestY !== prevHeight) {
-            world.updateLight(EnumSkyBlock.SKY, x - 1, highestY, z - 1, x + 1, prevHeight, z + 1);
+            this.world.updateLight(EnumSkyBlock.SKY, x - 1, highestY, z - 1, x + 1, prevHeight, z + 1);
         }
         this.setModifiedAllSections();
     }
@@ -292,15 +290,15 @@ export default class Chunk {
         let totalZ = this.z * 16 + z;
 
         // Update light
-        world.updateLight(EnumSkyBlock.SKY, totalX, y, totalZ, totalX, y, totalZ);
-        world.updateLight(EnumSkyBlock.BLOCK, totalX, y, totalZ, totalX, y, totalZ);
+        this.world.updateLight(EnumSkyBlock.SKY, totalX, y, totalZ, totalX, y, totalZ);
+        this.world.updateLight(EnumSkyBlock.BLOCK, totalX, y, totalZ, totalX, y, totalZ);
 
         // Notify surrounding blocks
         this.notifyNeighbors(x, z);
 
         // Handle block abilities
         if (typeId !== 0 && block !== null) {
-            block.onBlockAdded(world, totalX, y, totalZ,mode);
+            block.onBlockAdded(this.world, totalX, y, totalZ,mode);
         }
 
         return true;
