@@ -268,7 +268,6 @@ export default class NetworkPlayHandler extends PacketHandler {
         this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState,2);
 
         let block = Block.getById(blockState);    
-        console.log("meta"+metaValue);   
         if(block !== null) block.onBlockPlaced(this.minecraft.world, position.getX(), position.getY(), position.getZ(), metaValue,true,2);
         
     }

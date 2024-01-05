@@ -458,7 +458,7 @@ export default class Minecraft {
                         this.particleRenderer.spawnBlockBreakParticle(this.world, hitResult.x, hitResult.y, hitResult.z);
 
                         // Destroy block
-                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0,1+this.isSingleplayer()?0:2);
+                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0,1+(this.isSingleplayer()?0:2));
                         let face;
                         if(hitResult.face.y<0) face=0;
                         else if(hitResult.face.y>0) face=1;
@@ -516,7 +516,7 @@ export default class Minecraft {
                         if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
                             
-                            this.world.setBlockAt(x, y, z, typeId,1+this.isSingleplayer()?0:2);
+                            this.world.setBlockAt(x, y, z, typeId,1+(this.isSingleplayer()?0:2));
                             let face;
                             if(hitResult.face.y<0) face=0;
                             else if(hitResult.face.y>0) face=1;
@@ -531,10 +531,9 @@ export default class Minecraft {
                         //https://wiki.vg/index.php?title=Protocol&oldid=7368#Set_Slot
                             // Swing player arm
                             this.player.swingArm();
-                          
                             // Handle block abilities
                             let block = Block.getById(typeId);
-                            block.onBlockPlaced(this.world, x, y, z, hitResult.face,1+this.isSingleplayer()?0:2);
+                            block.onBlockPlaced(this.world, x, y, z, hitResult.face,1+(this.isSingleplayer()?0:2));
 
                             // Play sound
                             let sound = block.getSound();

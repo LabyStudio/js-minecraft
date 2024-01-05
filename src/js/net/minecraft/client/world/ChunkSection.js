@@ -1,13 +1,12 @@
 import EnumSkyBlock from "../../util/EnumSkyBlock.js";
 import Block from "./block/Block.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
-let world=null;
 export default class ChunkSection {
 
     static SIZE = 16;
 
-    constructor(world2, chunk, x, y, z) {
-        world = world2;
+    constructor(world, chunk, x, y, z) {
+        this.world = world;
         this.chunk = chunk;
 
         this.x = x;
@@ -45,7 +44,7 @@ export default class ChunkSection {
         this.isModified = false;
         this.group.clear();
 
-        let ambientOcclusion = world.minecraft.settings.ambientOcclusion;
+        let ambientOcclusion = this.world.minecraft.settings.ambientOcclusion;
         let tessellator = renderer.blockRenderer.tessellator;
 
         // Tree render phases for solid, translucent and decoration (alpha enabled)
@@ -71,7 +70,7 @@ export default class ChunkSection {
                                 continue;
                             }
 
-                            renderer.blockRenderer.renderBlock(world, block, ambientOcclusion, absoluteX, absoluteY, absoluteZ);
+                            renderer.blockRenderer.renderBlock(this.world, block, ambientOcclusion, absoluteX, absoluteY, absoluteZ);
                         }
                     }
                 }
@@ -131,7 +130,7 @@ export default class ChunkSection {
 
     getTotalLightAt(x, y, z) {
         let index = y << 8 | z << 4 | x;
-        let skyLight = (index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14)) - world.skylightSubtracted;
+        let skyLight = (index in this.skyLight ? this.skyLight[index] : (this.empty ? 15 : 14)) - this.world.skylightSubtracted;
         let blockLight = index in this.blockLight ? this.blockLight[index] : 0;
         if (blockLight > skyLight) {
             skyLight = blockLight;

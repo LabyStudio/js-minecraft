@@ -1,17 +1,15 @@
 import ChunkProvider from "./ChunkProvider.js";
 import WorldGenerator from "../generator/WorldGenerator.js";
 import Random from "../../../util/Random.js";
-let world=null
 export default class ChunkProviderGenerate extends ChunkProvider {
 
-    constructor(world2, seed) {
-        super(world2);
-        world=world2;
-        this.generator = new WorldGenerator(world, seed);
+    constructor(world, seed) {
+        super(world);
+        this.generator = new WorldGenerator(this.world, seed);
     }
 
     generateChunk(x, z) {
-        return this.generator.newChunk(world, x, z);
+        return this.generator.newChunk(this.world, x, z);
     }
 
     populateChunk(chunk) {
@@ -44,7 +42,7 @@ export default class ChunkProviderGenerate extends ChunkProvider {
     }
 
     findSpawn() {
-        let spawn = world.spawn;
+        let spawn = this.world.spawn;
         if (spawn.y <= 0) {
             spawn.y = 64;
         }
@@ -58,10 +56,10 @@ export default class ChunkProviderGenerate extends ChunkProvider {
 
     getBlockAboveSeaLevel(x, z) {
         let y = this.generator.getSeaLevel();
-        while (world.getBlockAt(x, y + 1, z) !== 0) {
+        while (this.world.getBlockAt(x, y + 1, z) !== 0) {
             y++;
         }
-        return world.getBlockAt(x, y, z);
+        return this.world.getBlockAt(x, y, z);
     }
 
 }
