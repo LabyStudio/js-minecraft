@@ -2,9 +2,10 @@ let Splash=
 {
     "splashes": [
         "Made in JavaScript!",
+        "Learn Programming!",
         "Splish Splash!",
         "Algebraic!",
-        "Methematical!",
+        "Mathematical!",
         "As seen on TV!",
         "Awesome!",
         "100% pure!",
@@ -18,10 +19,8 @@ let Splash=
         "When it's finished!",
         "Excitement!",
         "Check it out!",
-        "Mintcraft!",
-        "Creepers gonna creep!",
+        "Mintblock!",
         "That's no moon!",
-        "Open source!",
         "Create!",
         "Call your mother!",
         "Tell your friends!",
