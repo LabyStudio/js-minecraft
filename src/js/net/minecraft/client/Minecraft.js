@@ -422,6 +422,8 @@ export default class Minecraft {
             const div = document.getElementById('blocklycode');
             abortscript()
 		    div.style.visibility = 'visible';  
+            const div2 = document.getElementById('selectLanguage');
+            
 
         }
 

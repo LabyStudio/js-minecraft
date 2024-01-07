@@ -21,11 +21,14 @@
 
 <div id="blocklycode" class="fullscreen2">
     <div class="blocklybuttonblock">
+    <select class="mode-blockly mdl-button mdl-js-button" id="selectLanguage">
+    </select>
      <button class="mode-blockly mdl-button mdl-js-button" id="back">Zurück</button>
      <button class="mode-blockly mdl-button mdl-js-button" id="run">Ausführen</button>
      <button class="mode-blockly mdl-button mdl-js-button" id="save">Speichern</button>
      <button class="mode-blockly mdl-button mdl-js-button" id="load">Laden</button>
     </div>
+
     <div class="blockly-editor">
       <div id="blocklyDiv" style="height: 95vh; width: 90vw;"></div>
     </div>
@@ -53,11 +56,40 @@
 <script src="blockly_git/dist/blockly_compressed.js"></script>
 <script src="blockly_git/dist/blocks_compressed.js"></script>
  
+<script type="text/javascript">
+  const loadScript = (FILE_URL, async = true, type = "text/javascript") => {
+    return new Promise((resolve, reject) => {
+        try {
+            const scriptEle = document.createElement("script");
+            scriptEle.type = type;
+            scriptEle.async = async;
+            scriptEle.src =FILE_URL;
+
+            scriptEle.addEventListener("load", (ev) => {
+                resolve({ status: true });
+            });
+
+            scriptEle.addEventListener("error", (ev) => {
+                reject({
+                    status: false,
+                    message: `Failed to load the script ${FILE_URL}`
+                });
+            });
+
+            document.body.appendChild(scriptEle);
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+
+</script>
 
  <script  src="blockly_git/dist/javascript_compressed.js"></script>
   
-  <script src="blockly_git/build/msg/de.js"></script>
-<!--
+  <!--
+<script src="blockly_git/build/msg/de.js"></script>
 
 
     
