@@ -60,15 +60,44 @@ export default class FontRenderer {
 
     drawStringRaw(stack, string, x, y, color = -1, isShadow = false) {
         stack.save();
-
-        // Set color
         this.setColor(stack, color, isShadow);
+        // Set color
+        // For each character
+        let string2="";
+        for (let i = 0; i < string.length; i++) {
+            let character = string[i];
+            let index = FontRenderer.CHAR_INDEX_LOOKUP.indexOf(character);
+            let code = character.charCodeAt(0);
 
-        // Draw string
-        stack.font = "8px Minecraft";
-        stack.fillText(string, x, y+6);
+            // Handle color codes if character is &
+            if (character === FontRenderer.COLOR_PREFIX && i !== string.length - 1) {
+                if(string2.length>0){
+                    stack.font = "8px Minecraft";
+                    stack.fillText(string2, x, y+6);
+                    x+=getCleanStringWidth(stack,string2);
+                }
+                
+                // Get the next character
+                let nextCharacter = string[i + 1];
 
+                // Change color of string
+                this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
+
+                // Skip the color code for rendering
+                i += 1;
+                string2="";
+                continue;
+            }
+            string2+=character;
+        }
+        if(string2.length>0){
+            stack.font = "8px Minecraft";
+            stack.fillText(string2, x, y+6);
+        }
+       
         stack.restore();
+        // Draw string
+    
     }
 
     getColorOfCharacter(character) {
@@ -82,12 +111,30 @@ export default class FontRenderer {
 
         return r << 16 | g << 8 | b;
     }
-
-    getStringWidth(stack, string) {
+    
+    getCleanStringWidth(stack,string) {
         stack.font = "8px Minecraft";
         return stack.measureText(string).width;
     }
 
+    getStringWidth(stack,string) {
+        let length = 0;
+        let string2="";
+        // For each character
+        for (let i = 0; i < string.length; i++) {
+
+            // Check for color code
+            if (string[i] === FontRenderer.COLOR_PREFIX) {
+                // Skip the next character
+                i++;
+            } else {
+                // Add the width of the character
+                string2+=string[i];
+            }
+        }
+        stack.font = "8px Minecraft";
+        return stack.measureText(string2).width;
+    }
 
     createBitMap(img) {
         let canvas = document.createElement('canvas');
