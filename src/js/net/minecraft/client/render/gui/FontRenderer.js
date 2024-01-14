@@ -58,37 +58,55 @@ export default class FontRenderer {
         this.drawStringRaw(stack, string, x, y, color, false);
     }
 
-    drawStringRaw(stack, string, x, y, color = -1, isShadow = false) {
+    drawStringRaw(stack, string, x, y, color = 0xffffff, isShadow = false) {
         stack.save();
-        this.setColor(stack, color, isShadow);
+    //    this.setColor(stack, color, isShadow);
+    //    stack.font = "8px Minecraft";
+
         // Set color
         // For each character
         let string2="";
-        for (let i = 0; i < string.length; i++) {
-            let character = string[i];
-            let index = FontRenderer.CHAR_INDEX_LOOKUP.indexOf(character);
-            let code = character.charCodeAt(0);
+        let neversetcolour=true;
+        if(true){
+            for (let i = 0; i < string.length; i++) {
+                let character = string[i];
+                let index = FontRenderer.CHAR_INDEX_LOOKUP.indexOf(character);
+                let code = character.charCodeAt(0);
 
-            // Handle color codes if character is &
-            if (character === FontRenderer.COLOR_PREFIX && i !== string.length - 1) {
-                if(string2.length>0){
-                    stack.font = "8px Minecraft";
-                    stack.fillText(string2, x, y+6);
-                    x+=getCleanStringWidth(stack,string2);
+                // Handle color codes if character is &
+                if (character === FontRenderer.COLOR_PREFIX && i !== string.length - 1) {
+                    if(string2.length>0){
+                        if(neversetcolour) {
+                            this.setColor(stack, color, isShadow);
+                           
+                        }
+                        stack.font = "8px Minecraft";
+                        stack.fillText(string2, x, y+6);
+                        stack.restore();
+                        x+=this.getCleanStringWidth(stack,string2);
+                        stack.save()
+                      
+
+                    }
+                    
+                    // Get the next character
+                    let nextCharacter = string[i + 1];
+
+                    // Change color of string
+                    neversetcolour=false;
+                    this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
+                    //else  this.setColor(stack, color, isShadow);
+                    // Skip the color code for rendering
+                    i += 1;
+                    string2="";
+                    continue;
                 }
-                
-                // Get the next character
-                let nextCharacter = string[i + 1];
-
-                // Change color of string
-                this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
-
-                // Skip the color code for rendering
-                i += 1;
-                string2="";
-                continue;
+                string2+=character;
             }
-            string2+=character;
+        }
+        if(neversetcolour) {
+            this.setColor(stack, color, isShadow);
+
         }
         if(string2.length>0){
             stack.font = "8px Minecraft";
@@ -113,7 +131,6 @@ export default class FontRenderer {
     }
     
     getCleanStringWidth(stack,string) {
-        stack.font = "8px Minecraft";
         return stack.measureText(string).width;
     }
 
