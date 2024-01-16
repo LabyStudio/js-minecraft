@@ -118,7 +118,7 @@ export default class NetworkPlayHandler extends PacketHandler {
 
     handleServerSpawnPlayer(packet) {
         let world = this.minecraft.world;
-        let entity = new PlayerEntity(this.minecraft, world, packet.getEntityId(),packet.getUUID());
+        let entity = new PlayerEntity(this.minecraft, world, packet.getEntityId(),packet.getUUID());//KSKSKS
 
         entity.serverPositionX = packet.getX();
         entity.serverPositionY = packet.getY();

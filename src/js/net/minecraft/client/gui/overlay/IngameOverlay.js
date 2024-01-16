@@ -51,6 +51,7 @@ export default class IngameOverlay extends Gui {
             let debugHeight = canvasDebug.height * this.window.scaleFactor;
             let debugWidth = canvasDebug.width * this.window.scaleFactor;
             stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
+            window.app
 
         }
 
@@ -63,6 +64,7 @@ export default class IngameOverlay extends Gui {
     onTick() {
         this.chatOverlay.onTick();
         this.window.canvasNames.getContext('2d').clearRect(0, 0, this.window.width, this.window.height);
+        window.app.clearednames=true;
         // Render debug overlay on tick
         if (this.minecraft.settings.debugOverlay) {
             let stack = this.window.canvasDebug.getContext('2d');

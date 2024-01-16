@@ -51,20 +51,22 @@ export default class FontRenderer {
         return 2;
     }
 
-    drawString(stack, string, x, y, color = -1, shadow = true) {
+    drawString(stack, string, x, y, color = 0xffffffff, shadow = true) {
         if (shadow) {
             this.drawStringRaw(stack, string, x + 1, y + 1, color, true);
         }
         this.drawStringRaw(stack, string, x, y, color, false);
     }
 
-    drawStringRaw(stack, string, x, y, color = 0xffffff, isShadow = false) {
+    drawStringRaw(stack, string, x, y, color = 0xffffffff, isShadow = false) {
         stack.save();
     //    this.setColor(stack, color, isShadow);
     //    stack.font = "8px Minecraft";
 
         // Set color
         // For each character
+        let a = (color&0xff000000)
+     
         let string2="";
         let neversetcolour=true;
         if(true){
@@ -94,7 +96,7 @@ export default class FontRenderer {
 
                     // Change color of string
                     neversetcolour=false;
-                    this.setColor(stack, this.getColorOfCharacter(nextCharacter), isShadow);
+                    this.setColor(stack, a|(this.getColorOfCharacter(nextCharacter)), isShadow);
                     //else  this.setColor(stack, color, isShadow);
                     // Skip the color code for rendering
                     i += 1;
@@ -162,17 +164,18 @@ export default class FontRenderer {
     }
 
     setColor(stack, color, isShadow = false) {
-        let a = 255;
+        let a = (color&0xff000000)>>>24;
+
+        
         if (isShadow) {
-            color = (color & 0xFCFCFC) >> 2;
-            a = 127;
+            color = (color & 0xFCFCFC) >>> 2;
+            a = a>>>1;
         }
 
-        let r = (color & 0xFF0000) >> 16;
-        let g = (color & 0x00FF00) >> 8;
-        let b = (color & 0x0000FF);
-
-        stack.fillStyle = `rgba(${r},${g},${b},${a})`;
+        let r = (color & 0xFF0000) >>> 16;
+        let g = (color & 0x00FF00) >>> 8;
+        let b = (color & 0x0000FF)>>>0;
+        stack.fillStyle = `rgba(${r},${g},${b},${a/255})`;
     }
 
     listFormattedStringToWidth(text, wrapWidth) {

@@ -72,6 +72,7 @@ export default class Minecraft {
             this.playerController = null;
             this.fps = 0;
             this.maxFps = 0;
+            this.clearednames=false;
 
             // Tick timer
             this.timer = new Timer(20);
@@ -84,7 +85,7 @@ export default class Minecraft {
 
             // Load session from settings
             if (this.settings.session === null) {
-                let username = "Player" + Math.floor(Math.random() * 100);
+                let username = this.settings.name;
                 let profile = new GameProfile(UUID.randomUUID(), username);
                 this.setSession(new Session(profile, ""));
             } else {
@@ -98,7 +99,6 @@ export default class Minecraft {
             this.worldRenderer = new WorldRenderer(this, this.window);
             this.screenRenderer = new ScreenRenderer(this, this.window);
             this.itemRenderer = new ItemRenderer(this, this.window);
-
             // Create current screen and overlay
             this.ingameOverlay = new IngameOverlay(this, this.window);
 

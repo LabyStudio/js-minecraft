@@ -78,16 +78,22 @@ export default class PlayerRenderer extends EntityRenderer {
 
         //KSKSKS
         let canvas=window.app.ingameOverlay.window.canvasNames.getContext('2d');
-        let playerpos=new THREE.Vector3(interpolatedX,interpolatedY+2,interpolatedZ);
-        let selfpos=new THREE.Vector3(interpolatedselfX,interpolatedselfY+2,interpolatedselfZ);
+        let playerpos=new THREE.Vector3(interpolatedX,interpolatedY,interpolatedZ);
+        let selfpos=new THREE.Vector3(interpolatedselfX,interpolatedselfY,interpolatedselfZ);
         selfpos.sub(playerpos)
-        let yaw2 = Math.atan2(selfpos.z, selfpos.x)/Math.PI*180.;
-        if(selfpos.length()>0.1 )console.log(MathHelper.wrapAngleTo180(Math.abs(yaw-yaw2)))
-        if(selfpos.length()<0.1 || MathHelper.wrapAngleTo180(Math.abs(yaw-yaw2))<90. ){           
+
+        let yawvec=new THREE.Vector2(Math.cos((yaw-90)/180*Math.PI),Math.sin((yaw-90)/180*Math.PI));
+        let yawvec2=new THREE.Vector2(selfpos.x,selfpos.z);;
+        
+        if(selfpos.length()>0.1 )console.log(yawvec.dot(yawvec2))
+        if((selfpos.length()<0.1 ||yawvec.dot(yawvec2)>0) && window.app.playerController.getNetworkHandler !== undefined ){           
             playerpos.project(window.app.worldRenderer.camera);
             var widthHalf=window.app.ingameOverlay.window.width/2;
             var heightHalf=window.app.ingameOverlay.window.height/2;
-            window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf) ;// 
+            if(window.app.clearednames){
+                window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf,0x50ffffff) ;// 
+                window.app.clearednames=false;
+            } 
         }
 
         let swingProgress = entity.swingProgress - entity.prevSwingProgress;

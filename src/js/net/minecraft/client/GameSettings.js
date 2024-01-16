@@ -20,6 +20,7 @@ export default class GameSettings {
         this.viewDistance = 4;
         this.debugOverlay = false;
         this.serverAddress = 'localhost';
+        this.name="Player"+ Math.floor(Math.random() * 100);
     }
 
     load() {

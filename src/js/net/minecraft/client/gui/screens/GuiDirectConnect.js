@@ -2,7 +2,9 @@ import GuiScreen from "../GuiScreen.js";
 import GuiButton from "../widgets/GuiButton.js";
 import GuiTextField from "../widgets/GuiTextField.js";
 import GuiConnecting from "./GuiConnecting.js";
-
+import GameProfile from "../../../util/GameProfile.js";
+import UUID from "../../../util/UUID.js";
+import Session from "../../../util/Session.js";
 export default class GuiDirectConnect extends GuiScreen {
 
     constructor(previousScreen) {
@@ -20,6 +22,11 @@ export default class GuiDirectConnect extends GuiScreen {
         this.fieldAddress.maxLength = 30;
         this.fieldAddress.text = this.minecraft.settings.serverAddress;
         this.buttonList.push(this.fieldAddress);
+
+        this.fieldName = new GuiTextField(this.width / 2 - 100, y + 60, 200, 20)
+        this.fieldName.maxLength = 30;
+        this.fieldName.text = this.minecraft.settings.name;
+        this.buttonList.push(this.fieldName);
 
         this.buttonList.push(new GuiButton("Connect", this.width / 2 - 155, y + 110, 150, 20, () => {
             this.minecraft.displayScreen(new GuiConnecting(this, this.fieldAddress.text));
@@ -46,7 +53,18 @@ export default class GuiDirectConnect extends GuiScreen {
 
     onClose() {
         this.minecraft.settings.serverAddress = this.fieldAddress.text;
+        this.minecraft.settings.name = this.fieldName.text;
         this.minecraft.settings.save();
+        
+
+        // Load session from settings
+        if (this.minecraft.settings.session === null) {
+            let username = this.minecraft.settings.name;
+            let profile = new GameProfile(UUID.randomUUID(), username);
+            this.minecraft.setSession(new Session(profile, ""));
+        } else {
+            this.minecraft.setSession(Session.fromJson(this.minecraft.settings.session));
+        }
     }
 
 }
