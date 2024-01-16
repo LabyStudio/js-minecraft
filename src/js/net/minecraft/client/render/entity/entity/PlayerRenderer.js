@@ -67,6 +67,7 @@ export default class PlayerRenderer extends EntityRenderer {
     }
 
     render(entity, partialTicks) {
+  
         let interpolatedX = entity.prevX + (entity.x - entity.prevX) * partialTicks;
         let interpolatedY = entity.prevY + (entity.y - entity.prevY) * partialTicks;
         let interpolatedZ = entity.prevZ + (entity.z - entity.prevZ) * partialTicks;
@@ -75,6 +76,8 @@ export default class PlayerRenderer extends EntityRenderer {
         let interpolatedselfZ = window.app.player.prevZ + (window.app.player.z - window.app.player.prevZ) * partialTicks;
 
         let yaw = window.app.player.rotationYaw;
+        let pitch=window.app.player.rotationPitch;
+        console.log(pitch)
 
         //KSKSKS
         let canvas=window.app.ingameOverlay.window.canvasNames.getContext('2d');
@@ -82,19 +85,16 @@ export default class PlayerRenderer extends EntityRenderer {
         let selfpos=new THREE.Vector3(interpolatedselfX,interpolatedselfY,interpolatedselfZ);
         selfpos.sub(playerpos)
 
-        let yawvec=new THREE.Vector2(Math.cos((yaw-90)/180*Math.PI),Math.sin((yaw-90)/180*Math.PI));
-        let yawvec2=new THREE.Vector2(selfpos.x,selfpos.z);;
-        
-        if(selfpos.length()>0.1 )console.log(yawvec.dot(yawvec2))
+        let yawvec=new THREE.Vector3(Math.cos((yaw-90)/180*Math.PI)*Math.cos(pitch/180*Math.PI),Math.sin(pitch/180*Math.PI),Math.sin((yaw-90)/180*Math.PI)*Math.cos(pitch/180*Math.PI));
+        let yawvec2=new THREE.Vector3(selfpos.x,selfpos.y,selfpos.z);;
         if((selfpos.length()<0.1 ||yawvec.dot(yawvec2)>0) && window.app.playerController.getNetworkHandler !== undefined ){           
             playerpos.project(window.app.worldRenderer.camera);
             var widthHalf=window.app.ingameOverlay.window.width/2;
             var heightHalf=window.app.ingameOverlay.window.height/2;
-            if(window.app.clearednames){
-                window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf,0x50ffffff,false) ;// 
-                window.app.clearednames=false;
-            } 
+            window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf,0x50ffffff,false) ;// 
         }
+       
+       
 
         let swingProgress = entity.swingProgress - entity.prevSwingProgress;
         if (swingProgress < 0.0) {

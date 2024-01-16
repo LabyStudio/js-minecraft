@@ -72,7 +72,6 @@ export default class Minecraft {
             this.playerController = null;
             this.fps = 0;
             this.maxFps = 0;
-            this.clearednames=false;
 
             // Tick timer
             this.timer = new Timer(20);
@@ -274,6 +273,8 @@ export default class Minecraft {
                 let deltaX = this.window.pullMouseMotionX();
                 let deltaY = this.window.pullMouseMotionY();
                 this.player.turn(deltaX, deltaY);
+
+                this.window.canvasNames.getContext('2d').clearRect(0, 0, this.window.width, this.window.height);
             }
 
             // Update lights
