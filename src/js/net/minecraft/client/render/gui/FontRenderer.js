@@ -169,7 +169,6 @@ export default class FontRenderer {
         
         if (isShadow) {
             color = (color & 0xFCFCFC) >>> 2;
-            a = a>>>1;
         }
 
         let r = (color & 0xFF0000) >>> 16;

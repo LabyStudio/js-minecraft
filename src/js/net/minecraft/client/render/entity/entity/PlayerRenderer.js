@@ -91,7 +91,7 @@ export default class PlayerRenderer extends EntityRenderer {
             var widthHalf=window.app.ingameOverlay.window.width/2;
             var heightHalf=window.app.ingameOverlay.window.height/2;
             if(window.app.clearednames){
-                window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf,0x50ffffff) ;// 
+                window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf,0x50ffffff,false) ;// 
                 window.app.clearednames=false;
             } 
         }
