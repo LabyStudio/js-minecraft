@@ -19,6 +19,7 @@ export default class GameSettings {
         this.viewDistance = 4;
         this.debugOverlay = false;
         this.serverAddress = 'server.labystudio.de';
+        this.name="Player"+ Math.floor(Math.random() * 100);
     }
 
     load() {

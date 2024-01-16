@@ -82,7 +82,7 @@ export default class Minecraft {
 
             // Load session from settings
             if (this.settings.session === null) {
-                let username = "Player" + Math.floor(Math.random() * 100);
+                let username = this.settings.name;
                 let profile = new GameProfile(UUID.randomUUID(), username);
                 this.setSession(new Session(profile, ""));
             } else {
@@ -96,7 +96,6 @@ export default class Minecraft {
             this.worldRenderer = new WorldRenderer(this, this.window);
             this.screenRenderer = new ScreenRenderer(this, this.window);
             this.itemRenderer = new ItemRenderer(this, this.window);
-
             // Create current screen and overlay
             this.ingameOverlay = new IngameOverlay(this, this.window);
 
@@ -272,6 +271,8 @@ export default class Minecraft {
                 let deltaX = this.window.pullMouseMotionX();
                 let deltaY = this.window.pullMouseMotionY();
                 this.player.turn(deltaX, deltaY);
+
+                this.window.canvasNames.getContext('2d').clearRect(0, 0, this.window.width, this.window.height);
             }
 
             // Update lights

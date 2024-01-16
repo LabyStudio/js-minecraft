@@ -4,10 +4,11 @@ import Random from "../../util/Random.js";
 
 export default class Entity {
 
-    constructor(minecraft, world, id) {
+    constructor(minecraft, world, id,uuid="") {
         this.minecraft = minecraft;
         this.world = world;
         this.id = id;
+        this.uuid=uuid;
 
         this.random = new Random();
         this.renderer = null;

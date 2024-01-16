@@ -45,6 +45,14 @@ export default class IngameOverlay extends Gui {
             let debugWidth = canvasDebug.width * this.window.scaleFactor;
             stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
         }
+        {
+            let canvasDebug = this.window.canvasNames;
+            let canvas = this.window.canvas;
+            let debugHeight = canvasDebug.height * this.window.scaleFactor;
+            let debugWidth = canvasDebug.width * this.window.scaleFactor;
+            stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
+
+        }
 
         // Render player list
         if (Keyboard.isKeyDown(this.minecraft.settings.keyPlayerList) && !this.minecraft.isSingleplayer()) {
@@ -54,7 +62,7 @@ export default class IngameOverlay extends Gui {
 
     onTick() {
         this.chatOverlay.onTick();
-
+    
         // Render debug overlay on tick
         if (this.minecraft.settings.debugOverlay) {
             let stack = this.window.canvasDebug.getContext('2d');
