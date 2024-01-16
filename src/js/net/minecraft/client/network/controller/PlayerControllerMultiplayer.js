@@ -12,7 +12,7 @@ export default class PlayerControllerMultiplayer extends PlayerController {
     }
 
     createPlayer(world) {
-        return new PlayerEntityMultiplayer(this.minecraft, world, this.networkHandler, this.entityId);
+        return new PlayerEntityMultiplayer(this.minecraft, world, this.networkHandler, this.entityId,this.networkHandler.profile.getId());
     }
 
     sendChatMessage(message) {

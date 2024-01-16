@@ -2,7 +2,7 @@ import ModelPlayer from "../../model/model/ModelPlayer.js";
 import EntityRenderer from "../EntityRenderer.js";
 import Block from "../../../world/block/Block.js";
 import * as THREE from "../../../../../../../../libraries/three.module.js";
-
+import MathHelper from "../../../../util/MathHelper.js";
 export default class PlayerRenderer extends EntityRenderer {
 
     constructor(worldRenderer) {
@@ -67,6 +67,29 @@ export default class PlayerRenderer extends EntityRenderer {
     }
 
     render(entity, partialTicks) {
+        let interpolatedX = entity.prevX + (entity.x - entity.prevX) * partialTicks;
+        let interpolatedY = entity.prevY + (entity.y - entity.prevY) * partialTicks;
+        let interpolatedZ = entity.prevZ + (entity.z - entity.prevZ) * partialTicks;
+        let interpolatedselfX = window.app.player.prevX + (window.app.player.x - window.app.player.prevX) * partialTicks;
+        let interpolatedselfY = window.app.player.prevY + (window.app.player.y - window.app.player.prevY) * partialTicks;
+        let interpolatedselfZ = window.app.player.prevZ + (window.app.player.z - window.app.player.prevZ) * partialTicks;
+
+        let yaw = window.app.player.rotationYaw;
+
+        //KSKSKS
+        let canvas=window.app.ingameOverlay.window.canvasNames.getContext('2d');
+        let playerpos=new THREE.Vector3(interpolatedX,interpolatedY+2,interpolatedZ);
+        let selfpos=new THREE.Vector3(interpolatedselfX,interpolatedselfY+2,interpolatedselfZ);
+        selfpos.sub(playerpos)
+        let yaw2 = Math.atan2(selfpos.z, selfpos.x)/Math.PI*180.;
+        if(selfpos.length()>0.1 )console.log(MathHelper.wrapAngleTo180(Math.abs(yaw-yaw2)))
+        if(selfpos.length()<0.1 || MathHelper.wrapAngleTo180(Math.abs(yaw-yaw2))<90. ){           
+            playerpos.project(window.app.worldRenderer.camera);
+            var widthHalf=window.app.ingameOverlay.window.width/2;
+            var heightHalf=window.app.ingameOverlay.window.height/2;
+            window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf) ;// 
+        }
+
         let swingProgress = entity.swingProgress - entity.prevSwingProgress;
         if (swingProgress < 0.0) {
             swingProgress++;

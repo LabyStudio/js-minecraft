@@ -10,11 +10,11 @@ export default class PlayerEntity extends EntityLiving {
 
     static name = "PlayerEntity";
 
-    constructor(minecraft, world, id) {
-        super(minecraft, world, id);
+    constructor(minecraft, world, id,uuid="") {
+        super(minecraft, world, id,uuid);
 
         this.inventory = new InventoryPlayer();
-        this.username = "Player";
+        this.username = "Player";//KSKSKS get right name
 
         this.collision = false;
 

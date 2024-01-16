@@ -52,6 +52,7 @@ export default class GameWindow {
         // Create render layers
         this.canvasWorld = document.createElement('canvas');
         this.canvasDebug = document.createElement('canvas');
+        this.canvasNames = document.createElement('canvas');//KSKSKS
         this.canvasPlayerList = document.createElement('canvas');
         this.canvasItems = document.createElement('canvas');
 
@@ -387,6 +388,12 @@ export default class GameWindow {
             this.canvasDebug.width = this.canvas.width;
             this.canvasDebug.height = this.canvas.height;
             let ctx = this.canvasDebug.getContext('2d');
+            ctx.scale(this.scaleFactor, this.scaleFactor);
+        }
+        if (this.canvasNames.width !== this.canvas.width || this.canvasNames.height !== this.canvas.height) {
+            this.canvasNames.width = this.canvas.width;
+            this.canvasNames.height = this.canvas.height;
+            let ctx = this.canvasNames.getContext('2d');
             ctx.scale(this.scaleFactor, this.scaleFactor);
         }
 

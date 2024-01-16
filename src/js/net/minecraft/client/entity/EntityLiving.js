@@ -3,8 +3,8 @@ import MathHelper from "../../util/MathHelper.js";
 
 export default class EntityLiving extends Entity {
 
-    constructor(minecraft, world, id) {
-        super(minecraft, world, id);
+    constructor(minecraft, world, id,uuid="") {
+        super(minecraft, world, id,uuid);//KSKSKS
 
         this.jumpTicks = 0;
 

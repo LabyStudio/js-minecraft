@@ -11,8 +11,8 @@ import ClientCreativeInventoryActionPacket from "../network/packet/play/client/C
 import ClientHeldItemChangePacket from "../network/packet/play/client/ClientHeldItemChangePacket.js"
 export default class PlayerEntityMultiplayer extends PlayerEntity {
 
-    constructor(minecraft, world, networkHandler, id) {
-        super(minecraft, world, id);
+    constructor(minecraft, world, networkHandler, id,uuid="") {
+        super(minecraft, world, id,uuid);
 
         this.networkHandler = networkHandler;
 
