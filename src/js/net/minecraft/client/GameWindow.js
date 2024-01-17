@@ -177,7 +177,7 @@ export default class GameWindow {
                 if (this.focusState === FocusStateType.LOCKED) event.preventDefault();
             }
             else {
-                this.updateWindowSize();
+                this.updateWindowSize()
             }
 
             // Ignore key input if mouse is not inside window
@@ -384,23 +384,7 @@ export default class GameWindow {
         this.canvas.style.width = wrapperWidth + "px";
         this.canvas.style.height = wrapperHeight + "px";
 
-        if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
-            this.canvasDebug.width = this.canvas.width;
-            this.canvasDebug.height = this.canvas.height;
-            let ctx = this.canvasDebug.getContext('2d');
-            ctx.scale(this.scaleFactor, this.scaleFactor);
-        }
-        if (this.canvasNames.width !== this.canvas.width || this.canvasNames.height !== this.canvas.height) {
-            this.canvasNames.width = this.canvas.width;
-            this.canvasNames.height = this.canvas.height;
-            let ctx = this.canvasNames.getContext('2d');
-            ctx.scale(this.scaleFactor, this.scaleFactor);
-        }
-
-        if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
-            this.canvasPlayerList.width = this.canvas.width;
-            this.canvasPlayerList.height = this.canvas.height;
-        }
+        
 
         // Reinitialize gui
         this.minecraft.screenRenderer.initialize();
@@ -414,6 +398,24 @@ export default class GameWindow {
         if (this.minecraft.isInGame()) {
             this.minecraft.worldRenderer.render(0);
             this.minecraft.onRender(0)
+        }
+        if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
+            this.canvasDebug.width = this.canvas.width;
+            this.canvasDebug.height = this.canvas.height;
+            let ctx = this.canvasDebug.getContext('2d');
+            ctx.scale(this.scaleFactor, this.scaleFactor);
+        }
+   
+
+        if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
+            this.canvasPlayerList.width = this.canvas.width;
+            this.canvasPlayerList.height = this.canvas.height;
+        }
+        if (this.canvasNames.width !== this.canvas.width || this.canvasNames.height !== this.canvas.height) {
+            this.canvasNames.width = this.canvas.width;
+            this.canvasNames.height = this.canvas.height;
+            let ctx = this.canvasNames.getContext('2d');
+            ctx.scale(this.scaleFactor, this.scaleFactor);
         }
     }
 
