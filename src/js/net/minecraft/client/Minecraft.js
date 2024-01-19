@@ -532,7 +532,7 @@ export default class Minecraft {
                             this.player.swingArm();
                             // Handle block abilities
                             let block = Block.getById(typeId);
-                            block.onBlockPlaced(this.world, x, y, z, hitResult.face,1+(this.isSingleplayer()?0:2));
+                            block.onBlockPlaced(this.world, x, y, z, hitResult.face,false,1+(this.isSingleplayer()?0:2));
 
                             // Play sound
                             let sound = block.getSound();
