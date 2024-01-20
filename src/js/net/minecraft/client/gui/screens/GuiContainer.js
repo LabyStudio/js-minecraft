@@ -1,6 +1,6 @@
 import GuiScreen from "../GuiScreen.js";
 import Block from "../../world/block/Block.js";
-
+import GuiSliderButtonVertical from "../widgets/GuiSliderButtonVertical.js"
 export default class GuiContainer extends GuiScreen {
 
     constructor(container) {
@@ -12,6 +12,7 @@ export default class GuiContainer extends GuiScreen {
         this.container = container;
 
         this.hoverSlot = null;
+        this.offset=0;
     }
 
     init() {
@@ -20,7 +21,6 @@ export default class GuiContainer extends GuiScreen {
         this.x = Math.floor((this.width - this.inventoryWidth) / 2);
         this.y = Math.floor((this.height - this.inventoryHeight) / 2);
     }
-
     drawScreen(stack, mouseX, mouseY, partialTicks) {
         this.drawDefaultBackground(stack);
         this.drawInventoryBackground(stack);
@@ -58,7 +58,15 @@ export default class GuiContainer extends GuiScreen {
 
         // Draw title
         this.drawTitle(stack);
+        // Draw Scrollbar
 
+       // let y = this.height-50;
+        this.buttonList.push(new GuiSliderButtonVertical("Mouse Sensitivity", this.offset, 0, 3,Math.floor((this.width + this.inventoryWidth) / 2)-21, Math.floor((this.height - this.inventoryHeight) / 2)+18, 14,this.inventoryHeight-26, value => {
+            this.offset=value;
+            this.container.scrollTo(this.offset);
+            this.container.dirty=true;
+        }).setDisplayNameBuilder(function (name, value) {
+            return "";        }));
         super.drawScreen(stack, mouseX, mouseY, partialTicks);
     }
 
