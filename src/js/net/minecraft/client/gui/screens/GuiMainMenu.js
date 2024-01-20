@@ -14,12 +14,13 @@ export default class GuiMainMenu extends GuiScreen {
         super();
 
         this.panoramaTimer = 0;
-        this.splashText = "Minecraft written in JavaScript!";
+        this.splashText = '';
     }
 
     init() {
         super.init();
         this.textureLogo = this.getTexture("gui/title/minecraft.png");
+        this.splashText = this.minecraft.splashText;
 
         let y = this.height / 4 + 48;
 
@@ -29,7 +30,7 @@ export default class GuiMainMenu extends GuiScreen {
         this.buttonList.push(new GuiButton("Multiplayer", this.width / 2 - 100, y + 24, 200, 20, () => {
             this.minecraft.displayScreen(new GuiDirectConnect(this));
         }));
-        this.buttonList.push(new GuiButton("Minecraft Realms", this.width / 2 - 100, y + 24 * 2, 200, 20, () => {
+        this.buttonList.push(new GuiButton("Mintblock Realms", this.width / 2 - 100, y + 24 * 2, 200, 20, () => {
 
         }).setEnabled(false));
         this.buttonList.push(new GuiButton("Options...", this.width / 2 - 100, y + 72 + 12, 98, 20, () => {
@@ -84,8 +85,7 @@ export default class GuiMainMenu extends GuiScreen {
     }
 
     drawLogo(stack, x, y) {
-        this.drawSprite(stack, this.textureLogo, 0, 0, 155, 44, x, y, 155, 44);
-        this.drawSprite(stack, this.textureLogo, 0, 45, 155, 44, x + 155, y, 155, 44);
+        this.drawSprite(stack, this.textureLogo, 0, 0, 274, 51, x, y, 274, 51);
     }
 
     drawSplash(stack) {
@@ -93,7 +93,7 @@ export default class GuiMainMenu extends GuiScreen {
         f = f * 100.0 / (this.getStringWidth(stack, this.splashText) + 32);
 
         stack.save();
-        stack.translate((this.width / 2 + 90), 70.0, 0.0);
+        stack.translate((this.width / 2 + 120), 80.0, 0.0);
         stack.rotate(MathHelper.toRadians(-20));
         stack.scale(f, f, f);
 
@@ -109,9 +109,13 @@ export default class GuiMainMenu extends GuiScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         // Click on GitHub text
-        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
+        let mouseOver = mouseX > this.width / 2 + 70 && mouseY > this.height - 40 && mouseY < this.height - 20
+        let mouseOver2 = mouseX > this.width / 2 + 70 && mouseY > this.height - 20;
         if (mouseOver) {
             this.minecraft.window.openUrl(Minecraft.URL_GITHUB, true);
+        }
+        if (mouseOver2) {
+            this.minecraft.window.openUrl(Minecraft.URL_GITHUB_LABYSTUDIO, true);
         }
     }
 
@@ -119,7 +123,7 @@ export default class GuiMainMenu extends GuiScreen {
         this.scene = new THREE.Scene();
 
         // Create cube
-        let geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+        let geometry = new THREE.BoxGeometry (1, 1, 1);
         let materials = [
             new THREE.MeshBasicMaterial({
                 side: BackSide,

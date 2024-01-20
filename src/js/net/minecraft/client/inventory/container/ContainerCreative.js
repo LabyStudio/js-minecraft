@@ -34,7 +34,6 @@ export default class ContainerCreative extends Container {
         let typeId = slotInventory.getItemInSlot(slot.index);
 
         inventoryPlayer.setItem(hotbarIndex, typeId);
-
         this.dirty = true;
     }
 

@@ -15,7 +15,7 @@ export default class BlockGlass extends Block {
 
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || typeId !== this.id;
+        return typeId === 0 || typeId !== this.getId();
     }
 
     getOpacity() {

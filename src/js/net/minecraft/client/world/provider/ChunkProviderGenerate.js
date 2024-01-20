@@ -1,13 +1,11 @@
 import ChunkProvider from "./ChunkProvider.js";
 import WorldGenerator from "../generator/WorldGenerator.js";
 import Random from "../../../util/Random.js";
-
 export default class ChunkProviderGenerate extends ChunkProvider {
 
     constructor(world, seed) {
         super(world);
-
-        this.generator = new WorldGenerator(world, seed);
+        this.generator = new WorldGenerator(this.world, seed);
     }
 
     generateChunk(x, z) {

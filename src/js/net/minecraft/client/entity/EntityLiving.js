@@ -3,8 +3,8 @@ import MathHelper from "../../util/MathHelper.js";
 
 export default class EntityLiving extends Entity {
 
-    constructor(minecraft, world, id) {
-        super(minecraft, world, id);
+    constructor(minecraft, world, id,uuid="") {
+        super(minecraft, world, id,uuid);//KSKSKS
 
         this.jumpTicks = 0;
 
@@ -29,6 +29,7 @@ export default class EntityLiving extends Entity {
         this.prevLimbSwingStrength = 0;
 
         this.health = 20.0;
+        this.previouslyWasOnLand=true;
     }
 
     onUpdate() {
@@ -126,9 +127,15 @@ export default class EntityLiving extends Entity {
             this.travelFlying(moveForward, 0, moveStrafing);
         } else {
             if (this.isInWater()) {
-                // Is inside of water
+                if(this.previouslyWasOnLand){
+                    this.minecraft.soundManager.playSound("jump.water", this.x, this.y, this.z, 0.25, 1);
+                }
+                this.previouslyWasOnLand=false;
+                                // Is inside of water
+                
                 this.travelInWater(moveForward, 0, moveStrafing);
             } else {
+                this.previouslyWasOnLand=true;
                 // Is on land
                 this.travel(moveForward, 0, moveStrafing);
             }
@@ -145,6 +152,165 @@ export default class EntityLiving extends Entity {
         }
         this.limbSwingStrength += (distance - this.limbSwingStrength) * 0.4;
         this.limbSwingProgress += this.limbSwingStrength;
+    }
+
+    moveCollide(targetX, targetY, targetZ) {
+        // Target position
+        let originalTargetX = targetX;
+        let originalTargetY = targetY;
+        let originalTargetZ = targetZ;
+
+        if (this.onGround && this.isSneaking()) {
+            for (; targetX !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(targetX, -this.stepHeight, 0.0)).length === 0; originalTargetX = targetX) {
+                if (targetX < 0.05 && targetX >= -0.05) {
+                    targetX = 0.0;
+                } else if (targetX > 0.0) {
+                    targetX -= 0.05;
+                } else {
+                    targetX += 0.05;
+                }
+            }
+
+            for (; targetZ !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(0.0, -this.stepHeight, targetZ)).length === 0; originalTargetZ = targetZ) {
+                if (targetZ < 0.05 && targetZ >= -0.05) {
+                    targetZ = 0.0;
+                } else if (targetZ > 0.0) {
+                    targetZ -= 0.05;
+                } else {
+                    targetZ += 0.05;
+                }
+            }
+
+            for (; targetX !== 0.0 && targetZ !== 0.0 && this.world.getCollisionBoxes(this.boundingBox.offset(targetX, -this.stepHeight, targetZ)).length === 0; originalTargetZ = targetZ) {
+                if (targetX < 0.05 && targetX >= -0.05) {
+                    targetX = 0.0;
+                } else if (targetX > 0.0) {
+                    targetX -= 0.05;
+                } else {
+                    targetX += 0.05;
+                }
+
+                originalTargetX = targetX;
+
+                if (targetZ < 0.05 && targetZ >= -0.05) {
+                    targetZ = 0.0;
+                } else if (targetZ > 0.0) {
+                    targetZ -= 0.05;
+                } else {
+                    targetZ += 0.05;
+                }
+            }
+        }
+
+        // Get level tiles as bounding boxes
+        let boundingBoxList = this.world.getCollisionBoxes(this.boundingBox.expand(targetX, targetY, targetZ));
+        let isClimbable = false;
+
+        // Move bounding box
+
+        // Calculate target Y
+        for (let aABB in boundingBoxList) {
+            targetY = boundingBoxList[aABB].clipYCollide(this.boundingBox, targetY);
+        }
+
+        // Check if on ground
+        this.onGround = originalTargetY !== targetY && originalTargetY < 0.0;
+
+        // Calculate target X
+        for (let aABB in boundingBoxList) {
+            // Skip collision check for half blocks on ground
+            if ((boundingBoxList[aABB].maxY - this.boundingBox.minY) <= 0.5 && (boundingBoxList[aABB].maxY - this.boundingBox.minY) > 0 && this.onGround) {
+                continue;
+            }
+            targetX = boundingBoxList[aABB].clipXCollide(this.boundingBox, targetX);
+        }
+
+        // Calculate target Z
+        for (let aABB in boundingBoxList) {
+            // Skip collision check for half blocks on ground
+            if ((boundingBoxList[aABB].maxY - this.boundingBox.minY) <= 0.5 && (boundingBoxList[aABB].maxY - this.boundingBox.minY) > 0 && this.onGround) {
+                continue;
+            }
+            targetZ = boundingBoxList[aABB].clipZCollide(this.boundingBox, targetZ);
+        }
+
+        // Check for climbable blocks on ground
+        if (this.onGround) {
+            for (let aABB in boundingBoxList) {
+                if ((boundingBoxList[aABB].maxY - this.boundingBox.minY) <= 0.5 && (boundingBoxList[aABB].maxY - this.boundingBox.minY) > 0) {
+                    if (targetX == originalTargetX && boundingBoxList[aABB].clipXCollide(this.boundingBox, targetX) !== originalTargetX) {
+                        isClimbable = true;
+                    }
+                    if (targetZ == originalTargetZ && boundingBoxList[aABB].clipZCollide(this.boundingBox, targetZ) !== originalTargetZ) {
+                        isClimbable = true;
+                    }
+                }
+            }
+        }
+
+        // Attemp to climb
+        if (isClimbable && this.onGround && (targetX === originalTargetX || targetZ === originalTargetZ)) {
+        
+            // Move bounding box up
+            this.boundingBox.move(0.0, 0.5, 0.0);
+
+            // Calculate collision
+            let isColliding = false;
+
+            if (targetX === originalTargetX) {
+                for (let aABB in boundingBoxList) {
+                    targetX = boundingBoxList[aABB].clipXCollide(this.boundingBox, targetX);
+                }
+                if (targetX !== originalTargetX) {
+                    isColliding = true;
+                }
+            }
+            
+            if (targetZ === originalTargetZ) {
+                for (let aABB in boundingBoxList) {
+                    targetZ = boundingBoxList[aABB].clipZCollide(this.boundingBox, targetZ);
+                }
+                if (targetZ !== originalTargetZ) {
+                    isColliding = true;
+                }
+            }
+            
+            // Climb if block is reachable
+            if (!isColliding) {
+                // Recalculate target Y
+                for (let aABB in boundingBoxList) {
+                    targetY = boundingBoxList[aABB].clipYCollide(this.boundingBox, targetY);
+                } 
+            }
+            else {
+                this.boundingBox.move(0.0, -0.5, 0.0);
+            }
+        }
+        
+        // Move bounding box
+        this.boundingBox.move(targetX, targetY, targetZ);
+
+        // Stop motion on collision
+        if (originalTargetX !== targetX) {
+            this.motionX = 0.0;
+            //console.log('stopX');
+        }
+        if (originalTargetY !== targetY) {
+            this.motionY = 0.0;
+            //console.log('stopY');
+        }
+        if (originalTargetZ !== targetZ) {
+            this.motionZ = 0.0;
+            //console.log('stopZ');
+        }
+
+        // Update position
+        this.x = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0;
+        this.y = this.boundingBox.minY;
+        this.z = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0;
+
+        // Horizontal collision?
+        return originalTargetX !== targetX || originalTargetZ !== targetZ;
     }
 
     onEntityUpdate() {
@@ -210,7 +376,14 @@ export default class EntityLiving extends Entity {
             this.isSwingInProgress = true;
         }
     }
-
+    digging(status,x,y,z,face){
+    }
+    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
+    }
+    inventorySelectSlot(slot){
+    }
+    setItemInSelectedSlot(slot,itemid){
+    }
     updateArmSwingProgress() {
         let swingAnimationEnd = 6;
         if (this.isSwingInProgress) {

@@ -5,6 +5,7 @@ export default class ChunkProvider {
     constructor(world) {
         this.world = world;
         this.chunks = new Map();
+       
     }
 
     chunkExists(x, z) {

@@ -4,6 +4,7 @@ export default class GameSettings {
         this.keyCrouching = 'ShiftLeft';
         this.keySprinting = 'ControlLeft';
         this.keyTogglePerspective = 'F5';
+        this.keyToggleDebug = 'F3'
         this.keyOpenChat = 'KeyT';
         this.keyOpenInventory = 'KeyE';
         this.keyPlayerList = 'Tab';
@@ -18,6 +19,7 @@ export default class GameSettings {
         this.viewDistance = 4;
         this.debugOverlay = false;
         this.serverAddress = 'server.labystudio.de';
+        this.name="Player"+ Math.floor(Math.random() * 100);
     }
 
     load() {

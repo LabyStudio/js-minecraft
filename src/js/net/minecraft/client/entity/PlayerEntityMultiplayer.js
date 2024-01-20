@@ -5,11 +5,14 @@ import ClientPlayerPositionPacket from "../network/packet/play/client/ClientPlay
 import ClientPlayerPositionRotationPacket from "../network/packet/play/client/ClientPlayerPositionRotationPacket.js";
 import ClientPlayerStatePacket from "../network/packet/play/client/ClientPlayerStatePacket.js";
 import ClientSwingArmPacket from "../network/packet/play/client/ClientSwingArmPacket.js";
-
+import ClientPlayerDiggingPacket from "../network/packet/play/client/ClientPlayerDiggingPacket.js";
+import ClientPlayerBlockPlacementPacket from "../network/packet/play/client/ClientPlayerBlockPlacementPacket.js";
+import ClientCreativeInventoryActionPacket from "../network/packet/play/client/ClientCreativeInventoryActionPacket.js";
+import ClientHeldItemChangePacket from "../network/packet/play/client/ClientHeldItemChangePacket.js"
 export default class PlayerEntityMultiplayer extends PlayerEntity {
 
-    constructor(minecraft, world, networkHandler, id) {
-        super(minecraft, world, id);
+    constructor(minecraft, world, networkHandler, id,uuid="") {
+        super(minecraft, world, id,uuid);
 
         this.networkHandler = networkHandler;
 
@@ -35,7 +38,18 @@ export default class PlayerEntityMultiplayer extends PlayerEntity {
         super.swingArm();
         this.networkHandler.sendPacket(new ClientSwingArmPacket());
     }
-
+    digging(status,x,y,z,face){
+        this.networkHandler.sendPacket(new ClientPlayerDiggingPacket(status,x,y,z,face));
+    }
+    inventorySelectSlot(slot){
+        this.networkHandler.sendPacket(new ClientHeldItemChangePacket(slot));
+    }
+    setItemInSelectedSlot(slot,itemid){
+        this.networkHandler.sendPacket(new ClientCreativeInventoryActionPacket(slot,itemid));
+    }
+    placeBlock(x,y,z,face,helditem,cursorx,cursory,cursorz){
+        this.networkHandler.sendPacket(new ClientPlayerBlockPlacementPacket(x,y,z,face,helditem,cursorx,cursory,cursorz));
+    }
     onUpdateWalkingPlayer() {
         // Send sprinting to server
         let isSprinting = this.isSprinting();

@@ -7,7 +7,8 @@ import ClientPlayerPositionRotationPacket from "../packet/play/client/ClientPlay
 import PlayerEntity from "../../entity/PlayerEntity.js";
 import ServerAnimationPacket from "../packet/play/server/ServerAnimationPacket.js";
 import ClientConfirmTransactionPacket from "../packet/play/client/ClientConfirmTransactionPacket.js";
-
+import Block from "../../world/block/Block.js";
+import { BlockRegistry } from "../../world/block/BlockRegistry.js";
 export default class NetworkPlayHandler extends PacketHandler {
 
     constructor(networkManager, profile) {
@@ -117,7 +118,7 @@ export default class NetworkPlayHandler extends PacketHandler {
 
     handleServerSpawnPlayer(packet) {
         let world = this.minecraft.world;
-        let entity = new PlayerEntity(this.minecraft, world, packet.getEntityId());
+        let entity = new PlayerEntity(this.minecraft, world, packet.getEntityId(),packet.getUUID());//KSKSKS
 
         entity.serverPositionX = packet.getX();
         entity.serverPositionY = packet.getY();
@@ -231,6 +232,8 @@ export default class NetworkPlayHandler extends PacketHandler {
 
         let chunk = this.minecraft.world.getChunkAt(packet.getX(), packet.getZ());
         chunk.fillChunk(packet.getData(), packet.getMask(), packet.isFullChunk());
+        chunk.generateSkylightMap();
+        chunk.generateBlockLightMap();
     }
 
     handleMultiChunkData(packet) {
@@ -238,14 +241,38 @@ export default class NetworkPlayHandler extends PacketHandler {
             this.handleChunkData(chunkData);
         }
     }
-
+    handleMultiBlockData(packet){
+        let minX=Number.MAX_VALUE,minY=Number.MAX_VALUE,minZ=Number.MAX_VALUE;
+        let maxX=-Number.MAX_VALUE,maxY=-Number.MAX_VALUE,maxZ=-Number.MAX_VALUE;
+        for(let blockData of packet.getBlockData()){
+            let blockid=(blockData.typeId<<4)+(blockData.metaValue&15);
+            this.minecraft.world.setBlockAt(blockData.x,blockData.y,blockData.z,blockid,2);
+            let block = Block.getById(blockid);
+            //WEST=-x
+            //EAST=+x
+            //NORTH=-Z
+            //south=+z;
+            //TOP=+y
+            //BOTTOM=-y
+            let metaValue=blockData.metaValue & 15;
+           
+            if(block !== null) block.onBlockPlaced(this.minecraft.world, blockData.x, blockData.y, blockData.z, metaValue,true,2);
+        }
+    }
     handleBlockChange(packet) {
         let position = packet.getBlockPosition();
 
         let blockState = packet.getBlockState();
         let typeId = blockState >> 4;
+        let metaValue=blockState & 15;
+        this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(),blockState,2);
 
-        this.minecraft.world.setBlockAt(position.getX(), position.getY(), position.getZ(), typeId);
+        let block = Block.getById(blockState);    
+        if(block !== null) block.onBlockPlaced(this.minecraft.world, position.getX(), position.getY(), position.getZ(), metaValue,true,2);
+        
+    }
+    handleHeldItemChange(packet){
+        this.minecraft.player.inventory.selectedSlotIndex=packet.getSlot();
     }
 
     handleDisconnect(packet) {

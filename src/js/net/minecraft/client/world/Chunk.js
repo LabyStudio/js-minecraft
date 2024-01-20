@@ -3,13 +3,13 @@ import Block from "./block/Block.js";
 import World from "./World.js";
 import ChunkSection from "./ChunkSection.js";
 import * as THREE from "../../../../../../libraries/three.module.js";
-
+import { BlockRegistry } from "./block/BlockRegistry.js";
 export default class Chunk {
 
     static SECTION_AMOUNT = 16;
-
     constructor(world, x, z) {
-        this.world = world;
+        this.world=world;
+        //world = world;//if world is part of chunk serialization was very slow.
         this.x = x;
         this.z = z;
 
@@ -24,7 +24,7 @@ export default class Chunk {
         // Initialize sections
         this.sections = [];
         for (let y = 0; y < Chunk.SECTION_AMOUNT; y++) {
-            let section = new ChunkSection(world, this, x, y, z);
+            let section = new ChunkSection(this.world, this, x, y, z);
 
             this.sections[y] = section;
             this.group.add(section.group);
@@ -63,7 +63,7 @@ export default class Chunk {
 
                     let typeId = section.getBlockAt(x, y & 15, z);
                     let block = Block.getById(typeId);
-                    let blockLight = typeId === 0 ? 0 : block.getLightValue();
+                    let blockLight = ((typeId ===0)||(block === null )) ? 0 : block.getLightValue();
 
                     if (blockLight > 0) {
                         section.setLightAt(EnumSkyBlock.BLOCK, x, y & 15, z, blockLight);
@@ -79,8 +79,8 @@ export default class Chunk {
                     let typeId = section.getBlockAt(x, y & 15, z);
                     let block = Block.getById(typeId);
 
-                    let opacity = typeId === 0 ? 0 : block.getOpacity();
-                    let blockLight = typeId === 0 ? 0 : block.getLightValue();
+                    let opacity = ((typeId ===0)||(block === null )) ? 0 : block.getOpacity();
+                    let blockLight = ((typeId ===0)||(block === null ))? 0 : block.getLightValue();
 
                     if (opacity === 0) {
                         opacity = 1;
@@ -246,12 +246,12 @@ export default class Chunk {
         let section = this.getSection(y >> 4);
         section.setLightAt(sourceType, x, y & 15, z, level);
     }
-
-    setBlockDataAt(x, y, z, data) {
-        this.setBlockAt(x, y, z, this.getBlockAt(x, y, z), data);
+    //mode allows for storing differences due to user interaction such that efficient storage and undo will become possible
+    setBlockDataAt(x, y, z, data,mode=0) {
+        this.setBlockAt(x, y, z, this.getBlockAt(x, y, z), data,mode);
     }
-
-    setBlockAt(x, y, z, typeId, data = 0) {
+    //mode allows for storing differences due to user interaction such that efficient storage and undo will become possible
+    setBlockAt(x, y, z, typeId, data = 0,mode=0) {
         if (y < 0 || y >= World.TOTAL_HEIGHT) {
             return;
         }
@@ -269,8 +269,8 @@ export default class Chunk {
         }
 
         // Update block type and data
-        section.setBlockAt(x, yInSection, z, typeId);
-        section.setBlockDataAt(x, yInSection, z, data);
+        section.setBlockAt(x, yInSection, z, typeId,mode);
+        section.setBlockDataAt(x, yInSection, z, data,mode);
 
         if (!this.loaded) {
             return;
@@ -298,7 +298,7 @@ export default class Chunk {
 
         // Handle block abilities
         if (typeId !== 0 && block !== null) {
-            block.onBlockAdded(this.world, totalX, y, totalZ);
+            block.onBlockAdded(this.world, totalX, y, totalZ,mode);
         }
 
         return true;
@@ -317,14 +317,29 @@ export default class Chunk {
 
                     let value = (((data[i] & 0xFF) | (data[i + 1] & 0xFF) << 8));
                     let typeId = value >> 4;
-                    let meta = value & 0xF; // TODO handle meta of block
+                    let metaValue = value & 0xF;
 
                     // TODO support more blocks
-                    if (typeId !== 0 && Block.getById(typeId) === null) {
-                        typeId = 1;
+                    if (value !== 0 && Block.getById(value) === null) {
+                        
+                         
+                        if(Block.getById(value&0xffff0)!=null) {
+                            //console.log("!!! simplified block:"+typeId+","+metaValue);
+                            value=value&0xffff0;
+                        }
+                        else{
+                            //console.log("!!! unknown block:"+typeId+","+metaValue);
+                            value = (95<<4)+6;
+                        }
                     }
 
-                    section.setBlockAt(x, y, z, typeId);
+                   
+                    let block = Block.getById(value);
+
+                    section.setBlockAt(x, y, z, value);
+                    if(block !== null) section.setBlockDataAt(x,y,z,metaValue);
+        
+              
 
                     i += 2;
                 }

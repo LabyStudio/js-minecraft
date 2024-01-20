@@ -23,16 +23,17 @@ import UUID from "../util/UUID.js";
 import FocusStateType from "../util/FocusStateType.js";
 import Session from "../util/Session.js";
 import PlayerControllerMultiplayer from "./network/controller/PlayerControllerMultiplayer.js";
-
+import Splash from "../../../../resources/splashes.js"
+import {get,set} from "../util/idbstore.js"
+import {require} from "../../../Start.js"
 export default class Minecraft {
-
-    static VERSION = "1.1.8"
+    static VERSION = "1.2.0"
     static URL_GITHUB = "https://github.com/labystudio/js-minecraft";
     static PROTOCOL_VERSION = 47; //758;
 
     // TODO Add to settings
     static PROXY = {
-        "address": "localhost",
+        "address": ( (window.location.host.replace(/:[0-9]*$/, "")=="127.0.0.1")?"ws://":"wss://")+window.location.host.replace(/:[0-9]*$/, ""),
         "port": 30023
     };
 
@@ -40,71 +41,95 @@ export default class Minecraft {
      * Create Minecraft instance and render it on a canvas
      */
     constructor(canvasWrapperId, resources) {
-        this.resources = resources;
+        this.pako=require("pako");
+        (async ()=>{
+            this.changedBlocksArray=null;
+            this.changedBlocksDataArray=null;
 
-        this.currentScreen = null;
-        this.loadingScreen = null;
-        this.world = null;
-        this.player = null;
-        this.playerController = null;
-        this.fps = 0;
-        this.maxFps = 0;
+            try{//preload saved world
+                let textdecoder=new TextDecoder("utf-8");
+                let compressed_block=await get("changedBlocksMap");
+                console.log(compressed_block)
+                let decompressed_block=this.pako.inflate(compressed_block,{chunkSize: 8192 })
+                this.changedBlocksArray=JSON.parse(textdecoder.decode(decompressed_block));
+                let compressed_data=await get("changedBlocksDataMap");
+                let decompressed_data=this.pako.inflate(compressed_data,{chunkSize: 8192 })
+                this.changedBlocksDataArray=JSON.parse(textdecoder.decode(decompressed_data));
+            }catch(e){
+                console.error(e)
+            }
+            this.playerx=0;
+            this.playery=0;
+            this.playerz=0;
+            this.inhibitMouseDownInterval=false;
+            this.resources = resources;
+            this.currentScreen = null;
+            this.loadingScreen = null;
+            this.world = null;
+            this.player = null;
+            this.playerController = null;
+            this.fps = 0;
+            this.maxFps = 0;
 
-        // Tick timer
-        this.timer = new Timer(20);
+            // Tick timer
+            this.timer = new Timer(20);
 
-        this.settings = new GameSettings();
-        this.settings.load();
+            this.settings = new GameSettings();
+            this.settings.load();
 
-        // Load session from settings
-        if (this.settings.session === null) {
-            let username = "Player" + Math.floor(Math.random() * 100);
-            let profile = new GameProfile(UUID.randomUUID(), username);
-            this.setSession(new Session(profile, ""));
-        } else {
-            this.setSession(Session.fromJson(this.settings.session));
-        }
+            // Persistent splash
+            this.splashText = this.getSpashText();
 
-        // Create window and world renderer
-        this.window = new GameWindow(this, canvasWrapperId);
+            // Load session from settings
+            if (this.settings.session === null) {
+                let username = this.settings.name;
+                let profile = new GameProfile(UUID.randomUUID(), username);
+                this.setSession(new Session(profile, ""));
+            } else {
+                this.setSession(Session.fromJson(this.settings.session));
+            }
 
-        // Create renderers
-        this.worldRenderer = new WorldRenderer(this, this.window);
-        this.screenRenderer = new ScreenRenderer(this, this.window);
-        this.itemRenderer = new ItemRenderer(this, this.window);
+            // Create window and world renderer
+            this.window = new GameWindow(this, canvasWrapperId);
 
-        // Create current screen and overlay
-        this.ingameOverlay = new IngameOverlay(this, this.window);
+            // Create renderers
+            this.worldRenderer = new WorldRenderer(this, this.window);
+            this.screenRenderer = new ScreenRenderer(this, this.window);
+            this.itemRenderer = new ItemRenderer(this, this.window);
+            // Create current screen and overlay
+            this.ingameOverlay = new IngameOverlay(this, this.window);
 
-        // Command handler
-        this.commandHandler = new CommandHandler(this);
+            // Command handler
+            this.commandHandler = new CommandHandler(this);
 
-        this.frames = 0;
-        this.lastTime = Date.now();
+            this.frames = 0;
+            this.lastTime = Date.now();
 
-        // Create all blocks
-        BlockRegistry.create();
+            // Create all blocks
+            BlockRegistry.create();
 
-        this.itemRenderer.initialize();
+            this.itemRenderer.initialize();
 
-        // Create font renderer
-        this.fontRenderer = new FontRenderer(this);
+            // Create font renderer
+            this.fontRenderer = new FontRenderer(this);
 
-        // Grass colorizer
-        this.grassColorizer = new GrassColorizer(this);
+            // Grass colorizer
+            this.grassColorizer = new GrassColorizer(this);
 
-        this.particleRenderer = new ParticleRenderer(this);
+            this.particleRenderer = new ParticleRenderer(this);
 
-        // Update window size
-        this.window.updateWindowSize();
+            // Update window size
+            this.window.updateWindowSize();
 
-        // Create sound manager
-        this.soundManager = new SoundManager();
+            // Create sound manager
+            this.soundManager = new SoundManager();
 
-        this.displayScreen(new GuiMainMenu());
+            this.displayScreen(new GuiMainMenu());
 
-        // Initialize
-        this.init();
+            // Initialize
+            this.init();
+
+        })();
     }
 
     init() {
@@ -156,7 +181,21 @@ export default class Minecraft {
             // Create world
             this.world = world;
             this.worldRenderer.scene.add(this.world.group);
-
+            if(localStorage.getItem("continue")=="true" && this.changedBlocksArray!=null) {//making a Map(window.worlddata) is not advisable as the threejs classes are not properly initilialized
+                this.world.setSpawn(this.playerx,this.playerz);
+               
+                this.world.changedBlocksMap=new Map(this.changedBlocksArray);
+                this.world.changedBlocksDataMap=new Map(this.changedBlocksDataArray);
+                for (const [key, value] of this.world.changedBlocksMap.entries()) {
+                    this.world.setBlockAt(value.x,value.y,value.z,value.typeId);
+                }
+                for (const [key, value] of this.world.changedBlocksDataMap.entries()) {
+                    this.world.setBlockDataAt(value.x,value.y,value.z,value.data);
+                }
+                this.worldRenderer.flushRebuild = true;
+            
+            
+            }
             // Create player
             this.player = this.playerController.createPlayer(this.world);
             this.player.username = this.session.getProfile().getUsername();
@@ -164,8 +203,14 @@ export default class Minecraft {
 
             // Load spawn chunks and respawn player
             this.world.loadSpawnChunks();
+            if(localStorage.getItem("continue")!="true"){
+                this.world.changedBlocksMap=new Map();
+                this.world.changedBlocksDataMap=new Map();
+            }
+           
             this.player.respawn();
         }
+
     }
 
     hasInGameFocus() {
@@ -226,6 +271,8 @@ export default class Minecraft {
                 let deltaX = this.window.pullMouseMotionX();
                 let deltaY = this.window.pullMouseMotionY();
                 this.player.turn(deltaX, deltaY);
+
+                this.window.canvasNames.getContext('2d').clearRect(0, 0, this.window.width, this.window.height);
             }
 
             // Update lights
@@ -262,18 +309,31 @@ export default class Minecraft {
         }
 
         // Close previous screen
+        let lastscreenwasinventory=this.currentScreen instanceof(GuiContainerCreative);
+
         if (this.currentScreen !== null) {
             this.currentScreen.onClose();
         }
 
         // Switch screen
+        
         this.currentScreen = screen;
 
         // Update window size
         this.window.updateWindowSize();
 
         // Initialize new screen
-        if (screen === null) {
+        if (screen === null) {//null is the gameing screen
+            if(lastscreenwasinventory){
+                let oldselectedslot=this.player.inventory.selectedSlotIndex;
+                for (let i = 0; i <= 8; i++) {
+                        this.player.inventory.selectedSlotIndex = i;
+                        this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,this.player.inventory.getItemInSelectedSlot());
+                }
+                this.player.inventory.selectedSlotIndex=oldselectedslot;
+          
+            }
+          
             this.window.updateFocusState(FocusStateType.REQUEST_LOCK);
         } else {
             this.window.updateFocusState(FocusStateType.REQUEST_EXIT);
@@ -339,6 +399,8 @@ export default class Minecraft {
         for (let i = 1; i <= 9; i++) {
             if (button === 'Digit' + i) {
                 this.player.inventory.selectedSlotIndex = i - 1;
+                this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,this.player.inventory.getItemInSelectedSlot());
+                this.player.inventorySelectSlot(this.player.inventory.selectedSlotIndex);
             }
         }
 
@@ -354,7 +416,7 @@ export default class Minecraft {
         }
 
         // Toggle debug overlay
-        if (button === "F3") {
+        if (button === this.settings.keyToggleDebug) {
             this.settings.debugOverlay = !this.settings.debugOverlay;
             this.settings.save();
         }
@@ -366,6 +428,8 @@ export default class Minecraft {
     }
 
     onMouseClicked(button) {
+
+
         if (this.window.isLocked()) {
             let hitResult = this.player.rayTrace(5, this.timer.partialTicks);
 
@@ -385,7 +449,7 @@ export default class Minecraft {
                             hitResult.x + 0.5,
                             hitResult.y + 0.5,
                             hitResult.z + 0.5,
-                            1.0,
+                            2.0,
                             1.0
                         );
 
@@ -393,7 +457,16 @@ export default class Minecraft {
                         this.particleRenderer.spawnBlockBreakParticle(this.world, hitResult.x, hitResult.y, hitResult.z);
 
                         // Destroy block
-                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0);
+                        this.world.setBlockAt(hitResult.x, hitResult.y, hitResult.z, 0,1+(this.isSingleplayer()?0:2));
+                        let face;
+                        if(hitResult.face.y<0) face=0;
+                        else if(hitResult.face.y>0) face=1;
+                        else if(hitResult.face.z<0) face=2;
+                        else if(hitResult.face.z>0) face=3;
+                        else if(hitResult.face.x<0) face=4;
+                        else if(hitResult.face.x>0) face=5;
+                        
+                        this.player.digging(0,hitResult.x, hitResult.y, hitResult.z,face);
                     }
                 }
 
@@ -410,12 +483,15 @@ export default class Minecraft {
                             const index = this.player.inventory.items.indexOf(item);
                             if (item === typeId && index <= 8) {
                                 this.player.inventory.selectedSlotIndex = index;
+                                this.player.inventorySelectSlot(this.player.inventory.selectedSlotIndex);
+                             
                                 return;
                             }
                         }
 
                         // Set item in hotbar
                         this.player.inventory.setItemInSelectedSlot(typeId);
+                        this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,typeId);
                     }
                 }
             }
@@ -438,26 +514,38 @@ export default class Minecraft {
 
                         if (typeId !== 0 && prevTypeId !== typeId) {
                             // Place block
-                            this.world.setBlockAt(x, y, z, typeId);
-
+                            
+                            this.world.setBlockAt(x, y, z, typeId,1+(this.isSingleplayer()?0:2));
+                            let face;
+                            if(hitResult.face.y<0) face=0;
+                            else if(hitResult.face.y>0) face=1;
+                            else if(hitResult.face.z<0) face=2;
+                            else if(hitResult.face.z>0) face=3;
+                            else if(hitResult.face.x<0) face=4;
+                            else if(hitResult.face.x>0) face=5;
+                            this.player.placeBlock(x,y,z,face,typeId,0,0,0)
+                            //this.player.placeBlock(x,y,z,face,this.player.inventory.selectedSlotIndex,0,0,0)
+                        //for this to work we need https://wiki.vg/index.php?title=Protocol&oldid=7368#Creative_Inventory_Action
+                        //and https://wiki.vg/index.php?title=Protocol&oldid=7368#Held_Item_Change_2
+                        //https://wiki.vg/index.php?title=Protocol&oldid=7368#Set_Slot
                             // Swing player arm
                             this.player.swingArm();
-
                             // Handle block abilities
                             let block = Block.getById(typeId);
-                            block.onBlockPlaced(this.world, x, y, z, hitResult.face);
+                            block.onBlockPlaced(this.world, x, y, z, hitResult.face,false,1+(this.isSingleplayer()?0:2));
 
                             // Play sound
                             let sound = block.getSound();
-                            let soundName = sound.getStepSound();
+                            let soundName = sound.getPlaceSound();
                             this.soundManager.playSound(
                                 soundName,
                                 hitResult.x + 0.5,
                                 hitResult.y + 0.5,
                                 hitResult.z + 0.5,
-                                1.0,
+                                2.0,
                                 sound.getPitch() * 0.8
                             );
+                        
                         }
                     }
                 }
@@ -471,6 +559,8 @@ export default class Minecraft {
     onMouseScroll(delta) {
         if (this.isInGame()) {
             this.player.inventory.shiftSelectedSlot(delta);
+            this.player.setItemInSelectedSlot(this.player.inventory.selectedSlotIndex,this.player.inventory.getItemInSelectedSlot());
+            this.player.inventorySelectSlot(this.player.inventory.selectedSlotIndex);          
         }
     }
 
@@ -526,5 +616,10 @@ export default class Minecraft {
         context.imageSmoothingEnabled = false;
         context.drawImage(image, 0, 0, image.width, image.height);
         return new THREE.CanvasTexture(canvas);
+    }
+    
+    getSpashText() {
+        let i = Math.floor(Math.random() * Splash.splashes.length);
+        return Splash.splashes[i];
     }
 }

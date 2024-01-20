@@ -89,6 +89,7 @@ export default class WorldRenderer {
         this.webRenderer.autoClear = false;
         this.webRenderer.sortObjects = false;
         this.webRenderer.setClearColor(0x000000, 0);
+        this.webRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;//necessary after r154
         this.webRenderer.clear();
 
         // Create sky
@@ -400,7 +401,7 @@ export default class WorldRenderer {
                 let cosZ = Math.cos(rotationZ);
 
                 // Random size of the star
-                let size = 0.25 + random.nextFloat() * 0.25;
+                let size = 0.15 + random.nextFloat() * 0.15;
 
                 // Add vertices for each edge of the star
                 for (let edge = 0; edge < 4; edge++) {
@@ -425,7 +426,6 @@ export default class WorldRenderer {
 
             let mesh = this.tessellator.draw(this.listStars);
             mesh.material = mesh.material.clone();
-            mesh.material.depthTest = true;
             mesh.material.side = THREE.BackSide;
             this.cycleGroup.add(this.listStars);
         }
@@ -493,9 +493,9 @@ export default class WorldRenderer {
 
     setupFog(x, z, inWater, partialTicks) {
         if (inWater) {
-            let color = new THREE.Color(0.2, 0.2, 0.4);
+            let color = new THREE.Color(0.0, 0.0, 0.2);
             this.background.background = color;
-            this.scene.fog = new THREE.Fog(color, 0.0025, 5);
+            this.scene.fog = new THREE.Fog(color, -10, 15);
         } else {
             let world = this.minecraft.world;
 
@@ -596,11 +596,11 @@ export default class WorldRenderer {
                 // Unload chunk
                 if (chunk.loaded) {
                     chunk.unload();
-
+                  //  console.log("unloading chunk to test storage")
                     // TODO Implement chunk unloading
-                    //let index = chunk.x + (chunk.z << 16);
-                    //world.getChunkProvider().getChunks().delete(index);
-                    //world.group.remove(chunk.group);
+                   // let index = chunk.x + (chunk.z << 16);
+                   // world.getChunkProvider().getChunks().delete(index);
+                   // world.group.remove(chunk.group);
                 }
             }
         }

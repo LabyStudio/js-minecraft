@@ -67,7 +67,7 @@ export default class ScreenRenderer {
     }
 
     getLimitedScaleFactor() {
-        return Math.min(this.window.scaleFactor, 4);
+        return Math.min(this.window.scaleFactor, 5);
     }
 
 }

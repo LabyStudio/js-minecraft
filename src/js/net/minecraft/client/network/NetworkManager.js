@@ -7,6 +7,8 @@ import MissingPackets from "../../util/MissingPackets.js";
 export default class NetworkManager {
 
     static DEBUG = false;
+    static DEBUGERROR=false;
+    static DEBUGOUT=false;
     static MAX_COMPRESSION = 2097152;
 
     constructor(minecraft) {
@@ -31,7 +33,9 @@ export default class NetworkManager {
     }
 
     connect(address, port, proxy) {
-        this.socket = new WebSocket("ws://" + proxy.address + ":" + proxy.port);
+        this.socket = new WebSocket( proxy.address + ":" + proxy.port);
+        //this.socket = new WebSocket(proxy.address);
+        
         this.socket.binaryType = "arraybuffer";
 
         this.socket.onopen = e => this._onOpen(e);
@@ -126,7 +130,8 @@ export default class NetworkManager {
         // Send chunk
         this.socket.send(wrapper.getArray());
 
-        if (NetworkManager.DEBUG) {
+        if (NetworkManager.DEBUG || NetworkManager.DEBUGOUT) {
+            if(packet.constructor.name!="ClientPlayerMovementPacket" &&packet.constructor.name!="ClientPlayerPositionPacket" && packet.constructor.name!="ClientPlayerRotationPacket" && packet.constructor.name!="ClientPlayerPositionRotationPacket" )
             console.log("[Network] [OUT] " + packet.constructor.name);
         }
     }
@@ -204,7 +209,7 @@ export default class NetworkManager {
         let packetId = buffer.readByte(); // Read packet id
         let clazz = this.registry.getServerBoundById(this.protocolState, packetId);
         if (clazz === null) {
-            if (NetworkManager.DEBUG) {
+            if (NetworkManager.DEBUGERROR || NetworkManager.DEBUG) {
                 console.log("[Network] [IN] Unknown packet id: " + packetId + " (0x" + packetId.toString(16) + ") (" + new MissingPackets().get(packetId) + ")");
             }
             return;

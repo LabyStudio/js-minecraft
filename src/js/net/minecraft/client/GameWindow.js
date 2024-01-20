@@ -52,6 +52,7 @@ export default class GameWindow {
         // Create render layers
         this.canvasWorld = document.createElement('canvas');
         this.canvasDebug = document.createElement('canvas');
+        this.canvasNames = document.createElement('canvas');//KSKSKS
         this.canvasPlayerList = document.createElement('canvas');
         this.canvasItems = document.createElement('canvas');
 
@@ -67,13 +68,17 @@ export default class GameWindow {
         this.registerListener(document, 'mousedown', event => {
             // In-Game mouse click
             this.minecraft.onMouseClicked(event.button);
-
-            // Start interval to repeat the mouse event
-            if (this.mouseDownInterval !== null) {
-                clearInterval(this.mouseDownInterval);
+            if(!this.minecraft.inhibitMouseDownInterval){
+                // Start interval to repeat the mouse event
+                if (this.mouseDownInterval !== null) {
+                    clearInterval(this.mouseDownInterval);
+                }
+                this.mouseDownInterval = setInterval(_ => this.minecraft.onMouseClicked(event.button), 250);
+            }else{
+                if (this.mouseDownInterval !== null) {
+                    clearInterval(this.mouseDownInterval);
+                }
             }
-            this.mouseDownInterval = setInterval(_ => this.minecraft.onMouseClicked(event.button), 250);
-
             // Handle mouse click on screen
             let currentScreen = this.minecraft.currentScreen;
             if (currentScreen !== null) {
@@ -93,7 +98,7 @@ export default class GameWindow {
             }
 
             this.initialSoundEngine();
-        });
+        },false);
         this.registerListener(document, 'mousemove', event => {
             this.mouseX = event.clientX / this.scaleFactor;
             this.mouseY = event.clientY / this.scaleFactor;
@@ -108,7 +113,7 @@ export default class GameWindow {
             }
 
             this.requestCursorUpdate();
-        });
+        },false);
         this.registerListener(document, 'mouseup', event => {
             // Handle mouse release on screen
             let currentScreen = this.minecraft.currentScreen;
@@ -123,7 +128,7 @@ export default class GameWindow {
             if (this.mouseDownInterval !== null) {
                 clearInterval(this.mouseDownInterval);
             }
-        });
+        },false);
         this.registerListener(document, 'pointerlockchange', event => {
             let intentState = this.focusState.getIntent(); // Get target state we want to switch into
             let isCursorLocked = this.isCursorLockedToCanvas(); // Get current state of the canvas lock
@@ -151,7 +156,7 @@ export default class GameWindow {
 
             // Update cursor lock
             this.requestCursorUpdate();
-        });
+        },false);
         this.registerListener(this.wrapper, 'mouseleave', event => {
             // Disable keyboard util handling
             Keyboard.setEnabled(false);
@@ -159,17 +164,20 @@ export default class GameWindow {
 
             // Update cursor lock
             this.requestCursorUpdate();
-        });
+        },false);
         this.registerListener(document, 'mouseout', event => {
             this.requestCursorUpdate();
-        });
+        },false);
         this.registerListener(document, 'mouseenter', event => {
             this.requestCursorUpdate();
         });
         this.registerListener(window, 'keydown', event => {
             // Prevent browser functions except fullscreen
             if (event.key !== 'F11') {
-                event.preventDefault();
+                if (this.focusState === FocusStateType.LOCKED) event.preventDefault();
+            }
+            else {
+                this.updateWindowSize()
             }
 
             // Ignore key input if mouse is not inside window
@@ -376,15 +384,7 @@ export default class GameWindow {
         this.canvas.style.width = wrapperWidth + "px";
         this.canvas.style.height = wrapperHeight + "px";
 
-        if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
-            this.canvasDebug.width = this.canvas.width;
-            this.canvasDebug.height = this.canvas.height;
-        }
-
-        if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
-            this.canvasPlayerList.width = this.canvas.width;
-            this.canvasPlayerList.height = this.canvas.height;
-        }
+        
 
         // Reinitialize gui
         this.minecraft.screenRenderer.initialize();
@@ -398,6 +398,24 @@ export default class GameWindow {
         if (this.minecraft.isInGame()) {
             this.minecraft.worldRenderer.render(0);
             this.minecraft.onRender(0)
+        }
+        if (this.canvasDebug.width !== this.canvas.width || this.canvasDebug.height !== this.canvas.height) {
+            this.canvasDebug.width = this.canvas.width;
+            this.canvasDebug.height = this.canvas.height;
+            let ctx = this.canvasDebug.getContext('2d');
+            ctx.scale(this.scaleFactor, this.scaleFactor);
+        }
+   
+
+        if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
+            this.canvasPlayerList.width = this.canvas.width;
+            this.canvasPlayerList.height = this.canvas.height;
+        }
+        if (this.canvasNames.width !== this.canvas.width || this.canvasNames.height !== this.canvas.height) {
+            this.canvasNames.width = this.canvas.width;
+            this.canvasNames.height = this.canvas.height;
+            let ctx = this.canvasNames.getContext('2d');
+            ctx.scale(this.scaleFactor, this.scaleFactor);
         }
     }
 

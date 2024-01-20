@@ -10,11 +10,11 @@ export default class PlayerEntity extends EntityLiving {
 
     static name = "PlayerEntity";
 
-    constructor(minecraft, world, id) {
-        super(minecraft, world, id);
+    constructor(minecraft, world, id,uuid="") {
+        super(minecraft, world, id,uuid);
 
         this.inventory = new InventoryPlayer();
-        this.username = "Player";
+        this.username = "Player";//KSKSKS get right name
 
         this.collision = false;
 
@@ -204,6 +204,14 @@ export default class PlayerEntity extends EntityLiving {
         this.motionY *= 0.8;
         this.motionZ *= slipperiness;
         this.motionY -= 0.02;
+        let distanceX = this.motionX;
+        let distanceZ = this.motionZ;
+
+        this.distanceWalked += Math.sqrt(distanceX * distanceX + distanceZ * distanceZ) * 0.6;
+        if (this.distanceWalked > this.nextStepDistance ) {
+            this.nextStepDistance = this.distanceWalked + 1;
+            this.minecraft.soundManager.playSound("move.water", this.x, this.y, this.z, 0.1  , 1);
+        }
     }
 
     travel(forward, vertical, strafe) {
@@ -263,7 +271,7 @@ export default class PlayerEntity extends EntityLiving {
 
                     // Play sound
                     if (!block.isLiquid()) {
-                        this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.15, sound.getPitch());
+                        this.minecraft.soundManager.playSound(sound.getStepSound(), this.x, this.y, this.z, 0.25, sound.getPitch());
                     }
                 }
             }

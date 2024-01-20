@@ -22,7 +22,10 @@ export default class SoundManager {
 
             // Load sound types
             this.loadSoundPool(sound.getStepSound());
+            this.loadSoundPool(sound.getBreakSound());
+            this.loadSoundPool(sound.getPlaceSound());
         }
+        this.loadSoundPool("jump.water");
     }
 
     loadSoundPool(name) {
@@ -47,8 +50,9 @@ export default class SoundManager {
 
         // Create sound
         let sound = new THREE.PositionalAudio(this.audioListener);
+        sound.setDistanceModel('inverse');
         sound.setRefDistance(0.1);
-        sound.setRolloffFactor(6);
+        sound.setRolloffFactor(0.1);
         sound.setFilter(sound.context.createBiquadFilter());
         sound.setVolume(0);
 

@@ -1,0 +1,114 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e1c271b52..7bfd51130 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,7 +11,7 @@ project(
+ 	LANGUAGES C CXX
+ )
+ 
+-option(BUILD_TOOLS "Sets up additional executables to be built along with the server" OFF)
++option(BUILD_TOOLS "Sets up additional executables to be built along with the server" ON)
+ option(BUILD_UNSTABLE_TOOLS "Sets up yet more executables to be built, these can be broken and generally are obsolete" OFF)
+ option(NO_NATIVE_OPTIMIZATION "Disables CPU-specific optimisations for the current machine, allows use on other CPUs of the same platform" OFF)
+ option(PRECOMPILE_HEADERS "Enable precompiled headers for faster builds" ON)
+diff --git a/src/ClientHandle.cpp b/src/ClientHandle.cpp
+index b726e5c6f..36b090a72 100644
+--- a/src/ClientHandle.cpp
++++ b/src/ClientHandle.cpp
+@@ -1130,13 +1130,14 @@ void cClientHandle::HandleLeftClick(Vector3i a_BlockPos, eBlockFace a_BlockFace,
+ 	}
+ 
+ 	cPluginManager * PlgMgr = cRoot::Get()->GetPluginManager();
+-	if (m_Player->IsFrozen() || PlgMgr->CallHookPlayerLeftClick(*m_Player, a_BlockPos, a_BlockFace, static_cast<char>(a_Status)))
+-	{
+-		// A plugin doesn't agree with the action, replace the block on the client and quit:
+-		m_Player->SendBlocksAround(a_BlockPos, 2);
+-		SendPlayerPosition();  // Prevents the player from falling through the block that was temporarily broken client side.
+-		return;
+-	}
++	if(cRoot::Get()->GetServer()->ShouldLimitPlayerBlockChanges())//KSKS modified for coding in minecraft client
++		if (m_Player->IsFrozen() || PlgMgr->CallHookPlayerLeftClick(*m_Player, a_BlockPos, a_BlockFace, static_cast<char>(a_Status)))
++		{
++			// A plugin doesn't agree with the action, replace the block on the client and quit:
++			m_Player->SendBlocksAround(a_BlockPos, 2);
++			SendPlayerPosition();  // Prevents the player from falling through the block that was temporarily broken client side.
++			return;
++		}
+ 
+ 	switch (a_Status)
+ 	{
+@@ -1433,7 +1434,7 @@ void cClientHandle::HandleRightClick(Vector3i a_BlockPos, eBlockFace a_BlockFace
+ 
+ 	FLOGD("HandleRightClick: {0}, face {1}, Cursor {2}, Hand: {3}, HeldItem: {4}", a_BlockPos, a_BlockFace, a_CursorPos, a_UsedMainHand, ItemToFullString(HeldItem));
+ 
+-	if (!PlgMgr->CallHookPlayerRightClick(*m_Player, a_BlockPos, a_BlockFace, a_CursorPos) && IsWithinReach(a_BlockPos) && !m_Player->IsFrozen())
++	if ( !cRoot::Get()->GetServer()->ShouldLimitPlayerBlockChanges()||(!PlgMgr->CallHookPlayerRightClick(*m_Player, a_BlockPos, a_BlockFace, a_CursorPos) && IsWithinReach(a_BlockPos) && !m_Player->IsFrozen()))////KSKS modified for coding in minecraft client
+ 	{
+ 		BLOCKTYPE BlockType;
+ 		NIBBLETYPE BlockMeta;
+@@ -1449,7 +1450,7 @@ void cClientHandle::HandleRightClick(Vector3i a_BlockPos, eBlockFace a_BlockFace
+ 		const bool ItemPlaceable = ItemHandler.IsPlaceable() && !m_Player->IsGameModeAdventure() && !m_Player->IsGameModeSpectator();
+ 		const bool ItemUseable = !m_Player->IsGameModeSpectator();
+ 
+-		if (BlockUsable)
++		if (BlockUsable || !cRoot::Get()->GetServer()->ShouldLimitPlayerBlockChanges())//KSKS modified for coding in minecraft client
+ 		{
+ 			cChunkInterface ChunkInterface(World->GetChunkMap());
+ 			if (!PlgMgr->CallHookPlayerUsingBlock(*m_Player, a_BlockPos, a_BlockFace, a_CursorPos, BlockType, BlockMeta))
+@@ -2093,8 +2094,17 @@ bool cClientHandle::IsWithinReach(const Vector3i a_Position) const
+ 	// Distance from the block's center to the player's eye height.
+ 	const double Distance = (Vector3d(0.5, 0.5, 0.5) + a_Position - m_Player->GetEyePosition()).SqrLength();
+ 
++	if (cRoot::Get()->GetServer()->ShouldLimitPlayerBlockChanges())
++	{
++		return Distance <=
++			   (m_Player->IsGameModeCreative() ? 33.4084 : 27.6676);
++	}
++	else{
++		return Distance <=
++			   (m_Player->IsGameModeCreative() ? 330.4084 : 270.6676);//KSKS modified for coding in minecraft client
++	}
+ 	// _X 2014-11-25: I've maxed at 5.26 with a Survival client and 5.78 with a Creative client in my tests.
+-	return Distance <= (m_Player->IsGameModeCreative() ? 33.4084 : 27.6676);
++	
+ }
+ 
+ 
+diff --git a/src/Protocol/Protocol_1_8.cpp b/src/Protocol/Protocol_1_8.cpp
+index ad04691a8..f4fff01f8 100644
+--- a/src/Protocol/Protocol_1_8.cpp
++++ b/src/Protocol/Protocol_1_8.cpp
+@@ -4149,20 +4149,24 @@ void cProtocol_1_8_0::HandlePacket(cByteBuffer & a_Buffer)
+ 	}
+ 
+ 	// Log the packet info into the comm log file:
+-	if (g_ShouldLogCommIn && m_CommLogFile.IsOpen())
++	if (g_ShouldLogCommIn && m_CommLogFile.IsOpen() )
+ 	{
+ 		ContiguousByteBuffer PacketData;
+ 		a_Buffer.ReadAll(PacketData);
+ 		a_Buffer.ResetRead();
+ 		a_Buffer.ReadVarInt(PacketType);  // We have already read the packet type once, it will be there again
+-		ASSERT(PacketData.size() > 0);  // We have written an extra NUL, so there had to be at least one byte read
+-		PacketData.resize(PacketData.size() - 1);
+-		AString PacketDataHex;
+-		CreateHexDump(PacketDataHex, PacketData.data(), PacketData.size(), 16);
+-		m_CommLogFile.Write(fmt::format(
+-			FMT_STRING("Next incoming packet is type {0} (0x{0:x}), length {1} (0x{1:x}) at state {2}. Payload:\n{3}\n"),
+-			PacketType, a_Buffer.GetUsedSpace(), m_State, PacketDataHex
+-		));
++		//ASSERT(PacketData.size() > 0);  // We have written an extra NUL, so there had to be at least one byte read
++		if (PacketData.size() > 0)
++		{
++			PacketData.resize(PacketData.size() - 1);
++			AString PacketDataHex;
++			CreateHexDump(
++				PacketDataHex, PacketData.data(), PacketData.size(), 16);
++			m_CommLogFile.Write(fmt::format(
++				FMT_STRING("Next incoming packet is type {0} (0x{0:x}), length "
++						   "{1} (0x{1:x}) at state {2}. Payload:\n{3}\n"),
++				PacketType, a_Buffer.GetUsedSpace(), m_State, PacketDataHex));
++		}
+ 	}
+ 
+ 	if (!HandlePacket(a_Buffer, PacketType))

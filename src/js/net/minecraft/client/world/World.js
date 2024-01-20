@@ -26,7 +26,8 @@ export default class World {
 
         this.time = 0;
         this.spawn = new Vector3(0, 0, 0);
-
+        this.changedBlocksMap=new Map();
+        this.changedBlocksDataMap=new Map();
         // Update lights async
         let scope = this;
         setInterval(function () {
@@ -75,13 +76,17 @@ export default class World {
         let minX = MathHelper.floor(region.minX);
         let maxX = MathHelper.floor(region.maxX + 1.0);
         let minY = MathHelper.floor(region.minY);
-        let maxY = MathHelper.floor(region.maxY + 1.0);
+        let maxY = MathHelper.floor(region.maxY + 2.0);
         let minZ = MathHelper.floor(region.minZ);
         let maxZ = MathHelper.floor(region.maxZ + 1.0);
 
         for (let x = minX; x < maxX; x++) {
             for (let y = minY; y < maxY; y++) {
                 for (let z = minZ; z < maxZ; z++) {
+                    if (this.isHalfBlockAt(x, y, z)) {
+                        boundingBoxList.push(new BoundingBox(x, y, z, x + 1, y + 0.5, z + 1));
+                        continue;
+                    }
                     if (this.isSolidBlockAt(x, y, z)) {
                         boundingBoxList.push(new BoundingBox(x, y, z, x + 1, y + 1, z + 1));
                     }
@@ -179,7 +184,7 @@ export default class World {
         } else if (sourceType === EnumSkyBlock.BLOCK) {
             let typeId = this.getBlockAt(x, y, z);
             let block = Block.getById(typeId);
-            let blockLight = typeId === 0 ? 0 : block.getLightValue();
+            let blockLight = ((typeId ==0)||(block === null ))? 0 : block.getLightValue();
 
             if (blockLight > level) {
                 level = blockLight;
@@ -266,21 +271,31 @@ export default class World {
         return block !== null && block.isSolid();
     }
 
+    isHalfBlockAt(x, y, z) {
+        let typeId = this.getBlockAt(x, y, z);
+        if (typeId === 0) {
+            return false;
+        }
+
+        let block = Block.getById(typeId);
+        return block !== null && block.isHalf();
+    }
+
     isTranslucentBlockAt(x, y, z) {
         let typeId = this.getBlockAt(x, y, z);
         return typeId === 0 || Block.getById(typeId).isTranslucent();
     }
 
-    setBlockAt(x, y, z, type) {
+    setBlockAt(x, y, z, type,mode=0) {
         let chunk = this.getChunkAt(x >> 4, z >> 4);
-        chunk.setBlockAt(x & 15, y, z & 15, type);
+        chunk.setBlockAt(x & 15, y, z & 15, type,0,mode);
 
         // Rebuild chunk
         this.onBlockChanged(x, y, z);
     }
 
-    setBlockDataAt(x, y, z, data) {
-        this.getChunkAt(x >> 4, z >> 4).setBlockDataAt(x & 15, y, z & 15, data);
+    setBlockDataAt(x, y, z, data,mode=0) {
+        this.getChunkAt(x >> 4, z >> 4).setBlockDataAt(x & 15, y, z & 15, data,mode);
     }
 
     getBlockAt(x, y, z) {
@@ -527,7 +542,7 @@ export default class World {
         let angle = this.getCelestialAngle(partialTicks);
         let rotation = 1.0 - (Math.cos(angle * Math.PI * 2.0) * 2.0 + 0.75);
         rotation = MathHelper.clamp(rotation, 0.0, 1.0);
-        return rotation * rotation * 0.5;
+        return rotation * rotation * 0.75;
     }
 
     getLightBrightnessForEntity(entity) {

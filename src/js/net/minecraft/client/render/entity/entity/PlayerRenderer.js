@@ -2,7 +2,7 @@ import ModelPlayer from "../../model/model/ModelPlayer.js";
 import EntityRenderer from "../EntityRenderer.js";
 import Block from "../../../world/block/Block.js";
 import * as THREE from "../../../../../../../../libraries/three.module.js";
-
+import MathHelper from "../../../../util/MathHelper.js";
 export default class PlayerRenderer extends EntityRenderer {
 
     constructor(worldRenderer) {
@@ -67,6 +67,50 @@ export default class PlayerRenderer extends EntityRenderer {
     }
 
     render(entity, partialTicks) {
+  
+        let interpolatedX = entity.prevX + (entity.x - entity.prevX) * partialTicks;
+        let interpolatedY = entity.prevY + (entity.y - entity.prevY) * partialTicks;
+        let interpolatedZ = entity.prevZ + (entity.z - entity.prevZ) * partialTicks;
+        let interpolatedselfX;
+        let interpolatedselfY;
+        let interpolatedselfZ;
+        if(this.worldRenderer.minecraft.settings.thirdPersonView==0){
+            interpolatedselfX = window.app.player.prevX + (window.app.player.x - window.app.player.prevX) * partialTicks;
+            interpolatedselfY = window.app.player.prevY + (window.app.player.y - window.app.player.prevY) * partialTicks;
+            interpolatedselfZ = window.app.player.prevZ + (window.app.player.z - window.app.player.prevZ) * partialTicks;
+        }else{
+            let campos=new THREE.Vector3();
+            campos.setFromMatrixPosition( window.app.worldRenderer.camera.matrixWorld);
+            interpolatedselfX = campos.x;
+            interpolatedselfY = campos.y;
+            interpolatedselfZ = campos.z;
+        }
+
+        let yaw = window.app.player.rotationYaw;
+        let pitch=window.app.player.rotationPitch;
+      
+        //KSKSKS
+        let canvas=window.app.ingameOverlay.window.canvasNames.getContext('2d');
+        let playerpos=new THREE.Vector3(interpolatedX,interpolatedY,interpolatedZ);
+        let selfpos=new THREE.Vector3(interpolatedselfX,interpolatedselfY,interpolatedselfZ);
+        selfpos.sub(playerpos)
+
+        let yawvec=new THREE.Vector3(Math.cos((yaw-90)/180*Math.PI)*Math.cos(pitch/180*Math.PI),Math.sin(pitch/180*Math.PI),Math.sin((yaw-90)/180*Math.PI)*Math.cos(pitch/180*Math.PI));
+        let yawvec2;
+        if(this.worldRenderer.minecraft.settings.thirdPersonView!=2)
+            yawvec2=new THREE.Vector3(selfpos.x,selfpos.y,selfpos.z);
+        else
+            yawvec2=new THREE.Vector3(-selfpos.x,-selfpos.y,-selfpos.z);
+        
+        if((selfpos.length()<0.1 ||yawvec.dot(yawvec2)>0) && window.app.playerController.getNetworkHandler !== undefined ){           
+            playerpos.project(window.app.worldRenderer.camera);
+            var widthHalf=window.app.ingameOverlay.window.width/2;
+            var heightHalf=window.app.ingameOverlay.window.height/2;
+            window.app.fontRenderer.drawString(canvas,window.app.playerController.getNetworkHandler().playerInfoMap.get( entity.uuid.toString() ).profile.username,playerpos.x*widthHalf+widthHalf,-playerpos.y*heightHalf+heightHalf,0x50ffffff,false) ;// 
+        }
+       
+       
+
         let swingProgress = entity.swingProgress - entity.prevSwingProgress;
         if (swingProgress < 0.0) {
             swingProgress++;

@@ -39,7 +39,19 @@ export default class IngameOverlay extends Gui {
 
         // Render debug canvas on stack
         if (this.minecraft.settings.debugOverlay) {
-            stack.drawImage(this.window.canvasDebug, 0, 0);
+            let canvasDebug = this.window.canvasDebug;
+            let canvas = this.window.canvas;
+            let debugHeight = canvasDebug.height * this.window.scaleFactor;
+            let debugWidth = canvasDebug.width * this.window.scaleFactor;
+            stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
+        }
+        {
+            let canvasDebug = this.window.canvasNames;
+            let canvas = this.window.canvas;
+            let debugHeight = canvasDebug.height * this.window.scaleFactor;
+            let debugWidth = canvasDebug.width * this.window.scaleFactor;
+            stack.drawImage(canvasDebug, 0, 0, debugWidth, debugHeight, 0, 0, canvas.width, canvas.height);
+
         }
 
         // Render player list
@@ -50,7 +62,7 @@ export default class IngameOverlay extends Gui {
 
     onTick() {
         this.chatOverlay.onTick();
-
+    
         // Render debug overlay on tick
         if (this.minecraft.settings.debugOverlay) {
             let stack = this.window.canvasDebug.getContext('2d');
@@ -181,7 +193,7 @@ export default class IngameOverlay extends Gui {
         let towards = "Towards " + (facing.isPositive() ? "positive" : "negative") + " " + (facing.isXAxis() ? "X" : "Z");
 
         let lines = [
-            "js-minecraft " + Minecraft.VERSION,
+            "mintblock " + Minecraft.VERSION,
             fps + " fps (" + chunkUpdates + " chunk updates) T: " + this.minecraft.maxFps,
             "C: " + visibleChunks + "/" + loadedChunks + " D: " + viewDistance + ", L: " + lightUpdates,
             "E: " + visibleEntities + "/" + entities + ", P: " + particles,

@@ -2,11 +2,11 @@ import Block from "../Block.js";
 
 export default class BlockLeave extends Block {
 
-    constructor(id, textureSlotId) {
-        super(id, textureSlotId);
+    constructor(id, textureSlotId,metaValue) {
+        super(id, textureSlotId,metaValue);
 
         // Sound
-        this.sound = Block.sounds.grass;
+        this.sound = Block.sounds.dirt;
     }
 
     // TODO fix transparency of leaves
@@ -28,7 +28,7 @@ export default class BlockLeave extends Block {
     // TODO fix transparency of leaves
     /*shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
-        return typeId === 0 || typeId === this.id;
+        return typeId === 0 || typeId === this.getId();
     }*/
 
     getOpacity() {

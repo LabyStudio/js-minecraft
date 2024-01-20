@@ -5,8 +5,12 @@ export default class Sound {
         this.pitch = pitch;
     }
 
-    getBreakSound() {
+    getPlaceSound() {
         return "step." + this.name;
+    }
+
+    getBreakSound() {//currently only sand break sound is different to step sound
+        return "break." + this.name;
     }
 
     getStepSound() {

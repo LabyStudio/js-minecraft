@@ -38,7 +38,12 @@ import ServerAnimationPacket from "./packet/play/server/ServerAnimationPacket.js
 import ServerEntityMetadataPacket from "./packet/play/server/ServerEntityMetadataPacket.js";
 import ServerConfirmTransactionPacket from "./packet/play/server/ServerConfirmTransactionPacket.js";
 import ClientConfirmTransactionPacket from "./packet/play/client/ClientConfirmTransactionPacket.js";
-
+import ClientPlayerDiggingPacket from "./packet/play/client/ClientPlayerDiggingPacket.js";
+import ClientPlayerBlockPlacementPacket from "./packet/play/client/ClientPlayerBlockPlacementPacket.js";
+import ServerHeldItemChangePacket from "./packet/play/server/ServerHeldItemChangePacket.js";
+import ClientHeldItemChangePacket from "./packet/play/client/ClientHeldItemChangePacket.js";
+import ClientCreativeInventoryActionPacket from "./packet/play/client/ClientCreativeInventoryActionPacket.js"
+import ServerMultiBlockChangePacket from "./packet/play/server/ServerMultiBlockChangePacket.js";
 export default class PacketRegistry {
 
     constructor() {
@@ -66,6 +71,7 @@ export default class PacketRegistry {
         this.registerServer(ProtocolState.PLAY, 0x01, ServerJoinGamePacket);
         this.registerServer(ProtocolState.PLAY, 0x02, ServerChatPacket);
         this.registerServer(ProtocolState.PLAY, 0x08, ServerPlayerPositionRotationPacket);
+        this.registerServer(ProtocolState.PLAY, 0x09, ServerHeldItemChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x0B, ServerAnimationPacket);
         this.registerServer(ProtocolState.PLAY, 0x0C, ServerSpawnPlayerPacket);
         this.registerServer(ProtocolState.PLAY, 0x13, ServerDestroyEntitiesPacket);
@@ -77,6 +83,7 @@ export default class PacketRegistry {
         this.registerServer(ProtocolState.PLAY, 0x19, ServerEntityHeadLookPacket);
         this.registerServer(ProtocolState.PLAY, 0x1C, ServerEntityMetadataPacket);
         this.registerServer(ProtocolState.PLAY, 0x21, ServerChunkDataPacket);
+        this.registerServer(ProtocolState.PLAY, 0x22, ServerMultiBlockChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x23, ServerBlockChangePacket);
         this.registerServer(ProtocolState.PLAY, 0x26, ServerMultiChunkDataPacket);
         this.registerServer(ProtocolState.PLAY, 0x32, ServerConfirmTransactionPacket);
@@ -90,9 +97,13 @@ export default class PacketRegistry {
         this.registerClient(ProtocolState.PLAY, 0x04, ClientPlayerPositionPacket);
         this.registerClient(ProtocolState.PLAY, 0x05, ClientPlayerRotationPacket);
         this.registerClient(ProtocolState.PLAY, 0x06, ClientPlayerPositionRotationPacket);
+        this.registerClient(ProtocolState.PLAY, 0x07, ClientPlayerDiggingPacket);
+        this.registerClient(ProtocolState.PLAY, 0x08, ClientPlayerBlockPlacementPacket);
+        this.registerClient(ProtocolState.PLAY, 0x09, ClientHeldItemChangePacket);
         this.registerClient(ProtocolState.PLAY, 0x0A, ClientSwingArmPacket);
         this.registerClient(ProtocolState.PLAY, 0x0B, ClientPlayerStatePacket);
         this.registerClient(ProtocolState.PLAY, 0x0F, ClientConfirmTransactionPacket);
+        this.registerClient(ProtocolState.PLAY, 0x10, ClientCreativeInventoryActionPacket);
     }
 
     registerClient(state, id, packet) {

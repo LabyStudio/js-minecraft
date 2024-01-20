@@ -2,15 +2,22 @@ import BlockRenderType from "../../../util/BlockRenderType.js";
 import EnumBlockFace from "../../../util/EnumBlockFace.js";
 import MovingObjectPosition from "../../../util/MovingObjectPosition.js";
 import BoundingBox from "../../../util/BoundingBox.js";
-
+function generateRandomColor(){
+    let maxVal = 0xFFFFFF; // 16777215
+    let randomNumber = Math.random() * maxVal; 
+    randomNumber = Math.floor(randomNumber);
+    
+    return randomNumber;
+}
 export default class Block {
 
     static blocks = new Map();
 
     static sounds = {};
 
-    constructor(id, textureSlotId = id) {
+    constructor(id, textureSlotId = id,metaValue=0) {
         this.id = id;
+        this.metaValue=metaValue;
         this.textureSlotId = textureSlotId;
 
         // Bounding box
@@ -20,13 +27,17 @@ export default class Block {
         this.sound = Block.sounds.stone;
 
         // Register block
-        Block.blocks.set(id, this);
+        Block.blocks.set((id<<4)+(metaValue&15), this);
+        this.colormap=new Map();
+        this.color=0xffffff;
     }
 
     getId() {
-        return this.id;
+        return (this.id<<4)+(this.metaValue&15);
     }
-
+    getMetaValue(){
+        return this.metaValue;
+    }
     getRenderType() {
         return BlockRenderType.BLOCK;
     }
@@ -47,6 +58,10 @@ export default class Block {
         return this.getTransparency() > 0.0;
     }
 
+    isDecoration() {
+        return false;
+    }
+
     shouldRenderFace(world, x, y, z, face) {
         let typeId = world.getBlockAtFace(x, y, z, face);
         if (typeId === 0) {
@@ -56,9 +71,15 @@ export default class Block {
         let block = Block.getById(typeId);
         return block === null || block.isTranslucent();
     }
-
+    setColor(color,x,y,z,face){
+        var key = x + '#' + y + '#' + z;
+        this.colormap.set(key,color);
+        window.app.world.onBlockChanged(x, y, z);
+    }
+    
     getColor(world, x, y, z, face) {
-        return 0xffffff;
+        var key = x + '#' + y + '#' + z;
+        return this.colormap.get(key) ?? this.color;
     }
 
     getParticleColor(world, x, y, z) {
@@ -71,6 +92,10 @@ export default class Block {
 
     isSolid() {
         return true;
+    }
+
+    isHalf() {
+        return false;
     }
 
     getOpacity() {
@@ -93,11 +118,11 @@ export default class Block {
         return this.boundingBox;
     }
 
-    onBlockAdded(world, x, y, z) {
+    onBlockAdded(world, x, y, z,mode=0) {
 
     }
 
-    onBlockPlaced(world, x, y, z, face) {
+    onBlockPlaced(world, x, y, z, face,forceface,mode=0) {
 
     }
 
@@ -214,6 +239,7 @@ export default class Block {
 
     static getById(typeId) {
         let block = Block.blocks.get(typeId);
+        if(typeof block === "undefined") block=Block.blocks.get(typeId&0xfffff0);
         return typeof block === "undefined" ? null : block;
     }
 }
