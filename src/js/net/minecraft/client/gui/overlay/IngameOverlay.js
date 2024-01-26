@@ -34,8 +34,8 @@ export default class IngameOverlay extends Gui {
         // Render hotbar
         this.renderHotbar(stack, this.window.width / 2 - 91, this.window.height - 22);
 
-        // Render chat
-        this.chatOverlay.render(stack, mouseX, mouseY, partialTicks);
+        // Render chat canvas
+        stack.drawImage(this.window.canvasChat, 0, 0);
 
         // Render debug canvas on stack
         if (this.minecraft.settings.debugOverlay) {
@@ -69,6 +69,13 @@ export default class IngameOverlay extends Gui {
             }
 
             this.ticksRendered++;
+        }
+
+        // Render chat on tick if dirty
+        if (this.chatOverlay.isDirty()) {
+            let stack = this.window.canvasChat.getContext('2d');
+            stack.clearRect(0, 0, this.window.width, this.window.height);
+            this.chatOverlay.render(stack, 0, 0, 0);
         }
     }
 

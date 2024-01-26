@@ -31,7 +31,7 @@ export default class NetworkManager {
     }
 
     connect(address, port, proxy) {
-        this.socket = new WebSocket("ws://" + proxy.address + ":" + proxy.port);
+        this.socket = new WebSocket(proxy.url);
         this.socket.binaryType = "arraybuffer";
 
         this.socket.onopen = e => this._onOpen(e);
