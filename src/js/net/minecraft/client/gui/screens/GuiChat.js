@@ -3,8 +3,10 @@ import GuiTextField from "../widgets/GuiTextField.js";
 
 export default class GuiChat extends GuiScreen {
 
-    constructor() {
+    constructor(minecraft) {
         super();
+
+        this.minecraft = minecraft;
 
         this.inputField = new GuiTextField(0, 0, 0, 0);
         this.inputField.renderBackground = false;
@@ -22,6 +24,11 @@ export default class GuiChat extends GuiScreen {
         this.inputField.isFocused = true;
 
         this.buttonList.push(this.inputField);
+    }
+
+    onClose() {
+        super.onClose();
+        this.minecraft.ingameOverlay.chatOverlay.setDirty();
     }
 
     drawScreen(stack, mouseX, mouseY, partialTicks) {

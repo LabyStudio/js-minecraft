@@ -3,7 +3,7 @@ import Command from "../Command.js";
 export default class TeleportCommand extends Command {
 
     constructor() {
-        super("tp", "<x> <y> <y>", "Teleport to a position")
+        super("tp", "<x> <y> <z>", "Teleport to a position")
     }
 
     execute(minecraft, args) {

@@ -140,7 +140,6 @@ export default class FontRenderer {
         return length;
     }
 
-
     createBitMap(img) {
         let canvas = document.createElement('canvas');
         canvas.width = img.width;
@@ -178,6 +177,54 @@ export default class FontRenderer {
     }
 
     listFormattedStringToWidth(text, wrapWidth) {
-        return text.split("\n"); // TODO Implement wrap logic
+        let lines = [];
+        let currentColorCharacter = "r";
+        for (let line of text.split('\n')) {
+            let currentLine = '';
+            let currentLineWidth = 0;
+
+            // Split the text into words
+            for (let word of line.split(' ')) {
+                const wordWidth = this.getStringWidth(word + " ");
+
+                // If adding the word exceeds the wrap width, start a new line
+                if (currentLineWidth + wordWidth > wrapWidth) {
+                    lines.push(FontRenderer.COLOR_PREFIX + currentColorCharacter + currentLine.trim());
+                    currentColorCharacter = this.getLastColorCharacterOfText(currentLine);
+
+                    currentLine = '';
+                    currentLineWidth = 0;
+                }
+
+                // Add the word to the current line
+                currentLine += word + ' ';
+                currentLineWidth += wordWidth;
+            }
+
+            // Push the last line
+            if (currentLine.length > 0) {
+                lines.push(FontRenderer.COLOR_PREFIX + currentColorCharacter + currentLine.trim());
+                currentColorCharacter = this.getLastColorCharacterOfText(currentLine);
+            }
+        }
+        return lines;
+    }
+
+    getLastColorCharacterOfText(text) {
+        let character = "r";
+        let isColorCode = false;
+
+        // For each character
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === FontRenderer.COLOR_PREFIX) {
+                isColorCode = true;
+            } else {
+                if (isColorCode) {
+                    character = text[i];
+                    isColorCode = false;
+                }
+            }
+        }
+        return character;
     }
 }

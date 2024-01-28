@@ -52,6 +52,7 @@ export default class GameWindow {
         // Create render layers
         this.canvasWorld = document.createElement('canvas');
         this.canvasDebug = document.createElement('canvas');
+        this.canvasChat = document.createElement('canvas');
         this.canvasPlayerList = document.createElement('canvas');
         this.canvasItems = document.createElement('canvas');
 
@@ -381,6 +382,11 @@ export default class GameWindow {
             this.canvasDebug.height = this.canvas.height;
         }
 
+        if (this.canvasChat.width !== this.canvas.width || this.canvasChat.height !== this.canvas.height) {
+            this.canvasChat.width = this.canvas.width;
+            this.canvasChat.height = this.canvas.height;
+        }
+
         if (this.canvasPlayerList.width !== this.canvas.width || this.canvasPlayerList.height !== this.canvas.height) {
             this.canvasPlayerList.width = this.canvas.width;
             this.canvasPlayerList.height = this.canvas.height;
@@ -393,6 +399,8 @@ export default class GameWindow {
         if (this.minecraft.currentScreen !== null) {
             this.minecraft.currentScreen.setup(this.minecraft, this.width, this.height);
         }
+
+        this.minecraft.ingameOverlay.chatOverlay.setDirty();
 
         // Render first frame
         if (this.minecraft.isInGame()) {

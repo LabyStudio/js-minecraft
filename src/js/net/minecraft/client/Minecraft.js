@@ -32,8 +32,7 @@ export default class Minecraft {
 
     // TODO Add to settings
     static PROXY = {
-        "address": "localhost",
-        "port": 30023
+        "url": "wss://socket.labystudio.de/minecraft/"
     };
 
     /**
@@ -350,7 +349,8 @@ export default class Minecraft {
 
         // Open chat
         if (button === this.settings.keyOpenChat) {
-            this.displayScreen(new GuiChat());
+            this.displayScreen(new GuiChat(this));
+            this.ingameOverlay.chatOverlay.setDirty();
         }
 
         // Toggle debug overlay
